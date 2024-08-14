@@ -372,3 +372,39 @@ clean-deps:
 
 clean: clean-deps
 	-rm -f */*.o *.o */*.d *.d *.x core.* *.a gmon.out */*/*.o static/*.x *.so
+
+# MY_SRCDIR = MyShuffle
+# MY_SRC := $(wildcard $(SRC_DIR)/*.c)
+
+# %.x: MyShuffle/%.o $(MY_SRCDIR)/%.cpp $(COMMON) 
+# 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
+
+MY_SRC_DIR := MyShuffle
+MY_OBJ_DIR := MyShuffle
+
+MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
+MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
+
+%.x: MyShuffle/%.o $(COMMON) $(MY_OBJ)
+	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
+
+run:
+	./my_shuffle_main.x 3
+
+# MY_SRC_DIR := MyShuffle
+# MY_OBJ_DIR := MyShuffle
+
+# MY_EXE := $(MY_OBJ_DIR)/MyShuffle.o
+# MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
+# MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
+
+
+
+# $(MY_EXE): $(MY_OBJ)
+# 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@ -lstdc++
+
+# $(MY_OBJ_DIR)/%.o: $(MY_SRC_DIR)/%.cpp | $(MY_OBJ_DIR)
+# 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ -lstdc++
+
+# %.x: MyShuffle/%.o $(MY_EXE) $(COMMON) $(MY_OBJ)
+# 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
