@@ -28,12 +28,13 @@ using namespace std;
 template<class T> class MultiPlayer;
 class Server;
 class ServerSocket;
-
+class mpc_comm;
 /**
  * Network setup (hostnames and port numbers)
  */
 class Names
 {
+  friend class mpc_comm;
   friend class Player;
   friend class PlainPlayer;
   friend class RealTwoPartyPlayer;

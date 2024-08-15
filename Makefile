@@ -296,7 +296,7 @@ $(LIBSIMPLEOT_C): deps/SimplestOT_C/ref10/Makefile
 OT/BaseOT.o: deps/SimplestOT_C/ref10/Makefile
 
 deps/SimplestOT_C/ref10/Makefile:
-	git submodule update --init deps/SimplestOT_C || git clone https://github.com/mkskeller/SimplestOT_C deps/SimplestOT_C
+	git submodule update --init deps/SimplestOT_C || git clone git@github.com:mkskeller/SimplestOT_C.git deps/SimplestOT_C
 	cd deps/SimplestOT_C/ref10; PATH="$(CURDIR)/local/bin:$(PATH)" cmake .
 
 .PHONY: Programs/Circuits
@@ -382,14 +382,17 @@ clean: clean-deps
 MY_SRC_DIR := MyShuffle
 MY_OBJ_DIR := MyShuffle
 
-MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
+# MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
+MY_SRC = MyShuffle/my_shuffle_main.cpp MyShuffle/mpc_communicator.cpp MyShuffle/double_length_prg.cpp
+MY_SRC += MyShuffle/block_wrapper.cpp MyShuffle/math_gadget.cpp MyShuffle/Benes_network.cpp
+MY_SRC += MyShuffle/OPV.cpp
 MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
 
-%.x: MyShuffle/%.o $(COMMON) $(MY_OBJ)
+%.x: MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)
 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
-run:
-	./my_shuffle_main.x 3
+run: my_shuffle_main.x
+	for i in 0 1 2; do ./my_shuffle_main.x $$i 3 & true; done
 
 # MY_SRC_DIR := MyShuffle
 # MY_OBJ_DIR := MyShuffle

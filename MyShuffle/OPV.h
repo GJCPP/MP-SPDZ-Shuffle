@@ -5,10 +5,9 @@
 #include <queue>
 #include <stack>
 
-#include <emp-tool/emp-tool.h>
+#include "Tools/Hash.h"
 
 #include "global.h"
-
 #include "double_length_prg.h"
 
 class oblivious_punctured_vector {
@@ -43,7 +42,7 @@ void sender_append_OPV(std::vector<prg_seed>& msg0, std::vector<prg_seed>& msg1,
 	std::vector<block_wrapper>& check_val,
 	int logsz, std::vector<opv_2n>& opvs);
 
-void receiver_append_OPV(std::vector<byte>& choose, std::vector<block_wrapper>& hash_val, int logsz, int pos);
+void receiver_append_OPV(std::vector<octet>& choose, std::vector<block_wrapper>& hash_val, int logsz, int pos);
 /*
 * Sender is the one who knows all entries.
 */

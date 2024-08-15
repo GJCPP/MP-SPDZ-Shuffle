@@ -1,13 +1,13 @@
 #pragma once
 
-#include <emp-tool/utils/block.h>
+#include "Tools/random.h"
+#include "Tools/Hash.h"
+
+#define BLOCKS_FOR_HASH  (Hash::hash_length / SEED_SIZE)
 
 class block_wrapper {
 public:
     block_wrapper() = default;
-    block_wrapper(const emp::block& b);
-    
-    operator emp::block() const;
 
     block_wrapper operator^(const block_wrapper& b) const;
     block_wrapper& operator^=(const block_wrapper& b);
@@ -16,10 +16,10 @@ public:
     block_wrapper operator-(const block_wrapper& b) const;
     block_wrapper& operator-=(const block_wrapper& b);
 
-    emp::block *operator&();
-    const emp::block *operator&() const;
+    bool is_zero() const;
+    bool is_nonzero() const;
 
-    emp::block data;
+    octet data[SEED_SIZE];
 };
 
 block_wrapper makeBlockWrapper(uint64_t high, uint64_t low);

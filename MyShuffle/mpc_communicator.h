@@ -1,155 +1,82 @@
 #pragma once
 
-#include <cstdlib>
-#include <unistd.h>
+#ifndef MPC_COMMUNICATOR_H
+#define MPC_COMMUNICATOR_H
 
-#include <vector>
-#include <set>
-
-#include<emp-tool/emp-tool.h>
-#include<emp-ot/emp-ot.h>
+#include "Math/gfp.hpp"
+#include "Machines/SPDZ.hpp"
+#include "Protocols/ProtocolSet.h"
 
 #include "global.h"
-#include "field_int.h"
-#include "block_wrapper.h"
 #include "vectors.h"
 
+
 class mpc_comm {
-public:
-    mpc_comm(int num);
-    /*
-    * Call fork() to create processes until the number reaches n.
-    */
-    bool init();
-
-    void send(int who, const block_wrapper* data, int64_t length);
-    void send(int who, const std::vector<block_wrapper>& data);
-    void recv(int who, block_wrapper* data, int64_t length);
-
-    template <typename T>
-    void send(int who, const T& val);
-    template <typename T>
-    void recv(int who, T& val);
-    template <typename T>
-    void broadcast(int who, T& val);
-    
-    template <typename T>
-    void send(int who, const std::vector<T>& val);
-    template <typename T>
-    void recv(int who, std::vector<T>& val);
-    template <typename T>
-    void broadcast(int who, std::vector<T>& val);
-    
-    template <typename T>
-    void send(int who, const vectors<T>& val);
-    template <typename T>
-    void recv(int who, vectors<T>& val);
-    template <typename T>
-    void broadcast(int who, vectors<T>& val);
-
-    void ot_send(int who, const block_wrapper* data0, const block_wrapper* data1, int64_t length);
-    void ot_recv(int who, block_wrapper *data, const unsigned char *r, int64_t length);
-    void ot_recv(int who, block_wrapper *data, const bool *r, int64_t length);
-
-    int n, me;
 protected:
-    /*
-    * Each unordered pair of partys (P1, P2) is associated with a port. (IP = 127.0.01)
-    * Which is used for P1 P2 to send message to each other.
-    */
-    std::vector<std::vector<int>> port;
-    std::vector<emp::NetIO *> sock;
+    int n_party, my_number;
+    std::vector<octetStream> out_buff, in_buff;
+
+    Names N;
+    CryptoPlayer P;
+    ProtocolSetup<ShareType> setup;
+
+    Input<ShareType> *input;
+    SPDZ<ShareType> *protocol;
+    MAC_Check_<ShareType> *output;
+public:
+    mpc_comm(int n_party, int my_number);
+    
+    void init(Input<ShareType> *input, SPDZ<ShareType> *protocol, MAC_Check_<ShareType> *output);
+
+    CryptoPlayer& get_P();
+    ProtocolSetup<ShareType>& get_setup();
+    int get_port(int party = -1);
+    
+    template <typename T>
+    void send(int party, T val);
+    template <typename T>
+    void recv(int party, T& val);
+
+    template <typename T>
+    void send(int party, const vectors<T>& val);
+    template <typename T>
+    void recv(int party, vectors<T>& val);
 };
 
 template <typename T>
-inline void mpc_comm::send(int who, const T &val)
+void mpc_comm::send(int party, T val)
 {
-    sock[who]->send_data(&val, sizeof(T));
-#ifdef DEBUG
-    sock[who]->flush();
-#endif
+    octetStream o;
+    o.store(val);
+    P.send_to(party, o);
 }
 
 template <typename T>
-inline void mpc_comm::recv(int who, T &val)
+void mpc_comm::recv(int party, T &val)
 {
-    sock[who]->recv_data(&val, sizeof(T));
-#ifdef DEBUG
-    sock[who]->flush();
-#endif
+    octetStream o;
+    P.receive_player(party, o);
+    o.get(val);
 }
 
 template <typename T>
-inline void mpc_comm::broadcast(int who, T &val)
+inline void mpc_comm::send(int party, const vectors<T> &val)
 {
-    if (who == me) {
-        for (int i(1); i <= n; ++i) {
-            if (i == me) continue;
-            send(i, val);
-        }
-    } else {
-        recv(who, val);
+    octetStream o;
+    for (const T& v : val) {
+        o.store(v);
+    }
+    P.send_to(party, o);
+}
+
+template <typename T>
+inline void mpc_comm::recv(int party, vectors<T> &val)
+{
+    octetStream o;
+    P.receive_player(party, o);
+    for (T& v : val) {
+        o.get(v);
     }
 }
 
-template <typename T>
-inline void mpc_comm::send(int who, const std::vector<T> &val)
-{
-    sock[who]->send_data(val.data(), sizeof(T) * val.size());
-#ifdef DEBUG
-    sock[who]->flush();
 #endif
-}
-
-template <typename T>
-inline void mpc_comm::recv(int who, std::vector<T> &val)
-{
-    sock[who]->recv_data(val.data(), sizeof(T) * val.size());
-#ifdef DEBUG
-    sock[who]->flush();
-#endif
-}
-
-template <typename T>
-inline void mpc_comm::broadcast(int who, std::vector<T> &val)
-{
-    if (who == me) {
-        for (int i(1); i <= n; ++i) {
-            if (i == me) continue;
-            send(i, val);
-        }
-    } else {
-        recv(who, val);
-    }
-}
-
-template <typename T>
-inline void mpc_comm::send(int who, const vectors<T> &val)
-{
-    sock[who]->send_data(val.data(), sizeof(T) * val.size());
-#ifdef DEBUG
-    sock[who]->flush();
-#endif
-}
-
-template <typename T>
-inline void mpc_comm::recv(int who, vectors<T> &val)
-{
-    sock[who]->recv_data(val.data(), sizeof(T) * val.size());
-#ifdef DEBUG
-    sock[who]->flush();
-#endif
-}
-
-template <typename T>
-inline void mpc_comm::broadcast(int who, vectors<T> &val)
-{
-    if (who == me) {
-        for (int i(1); i <= n; ++i) {
-            if (i == me) continue;
-            send(i, val);
-        }
-    } else {
-        recv(who, val);
-    }
-}

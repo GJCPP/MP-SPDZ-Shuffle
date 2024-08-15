@@ -1,61 +1,70 @@
 #include "block_wrapper.h"
 
-block_wrapper::block_wrapper(const emp::block &b)
-	: data(b)
-{
-}
-
-block_wrapper::operator emp::block() const
-{
-	return data;
-}
-
 block_wrapper block_wrapper::operator^(const block_wrapper & b) const
 {
 	block_wrapper ret;
-	ret.data = data ^ b.data;
+	for (int i(0); i != SEED_SIZE; ++i)
+		ret.data[i] = data[i] ^ b.data[i];
 	return ret;
 }
 
 block_wrapper& block_wrapper::operator^=(const block_wrapper & b)
 {
-	data ^= b.data;
+	for (int i(0); i != SEED_SIZE; ++i)
+		data[i] ^= b.data[i];
 	return *this;
 }
 
 block_wrapper block_wrapper::operator+(const block_wrapper &b) const
 {
-    return data + b.data;
+	block_wrapper ret;
+	for (int i(0); i != SEED_SIZE; ++i)
+		ret.data[i] = data[i] + b.data[i];
+    return ret;
 }
 
 block_wrapper& block_wrapper::operator+=(const block_wrapper &b)
 {
-	data += b.data;
+	for (int i(0); i != SEED_SIZE; ++i)
+		data[i] += b.data[i];
     return *this;
 }
 
 block_wrapper block_wrapper::operator-(const block_wrapper &b) const
 {
-    return data - b.data;
+	block_wrapper ret;
+	for (int i(0); i != SEED_SIZE; ++i)
+		ret.data[i] = data[i] - b.data[i];
+    return ret;
 }
 
 block_wrapper& block_wrapper::operator-=(const block_wrapper &b)
 {
-	data -= b.data;
+	for (int i(0); i != SEED_SIZE; ++i)
+		data[i] -= b.data[i];
     return *this;
 }
 
-emp::block * block_wrapper::operator&()
+bool block_wrapper::is_zero() const
 {
-	return &data;
+	for (int i(0); i != SEED_SIZE; ++i)
+		if (data[i] != 0) return false;
+    return true;
 }
 
-const emp::block * block_wrapper::operator&() const
+bool block_wrapper::is_nonzero() const
 {
-	return &data;
+	for (int i(0); i != SEED_SIZE; ++i)
+		if (data[i] != 0) return true;
+    return false;
 }
 
 block_wrapper makeBlockWrapper(uint64_t high, uint64_t low)
 {
-    return emp::makeBlock(high, low);
+	block_wrapper ret;
+	for (int i(0); i != 8; ++i)
+		ret.data[i] = (high >> (8 * (7 - i))) & 0xff;
+	for (int i(0); i != 8; ++i)
+		ret.data[i + 8] = (low >> (8 * (7 - i))) & 0xff;
+	return ret;
 }

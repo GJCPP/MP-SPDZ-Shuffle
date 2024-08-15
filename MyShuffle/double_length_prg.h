@@ -1,14 +1,15 @@
 #pragma once
 #include <array>
 #include <string>
-#include <emp-tool/utils/prg.h>
+
+#include "Tools/random.h"
 
 #include "block_wrapper.h"
+
 
 typedef unsigned char byte;
 typedef block_wrapper prg_seed;
 typedef std::basic_string<block_wrapper> block_string;
-const size_t prg_seed_length = 16;
 
 prg_seed random_seed();
 

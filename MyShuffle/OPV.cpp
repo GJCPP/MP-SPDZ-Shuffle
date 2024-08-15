@@ -26,13 +26,13 @@ opv_2n::opv_2n(int n, int _pos, const prg_seed ot_msg[], const block_wrapper has
 		}
 	}
 	block_wrapper comp_hash_val[BLOCKS_FOR_HASH];
-	emp::Hash hash;
+	Hash hash;
 	for (int i(0); i != (1 << n); ++i) {
-		hash.put(&layers[tree_n][i << 1 | 1], sizeof(block_wrapper));
+		hash.update(&layers[tree_n][i << 1 | 1], sizeof(block_wrapper));
 	}
-	hash.digest(comp_hash_val);
+	hash.final(reinterpret_cast<octet *>(comp_hash_val));
 	for (int i(0); i != BLOCKS_FOR_HASH; ++i) {
-		if (!IS_ZERO_BLOCK(comp_hash_val[i] - hash_val[i])) {
+		if ((comp_hash_val[i] - hash_val[i]).is_nonzero()) {
 			std::cerr << "opv_2n: wrong hash value." << std::endl;
 			throw std::runtime_error("opv_2n: wrong hash value.");
 		}
@@ -41,7 +41,7 @@ opv_2n::opv_2n(int n, int _pos, const prg_seed ot_msg[], const block_wrapper has
 	for (int i(0); i != (1 << n); ++i) {
 		data[i] = layers[tree_n][i << 1];
 	}
-	if (!IS_ZERO_BLOCK(data[pos])) {
+	if (data[pos].is_nonzero()) {
 	 	std::cerr << "opv_2n::opv_2n Implementation error." << std::endl;
 	 	throw "opv_2n::opv_2n Implementation error.";
 	}
@@ -70,13 +70,13 @@ opv_2n::opv_2n(int n, int pos, prg_seed*& next_ot_msg, block_wrapper*& next_hash
 		}
 	}
 	block_wrapper comp_hash_val[BLOCKS_FOR_HASH];
-	emp::Hash hash;
+	Hash hash;
 	for (int i(0); i != (1 << n); ++i) {
-		hash.put(&layers[tree_n][i << 1 | 1], sizeof(block_wrapper));
+		hash.update(&layers[tree_n][i << 1 | 1], sizeof(block_wrapper));
 	}
-	hash.digest(comp_hash_val);
+	hash.final(reinterpret_cast<octet *>(comp_hash_val));
 	for (int i(0); i != BLOCKS_FOR_HASH; ++i) {
-		if (!IS_ZERO_BLOCK(comp_hash_val[i] - *next_hash_val++)) {
+		if ((comp_hash_val[i] - *next_hash_val++).is_nonzero()) {
 			std::cerr << "opv_2n: wrong hash value." << std::endl;
 			throw std::runtime_error("opv_2n: wrong hash value.");
 		}
@@ -85,7 +85,7 @@ opv_2n::opv_2n(int n, int pos, prg_seed*& next_ot_msg, block_wrapper*& next_hash
 	for (int i(0); i != (1 << n); ++i) {
 		data[i] = layers[tree_n][i << 1];
 	}
-	if (!IS_ZERO_BLOCK(data[pos])) {
+	if (data[pos].is_nonzero()) {
 	 	std::cerr << "opv_2n::opv_2n Implementation error." << std::endl;
 	 	throw "opv_2n::opv_2n Implementation error.";
 	}
@@ -128,12 +128,12 @@ std::array<std::vector<prg_seed>, 3> opv_2n::construct(int n)
 
 	
 	// Compute the hash of right leaves.
-	emp::Hash hash;
+	Hash hash;
 	ret[2].resize(BLOCKS_FOR_HASH);
 	for (int i(0); i != (1 << n); ++i) {
-		hash.put(&layers[tree_n][i << 1 | 1], sizeof(block_wrapper));
+		hash.update(&layers[tree_n][i << 1 | 1], sizeof(block_wrapper));
 	}
-	hash.digest(ret[2].data());
+	hash.final(reinterpret_cast<octet *>(ret[2].data()));
 
 	return ret;
 }
@@ -154,11 +154,11 @@ void sender_append_OPV(std::vector<prg_seed>& msg0, std::vector<prg_seed>& msg1,
 	opvs.push_back(opv);
 }
 
-void receiver_append_OPV(std::vector<byte>& choose, std::vector<block_wrapper>& hash_val, int logsz, int pos)
+void receiver_append_OPV(std::vector<octet>& choose, std::vector<block_wrapper>& hash_val, int logsz, int pos)
 {
 	int tree_pos = pos << 1;
 	for (int i(logsz); i >= 0; --i) {
 		choose.push_back(1 ^ ((tree_pos >> i) & 1));
 	}
-	for (int i(0); i != BLOCKS_FOR_HASH; ++i) hash_val.push_back(emp::zero_block);
+	for (int i(0); i != BLOCKS_FOR_HASH; ++i) hash_val.push_back({});
 }

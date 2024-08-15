@@ -2,27 +2,33 @@
 
 prg_seed random_seed() {
 	prg_seed ret;
-	static emp::PRG prg;
-	prg.random_block(&ret);
+	PRNG prg;
+	prg.get_octets(ret.data, SEED_SIZE);
 	return ret;
 }
 
+PRNG prg_with_seed(const prg_seed& seed) {
+	octetStream os;
+	os.append(seed.data, SEED_SIZE);
+	PRNG prg(os);
+	return prg;
+}
+
 std::array<prg_seed, 2> double_length_prg(const prg_seed& seed) {
-	static emp::PRG prg;
+	PRNG prg = prg_with_seed(seed);
 	std::array<prg_seed, 2> ret;
 
-	prg.reseed(&seed);
-	prg.random_block(&ret[0], 2);
+	prg.get_octets(ret[0].data, SEED_SIZE);
+	prg.get_octets(ret[1].data, SEED_SIZE);
     return ret;
 }
 
 block_string arbitrary_prg(const prg_seed& seed, int length) {
 	block_string ret;
-	static emp::PRG prg;
+	PRNG prg = prg_with_seed(seed);
 
 	ret.resize(length);
-	prg.reseed(&seed);
-	prg.random_data(&ret[0], length);
+	prg.get_octets(reinterpret_cast<octet *>(&ret[0]), length * SEED_SIZE);
 	return ret;
 }
 

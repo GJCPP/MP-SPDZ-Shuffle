@@ -1,8 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
-#include "emp-tool/emp-tool.h"
+// #include "emp-tool/emp-tool.h"
 
 /*
 	This is the implementation of 2-dim array, i.e. matrix.
@@ -23,6 +24,11 @@ public:
 	vectors(const std::vector<mpc_int>& v) : num(v.size()), len(1), vec(v) {}
 	vectors() = default;
 	vectors(const vectors<mpc_int>& other) = default;
+
+	typename std::vector<mpc_int>::iterator begin();
+	typename std::vector<mpc_int>::const_iterator begin() const;
+	typename std::vector<mpc_int>::iterator end();
+	typename std::vector<mpc_int>::const_iterator end() const;
 
 	operator mpc_int* ();
 	operator std::vector<mpc_int>();
@@ -49,7 +55,7 @@ public:
 	bool empty() const;
 
 
-	void rand_fill();
+	// void rand_fill();
 
 
 	bool operator!=(const vectors<mpc_int>& other) const;
@@ -114,8 +120,31 @@ vectors<mpc_int>::vectors(size_t _num, size_t _len)
 }
 
 template <typename mpc_int>
-vectors<mpc_int>::operator mpc_int* () {
-	return &vec[0];
+inline typename std::vector<mpc_int>::iterator vectors<mpc_int>::begin()
+{
+    return vec.begin();
+}
+template <typename mpc_int>
+inline typename std::vector<mpc_int>::const_iterator vectors<mpc_int>::begin() const
+{
+    return vec.begin();
+}
+
+template <typename mpc_int>
+inline typename std::vector<mpc_int>::iterator vectors<mpc_int>::end()
+{
+    return vec.end();
+}
+template <typename mpc_int>
+inline typename std::vector<mpc_int>::const_iterator vectors<mpc_int>::end() const
+{
+    return vec.end();
+}
+
+template <typename mpc_int>
+vectors<mpc_int>::operator mpc_int *()
+{
+    return &vec[0];
 }
 
 template<typename mpc_int>
@@ -265,15 +294,15 @@ inline bool vectors<mpc_int>::empty() const
 	return vec.empty();
 }
 
-template<typename mpc_int>
-inline void vectors<mpc_int>::rand_fill()
-{
-	emp::PRG prg;
-	size_t sz = size();
-	for (size_t i(0); i != sz; ++i) {
-		prg.random_data(vec[i], sizeof(mpc_int));
-	}
-}
+// template<typename mpc_int>
+// inline void vectors<mpc_int>::rand_fill()
+// {
+// 	emp::PRG prg;
+// 	size_t sz = size();
+// 	for (size_t i(0); i != sz; ++i) {
+// 		prg.random_data(vec[i], sizeof(mpc_int));
+// 	}
+// }
 
 template<typename mpc_int>
 inline bool vectors<mpc_int>::operator!=(const vectors<mpc_int>& other) const
