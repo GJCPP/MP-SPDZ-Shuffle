@@ -60,10 +60,20 @@ namespace gjcShuffle {
         return n_party;
     }
 
+    void mpc_comm::rand_bytes(octet * dest, size_t size)
+    {
+        prng.get(dest, size);
+    }
+
+    void mpc_comm::rand_blocks(block_wrapper *dest, size_t num)
+    {
+        prng.get(dest, num);
+    }
+
     void mpc_comm::send(int recver, const void * data, size_t size)
     {
         octetStream o;
-        o.store_bytes(reinterpret_cast<octet *>(const_cast<void *>(data)), size);
+        o.append(reinterpret_cast<octet *>(const_cast<void *>(data)), size);
         P.send_to(recver, o);
     }
 
@@ -71,7 +81,7 @@ namespace gjcShuffle {
     {
         octetStream o;
         P.receive_player(sender, o);
-        o.get_bytes(reinterpret_cast<octet *>(data), size);
+        o.consume(reinterpret_cast<octet *>(data), size);
     }
 
     void mpc_comm::send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> sendKey,
@@ -107,8 +117,8 @@ namespace gjcShuffle {
     {
         assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
         if (choices.size() != static_cast<size_t>(recvKey.size())) {
-            cerr << "mpc_comm::recv_base_ot : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
-            throw std::runtime_error("mpc_comm::recv_base_ot : choices.size() != recvKey.size()");
+            cerr << "mpc_comm::base_ot_recv : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
+            throw std::runtime_error("mpc_comm::base_ot_recv : choices.size() != recvKey.size()");
         }
         using namespace osuCrypto;
         Channel *recvChannel;
@@ -145,8 +155,8 @@ namespace gjcShuffle {
         std::vector<std::array<block, 2>> sendBlockMsg(num_ot);
 
         // IknpOtExtSender extOT;
-        // KosOtExtSender extOT;
-        SoftSpokenOT::TwoOneMaliciousSender extOT(10);
+        KosOtExtSender extOT;
+        //SoftSpokenOT::TwoOneMaliciousSender extOT(10);
 
         // Perform base ot
         size_t cnt_base_ot = extOT.baseOtCount();
@@ -166,15 +176,14 @@ namespace gjcShuffle {
     {
         assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
         if (choices.size() != static_cast<size_t>(recvKey.size())) {
-            cerr << "mpc_comm::recv_base_ot : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
-            throw std::runtime_error("mpc_comm::recv_base_ot : choices.size() != recvKey.size()");
+            cerr << "mpc_comm::base_ot_recv : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
+            throw std::runtime_error("mpc_comm::base_ot_recv : choices.size() != recvKey.size()");
         }
         using namespace osuCrypto;
         size_t num_ot(recvKey.size());
         Channel recvChannel = sessions[sender].addChannel();
-        // IknpOtExtReceiver extOT;
-        //KosOtExtReceiver extOT;
-        SoftSpokenOT::TwoOneMaliciousReceiver extOT(10);
+        // SoftSpokenOT::TwoOneMaliciousReceiver extOT(10);
+        KosOtExtReceiver extOT;
         
 
         // Perform base ot
@@ -190,7 +199,7 @@ namespace gjcShuffle {
         memcpy(recvKey.data(), recvBlockMsg.data(), num_ot * sizeof(block));
     }
 
-    void mpc_comm::send_ext_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg)
+    void mpc_comm::ext_ot_send(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg)
     {
         size_t numOT = sendMsg.size();
         std::vector<std::array<block_wrapper, 2>> sendKey(numOT);
@@ -202,7 +211,7 @@ namespace gjcShuffle {
         send(recver, sendKey.data(), numOT * 2 * sizeof(block_wrapper));
     }
 
-    void mpc_comm::send_ext_ot(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1)
+    void mpc_comm::ext_ot_send(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1)
     {
         assert(msg0.size() == msg1.size());
         size_t numOT = msg0.size();
@@ -215,7 +224,7 @@ namespace gjcShuffle {
         send(recver, sendKey.data(), numOT * 2 * sizeof(block_wrapper));
     }
 
-    void mpc_comm::recv_ext_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg)
+    void mpc_comm::ext_ot_recv(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg)
     {
         size_t numOT = recvMsg.size();
         std::vector<block_wrapper> recvKey(numOT);

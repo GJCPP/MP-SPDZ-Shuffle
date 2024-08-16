@@ -1,7 +1,5 @@
 #pragma once
 
-#include "emp-tool/emp-tool.h"
-
 #include "global.h"
 
 #include "vectors.h"
@@ -23,6 +21,7 @@ namespace chase2020 {
 		Only the last implementation, i.e. batch_sophisticated_permute, should be used,
 			which is fully optimized.
 	*/
+	using namespace gjcShuffle;
 	class shuffle_pair {
 	public:
 		int sender, permuter;
@@ -31,8 +30,8 @@ namespace chase2020 {
 		std::vector<int> perm;
 	};
 
-	shuffle_pair prepare_permute(mpc_comm& com, int sender, int permuter,
+	shuffle_pair prepare_permute(gjcShuffle::mpc_comm& com, int sender, int permuter,
 		const std::vector<int>& perm, int sz, int veclen, int batch);
 
-	void permute(mpc_comm& com, vectors<block_wrapper>& val, shuffle_pair& plan);
+	void permute(gjcShuffle::mpc_comm& com, vectors<block_wrapper>& val, shuffle_pair& plan);
 }

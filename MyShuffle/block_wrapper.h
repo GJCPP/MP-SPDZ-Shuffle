@@ -25,6 +25,9 @@ public:
     bool is_zero() const;
     bool is_nonzero() const;
 
+    void pack(octetStream& o, int n = -1) const;
+    void unpack(octetStream& o, int n = -1);
+
     octet data[SEED_SIZE];
 };
 

@@ -54,6 +54,9 @@ namespace gjcShuffle {
         int get_port(int party = -1) const;
         int get_my_number() const;
         int get_n_party() const;
+
+        void rand_bytes(octet *dest, size_t size);
+        void rand_blocks(block_wrapper *dest, size_t num);
         
         template <typename T>
         void send(int party, T val);
@@ -79,7 +82,7 @@ namespace gjcShuffle {
         void send(int recver, const void *data, size_t size);
         void recv(int sender, void *data, size_t size);
 
-        // void send_base_ot(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
+        // void base_ot_send(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
         void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
         void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
         void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
@@ -88,9 +91,9 @@ namespace gjcShuffle {
         void send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
         void recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
 
-        void send_ext_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg);
-        void send_ext_ot(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1);
-        void recv_ext_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg);
+        void ext_ot_send(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg);
+        void ext_ot_send(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1);
+        void ext_ot_recv(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg);
 
         ~mpc_comm(void);
     };
@@ -183,23 +186,6 @@ namespace gjcShuffle {
         for (T& v : val) {
             o.get(v);
         }
-    }
-
-    template <>
-    inline void mpc_comm::send<block_wrapper>(int party, const std::vector<block_wrapper> &val)
-    {
-        octetStream o;
-        o.store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(val.data())), val.size() * sizeof(block_wrapper));
-        P.send_to(party, o);
-    }
-
-    template <>
-    inline void mpc_comm::recv<block_wrapper>(int party, std::vector<block_wrapper> &val)
-    {
-        octetStream o;
-        P.receive_player(party, o);
-        size_t sz = val.size() * sizeof(block_wrapper);
-        o.get_bytes(reinterpret_cast<octet *>(val.data()), sz);
     }
 
     template <typename T>

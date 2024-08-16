@@ -26,6 +26,9 @@
 #include "math_gadget.h"
 #include "Benes_network.h"
 #include "OPV.h"
+#include "Chase_shuffle.h"
+#include "Song_shuffle.h"
+#include "test_shuffle.h"
 #include "unit_test.h"
 
 #include "local/include/cryptoTools/Network/IOService.h"
@@ -70,5 +73,5 @@ void run(char** argv, int prime_length)
     com.init(&set.input, &set.protocol, &set.output);
 
     // set up the protocol
-    gjcShuffle::test_opv(com);
+    test_Chase_shuffle(com);
 }

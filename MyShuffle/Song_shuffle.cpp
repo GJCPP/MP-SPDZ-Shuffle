@@ -1,6 +1,7 @@
 #include "Song_shuffle.h"
 
 namespace song2023 {
+    using namespace gjcShuffle;
     std::map<permute_info, std::vector<order_info>> booked_permute;
 
     permute_info::permute_info(int _permuter, int _logsz, int _veclen)
@@ -17,11 +18,11 @@ namespace song2023 {
 
     void book_permute_session(mpc_comm &com, permute_session *session)
     {
-        int me = com.me, permuter = session->permuter,
+        int me = com.get_my_number(), permuter = session->permuter,
             logsz = session->logsz, veclen = session->veclen, batch = session->batch;
         int sz = 1 << logsz;
         std::vector<int> dest(sz);
-		if (com.me == permuter) {
+		if (me == permuter) {
 			for (int i(0); i != sz; ++i) dest[session->perm[i]] = i;
 		} else {
 			for (int i(0); i != sz; ++i) dest[i] = i;
@@ -130,12 +131,12 @@ namespace song2023 {
         right_opvms.push_back(right_opvm);
     }
 
-    void put_opvm_into_hash(emp::Hash& hash, const vectors<block_wrapper>& opvm)
+    void put_opvm_into_hash(Hash& hash, const vectors<block_wrapper>& opvm)
     {
         int sz = opvm.num;
         for (int i(0); i != sz; ++i) {
             for (int j(0); j != sz; ++j) {
-                hash.put(&opvm[i][j], sizeof(block_wrapper));
+                hash.update(&opvm[i][j], sizeof(block_wrapper));
             }
         }
     }
@@ -147,15 +148,15 @@ namespace song2023 {
         std::vector<permute_pair>& output)
     {
         // Each order will produce a permute_pair as output.
-        int me = com.me;
+        int me = com.get_my_number();
         int permuter = info.permuter, logsz = info.logsz, veclen = info.veclen;
         int sz = 1 << logsz;
 
-        std::vector<byte> choose;
+        osuCrypto::BitVector choose;
         std::vector<block_wrapper> msg0, msg1, hash_val, col_sum;
         std::vector<opv_2n> opvs;
         std::vector<vectors<block_wrapper>> left_opvms, right_opvms;
-        emp::Hash left_hash; // Compute hash value of all left_opvm.
+        Hash left_hash; // Compute hash value of all left_opvm.
         for (const order_info &order : orders) {
             if (me == permuter && order.perm.n != sz) {
                 std::cerr << "process_orders : size mismatch, " << order.perm.n << " != " << sz << std::endl;
@@ -176,7 +177,7 @@ namespace song2023 {
                 // Sender computes the sum of each column.
                 const vectors<block_wrapper>& left_opvm = left_opvms.back();
                 for (int j(0); j != sz; ++j) { // j : row-th number
-                    block_wrapper sum = zero_block;
+                    block_wrapper sum = {};
                     for (int i(0); i != sz; ++i) {
                         sum = sum + left_opvm[i][j];
                     }
@@ -192,13 +193,13 @@ namespace song2023 {
         std::vector<block_wrapper> opv_msg(num_ot);
         block_wrapper *next_opv_msg = nullptr, *next_hash_msg = nullptr;
         if (me == permuter) {
-            com.ot_recv(sender, opv_msg.data(), choose.data(), num_ot);
+            com.ext_ot_recv(sender, choose, opv_msg);
             com.recv(sender, hash_val);
             com.recv(sender, col_sum);
             next_opv_msg = opv_msg.data();
             next_hash_msg = hash_val.data();
         } else {
-            com.ot_send(permuter, msg0.data(), msg1.data(), num_ot);
+            com.ext_ot_send(permuter, msg0, msg1);
             com.send(permuter, hash_val);
             com.send(permuter, col_sum);
         }
@@ -216,7 +217,7 @@ namespace song2023 {
 
                     for (int j(0); j != sz; ++j) {
 #ifdef DEBUG
-                        if (order.perm[i] == j && !IS_ZERO_BLOCK(opv[j])) {
+                        if (order.perm[i] == j && opv[j].is_nonzero()) {
                             std::cerr << "process_orders : unexpected non-zero block at oblivious position." << std::endl;
                             throw std::runtime_error("process_orders : unexpected non-zero block at oblivious position.");
                         }
@@ -247,15 +248,15 @@ namespace song2023 {
         }
         // Permuter reporst hash value of left_opvm.
         if (me == permuter) {
-            block hash_val[BLOCKS_FOR_HASH];
-            left_hash.digest(hash_val);
-            com.send(sender, hash_val);
+            block_wrapper hash_val[BLOCKS_FOR_HASH];
+            left_hash.final(reinterpret_cast<octet *>(hash_val), sizeof(hash_val));
+            com.send(sender, hash_val, sizeof(hash_val));
         } else {
-            block hash_val[BLOCKS_FOR_HASH], correct_val[BLOCKS_FOR_HASH];
-            left_hash.digest(correct_val);
-            com.recv(permuter, hash_val);
+            block_wrapper hash_val[BLOCKS_FOR_HASH], correct_val[BLOCKS_FOR_HASH];
+            left_hash.final(reinterpret_cast<octet *>(correct_val), sizeof(correct_val));
+            com.recv(permuter, hash_val, sizeof(hash_val));
             for (int i(0); i != BLOCKS_FOR_HASH; ++i) {
-                if (!IS_ZERO_BLOCK(hash_val[i] - correct_val[i])) {
+                if (hash_val[i] != correct_val[i]) {
                     std::cerr << "process_orders : Left OPVM hash value incorrect." << std::endl;
                     throw std::runtime_error("process_orders : Left OPVM hash value incorrect.");
                 }
@@ -265,12 +266,12 @@ namespace song2023 {
 
     void process_all_orders(mpc_comm &com)
     {
-        int me = com.me, n = com.n;
+        int me = com.get_my_number(), n = com.get_n_party();
         for (auto keyval : booked_permute) {
             permute_info info = keyval.first;
             std::vector<order_info> &orders = keyval.second;
             if (me == info.permuter) {
-                for (int sender(1); sender <= n; ++sender) {
+                for (int sender(0); sender != n; ++sender) {
                     if (me == sender) continue;
 
                     // Select a random permutation to hide the order of the orders.
@@ -327,7 +328,7 @@ namespace song2023 {
 
     void permute_session::perform(mpc_comm &com, vectors<block_wrapper> &val)
     {
-        int n = com.n, me = com.me;
+        int n = com.get_n_party(), me = com.get_my_number();
         size_t sz = (1 << logsz);
 #ifdef DEBUG
         if (sz != val.num || veclen != val.len) {
@@ -359,7 +360,7 @@ namespace song2023 {
                 result[i][j] = val[perm[i]][j];
             }
         }
-        for (int sender(1); sender <= n; ++sender) {
+        for (int sender(0); sender != n; ++sender) {
             if (sender == permuter) continue;
             if (me != permuter && me != sender) continue;
             std::vector<permute_pair>::iterator next_pair[MAX_BATCH_SIZE];

@@ -1,4 +1,7 @@
+#pragma once
 #include <map>
+
+#include "Tools/Hash.h"
 
 #include "global.h"
 
@@ -14,6 +17,8 @@
 #define MAX_BATCH_SIZE 32
 
 namespace song2023 {
+    using namespace gjcShuffle;
+
     class permute_pair {
     public:
         permute_pair() = default;

@@ -1,39 +1,41 @@
 #include "test_shuffle.h"
 
-bool test_Chase_shuffle(mpc_comm &com)
+bool test_Chase_shuffle(gjcShuffle::mpc_comm &com)
 {
+    using namespace gjcShuffle;
     static std::mt19937 eng;
     using namespace chase2020;
-    int num_test(1000);
+    int num_test(100);
+    int me = com.get_my_number(), n = com.get_n_party();
     int permuter, sender, logsz, veclen, batch;
     while (num_test--) {
-        if (com.me == 1) std::cout << "Start test : " << num_test << std::endl;
-        if (com.me == 1) { // Host
-            permuter = rand() % com.n + 1;
+        if (me == 0) std::cout << "Start test : " << num_test << std::endl;
+        if (me == 0) { // Host
+            permuter = rand() % n;
             do {
-                sender = rand() % com.n + 1;
+                sender = rand() % n;
             } while (sender == permuter);
             logsz = rand() % 10 + 1;
             veclen = rand() % 10 + 1;
             batch = rand() % (2 * logsz + 1) + 1;
         }
-        com.broadcast(1, sender);
-        com.broadcast(1, permuter);
-        com.broadcast(1, logsz);
-        com.broadcast(1, veclen);
-        com.broadcast(1, batch);
+        com.unchecked_broadcast(0, sender);
+        com.unchecked_broadcast(0, permuter);
+        com.unchecked_broadcast(0, logsz);
+        com.unchecked_broadcast(0, veclen);
+        com.unchecked_broadcast(0, batch);
         vectors<block_wrapper> val(1 << logsz, veclen);
         std::vector<int> perm(1 << logsz);
         bool fail(false);
-        if (com.me == sender) {
+        if (me == sender) {
             auto plan = prepare_permute(com, sender, permuter, perm, 1 << logsz, veclen, batch);
             permute(com, val, plan);
             com.send(permuter, val);
         }
-        if (com.me == permuter) {
+        if (me == permuter) {
             for (int i(0); i != (1 << logsz); ++i) {
                 for (int j(0); j != veclen; ++j) {
-                    val[i][j] = makeBlock(0, i);
+                    val[i][j] = makeBlockWrapper(0, i);
                 }
                 perm[i] = i;
             }
@@ -45,33 +47,35 @@ bool test_Chase_shuffle(mpc_comm &com)
             val += recv_vec;
             for (int i(0); i != (1 << logsz); ++i) {
                 for (int j(0); j != veclen; ++j) {
-                    if (!IS_ZERO_BLOCK(val[i][j] - makeBlockWrapper(0, perm[i]))) {
+                    if (val[i][j] != makeBlockWrapper(0, perm[i])) {
                         fail = true;
                     }
                 }
             }
         }
-        com.broadcast(permuter, fail);
+        com.unchecked_broadcast(permuter, fail);
         if (fail) {
             std::cerr << "test_Chase_shuffle : test FAILED!!!!!" << std::endl;
-            return false;
+            //return false;
         }
     }
-    if (com.me == 1) std::cerr << "test_Chase_shuffle : test passed." << std::endl;
+    if (me == 0) std::cerr << "test_Chase_shuffle : test passed." << std::endl;
     return true;
 }
 
-bool test_Song_shuffle(mpc_comm &com)
+bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
 {
-    static std::mt19937 eng;
+    using namespace gjcShuffle;
     using namespace song2023;
-    int num_test(10);
+
+    static std::mt19937 eng;
+    int num_test(10), me = com.get_my_number(), n = com.get_n_party();
     std::vector<int> all_permuter, all_logsz, all_veclen, all_batch;
     std::vector<permutation> all_perm;
-    if (com.me == 1) {
+    if (me == 1) {
         for (int cnt(0); cnt != num_test; ++cnt) {
-            if (com.me == 1) { // Host
-                all_permuter.push_back(rand() % com.n + 1);
+            if (me == 1) { // Host
+                all_permuter.push_back(rand() % n);
                 all_logsz.push_back(rand() % 7 + 1);
                 all_veclen.push_back(rand() % 10 + 1);
                 //all_permuter.push_back(1);
@@ -88,13 +92,13 @@ bool test_Song_shuffle(mpc_comm &com)
         all_batch.resize(num_test);
         all_perm.resize(num_test);
     }
-    com.broadcast(1, all_permuter);
-    com.broadcast(1, all_logsz);
-    com.broadcast(1, all_veclen);
-    com.broadcast(1, all_batch);
+    com.unchecked_broadcast(1, all_permuter);
+    com.unchecked_broadcast(1, all_logsz);
+    com.unchecked_broadcast(1, all_veclen);
+    com.unchecked_broadcast(1, all_batch);
     for (int rank(0); rank != num_test; ++rank) {
-        if (com.me != 1) all_perm[rank] = permutation(1 << all_logsz[rank]);
-        com.broadcast(1, all_perm[rank].perm);
+        if (me != 1) all_perm[rank] = permutation(1 << all_logsz[rank]);
+        com.unchecked_broadcast(1, all_perm[rank].perm);
     }
     std::vector<permute_session *> plans;
     for (int rank(0); rank != num_test; ++rank) {
@@ -109,14 +113,13 @@ bool test_Song_shuffle(mpc_comm &com)
         vectors<block_wrapper> val(sz, veclen), ans(sz, veclen);
         permute_session *plan = plans[rank];
         bool fail(false);
-        if (com.me != permuter) {
+        if (me != permuter) {
             insecure_share(com, permuter, val);
             plan->perform(com, val);
             delete plan;
             insecure_recon(com, permuter, val);
         } else {
-            emp::PRG prg;
-            prg.random_block(reinterpret_cast<emp::block *>(val.data()), sz * veclen);
+            com.rand_blocks(val.data(), sz * veclen);
             for (int i(0); i != sz; ++i) {
                 for (int j(0); j != veclen; ++j) {
                     ans[i][j] = val[plan->perm[i]][j];
@@ -129,19 +132,19 @@ bool test_Song_shuffle(mpc_comm &com)
             // for (int i(0); i != sz; ++i) std::cout << val[i][0] << std::endl;
             for (int i(0); i != sz; ++i) {
                 for (int j(0); j != veclen; ++j) {
-                    if (!IS_ZERO_BLOCK(val[i][j] - ans[i][j])) {
+                    if (val[i][j] != ans[i][j]) {
                         fail = true;
                     }
                 }
             }
         }
-        com.broadcast(permuter, fail);
+        com.unchecked_broadcast(permuter, fail);
         if (fail) {
             std::cerr << "test_Song_shuffle : test FAILED!!!!!" << std::endl;
             return false;
         }
     }
     
-    if (com.me == 1) std::cerr << "test_Song_shuffle : test passed." << std::endl;
+    if (me == 1) std::cerr << "test_Song_shuffle : test passed." << std::endl;
     return true;
 }

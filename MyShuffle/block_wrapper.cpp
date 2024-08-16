@@ -73,6 +73,18 @@ bool block_wrapper::is_nonzero() const
     return false;
 }
 
+void block_wrapper::pack(octetStream &o, int n) const
+{
+    (void) n;
+	o.append((octet*) &data,sizeof(data));
+}
+
+void block_wrapper::unpack(octetStream &o, int n)
+{
+    (void) n;
+	o.consume((octet*) &data,sizeof(data));
+}
+
 block_wrapper makeBlockWrapper(uint64_t high, uint64_t low)
 {
 	block_wrapper ret;

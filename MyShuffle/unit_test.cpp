@@ -92,7 +92,7 @@ namespace gjcShuffle {
                     send_msg[i][0] = makeBlockWrapper(0, 0);
                     send_msg[i][1] = makeBlockWrapper(0xffffffffffffffff, 0xffffffffffffffff);
                 }
-                com.send_ext_ot(1, send_msg);
+                com.ext_ot_send(1, send_msg);
                 com.send(1, send_msg.data(), numOTs * 2 * sizeof(block_wrapper));
                 com.recv<bool>(1, failed);
             }
@@ -104,7 +104,7 @@ namespace gjcShuffle {
                 std::vector<block_wrapper> recv_msg(numOTs);
                 osuCrypto::BitVector choices(numOTs);
                 choices.randomize(prg);
-                com.recv_ext_ot(0, choices, recv_msg);
+                com.ext_ot_recv(0, choices, recv_msg);
                 com.recv(0, send_msg.data(), numOTs * 2 * sizeof(block_wrapper));
                 for (int i = 0; i < numOTs; i++) {
                         std::cout << "Send " << i << ": " << send_msg[i][0] << " " << send_msg[i][1] << std::endl;
@@ -141,7 +141,7 @@ namespace gjcShuffle {
             for (size_t i(0); i != test_num; ++i) {
                 sender_append_OPV(msg0, msg1, hash_val, logsz[i], opvs);
             }
-            com.send_ext_ot(1, msg0, msg1);
+            com.ext_ot_send(1, msg0, msg1);
             com.send(1, hash_val.data(), hash_val.size() * sizeof(block_wrapper));
             for (size_t i(0); i != test_num; ++i) {
                 com.send(1, opvs[i].data);
@@ -158,7 +158,7 @@ namespace gjcShuffle {
                 receiver_append_OPV(choose, hash_val, logsz[i], pos.back());
             }
             recv_msg.resize(choose.size());
-            com.recv_ext_ot(0, choose, recv_msg);
+            com.ext_ot_recv(0, choose, recv_msg);
             com.recv(0, hash_val.data(), hash_val.size() * sizeof(block_wrapper));
             prg_seed* next_msg = recv_msg.data();
             block_wrapper* next_hash = hash_val.data();

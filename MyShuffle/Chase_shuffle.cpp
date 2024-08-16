@@ -3,30 +3,32 @@
 #include "math_gadget.h"
 
 namespace chase2020 {
+	using namespace gjcShuffle;
 	shuffle_pair prepare_permute(mpc_comm& com, int sender, int permuter,
 		const std::vector<int>& perm, int sz, int veclen, int batch)
 	{
+		int me = com.get_my_number();
 		int logsz = math_gadget::log2(sz);
 		shuffle_pair ret = {};
 		ret.sender = sender, ret.permuter = permuter;
 		ret.bat = batch, ret.logsz = logsz, ret.veclen = veclen;
 		ret.a.resize(veclen), ret.b.resize(veclen), ret.delta.resize(veclen);
-		if (com.me != sender && com.me != permuter) return ret;
+		if (me != sender && me != permuter) return ret;
 		if (sz != (1 << logsz)) {
 			std::cerr << "prepare_permute: sz must be power of two." << std::endl;
 			throw std::runtime_error("prepare_permute: sz must be power of two.");
 		}
-		static std::vector<byte> choose;
+		static osuCrypto::BitVector choose;
 		static std::vector<prg_seed> msg0, msg1, hash_val, col_sum;
 		static std::vector<prg_seed> opvm_hash;
 		static std::vector<opv_2n> opvs;
-		choose.clear();
+		choose.reset();
 		msg0.clear(), msg1.clear(), hash_val.clear(), col_sum.clear();
 		opvm_hash.clear();
 		opvs.clear();
 		int next_opvs(0);
 		std::vector<int> dest(sz);
-		if (com.me == permuter) {
+		if (me == permuter) {
 			for (int i(0); i != sz; ++i) dest[perm[i]] = i;
 		} else {
 			for (int i(0); i != sz; ++i) dest[i] = i;
@@ -46,7 +48,7 @@ namespace chase2020 {
 					inv_map[next] = v; // map the position back.
 					map[v] = next++;
 				}
-				if (com.me == permuter) { // Receiver of OT
+				if (me == permuter) { // Receiver of OT
 					for (int v : touched) { // Construct OPM
 						receiver_append_OPV(choose, hash_val, log_batch_sz, map[sub_route[bat][v]]);
 					}
@@ -58,20 +60,20 @@ namespace chase2020 {
 					// Send sum along columns for check
 					vectors<block_wrapper> left_opvm(batch_sz, batch_sz); // The left opvm is for integrity check
 					const opv_2n *seed_opvm = &opvs[opvs.size() - batch_sz];
-					emp::Hash hash;
-					block hash_res[BLOCKS_FOR_HASH];
+					Hash hash;
+					block_wrapper hash_res[BLOCKS_FOR_HASH];
 					// Reconstruct left OPVM and compute hash (first left to right, then top to bottom)
 					for (int i(0); i != batch_sz; ++i) {
 						for (int j(0); j != batch_sz; ++j) {
 							left_opvm[i][j] = double_length_prg(seed_opvm[i][j])[0];
-							hash.put(&left_opvm[i][j], sizeof(block));
+							hash.update(&left_opvm[i][j], sizeof(block_wrapper));
 						}
 					}
-					hash.digest(hash_res);
+					hash.final(reinterpret_cast<octet *>(hash_res), sizeof(hash_res));
 					for (int i(0); i != BLOCKS_FOR_HASH; ++i) opvm_hash.push_back(hash_res[i]);
 					// Compute sum along columns 
 					for (int j(0); j != batch_sz; ++j) {
-						block_wrapper sum = zero_block;
+						block_wrapper sum = {};
 						for (int i(0); i != batch_sz; ++i) {
 							sum += left_opvm[i][j];
 						}
@@ -80,18 +82,19 @@ namespace chase2020 {
 				}
 			}
 		}
+
 		static std::vector<prg_seed> msg; msg.clear();
 		prg_seed* next_msg = 0, *next_hash = 0, *next_sum = 0;
-		if (com.me == permuter) {
+		if (me == permuter) {
 			msg.resize(choose.size());
-			com.ot_recv(sender, msg.data(), reinterpret_cast<bool *>(choose.data()), choose.size());
-			com.recv(sender, hash_val.data(), hash_val.size());
-			com.recv(sender, col_sum.data(), col_sum.size());
+			com.ext_ot_recv(sender, choose, msg);
+			com.recv(sender, hash_val);
+			com.recv(sender, col_sum);
 			next_msg = msg.data();
 			next_hash = hash_val.data();
 			next_sum = col_sum.data();
 		} else {
-			com.ot_send(permuter, msg0.data(), msg1.data(), msg0.size());
+			com.ext_ot_send(permuter, msg0, msg1);
 			com.send(permuter, hash_val);
 			com.send(permuter, col_sum);
 		}
@@ -115,7 +118,7 @@ namespace chase2020 {
 				std::vector<opv_2n> seed_opvm;
 				vectors<block_wrapper> left_opvm(batch_sz, batch_sz), right_opvm(batch_sz, batch_sz);
 				std::vector<int> oblivious_pos;
-				if (com.me == permuter) { // Receiver of OT
+				if (me == permuter) { // Receiver of OT
 					// Reconstruct opv matrix
 					for (int v : touched) {
 						seed_opvm.push_back(opv_2n(log_batch_sz, map[sub_route[bat][v]], next_msg, next_hash));
@@ -129,13 +132,13 @@ namespace chase2020 {
 				// Expand to left/right opvm
 				for (int i(0); i != batch_sz; ++i) {
 					for (int j(0); j != batch_sz; ++j) {
-						if (com.me == permuter && j == oblivious_pos[i]) continue; // Skip puntured position
+						if (me == permuter && j == oblivious_pos[i]) continue; // Skip puntured position
 						auto expand = double_length_prg(seed_opvm[i][j]);
 						left_opvm[i][j] = expand[0];
 						right_opvm[i][j] = expand[1];
 					}
 				}
-				if (com.me == permuter) {
+				if (me == permuter) {
 					// Reconstruct whole left opvm, and transmit hash value back.
 					std::vector<block_wrapper> missing;
 					for (int j(0); j != batch_sz; ++j) {
@@ -149,22 +152,22 @@ namespace chase2020 {
 						left_opvm[i][oblivious_pos[i]] = missing[oblivious_pos[i]];
 					}
 					// Computing Hash
-					emp::Hash hash;
+					Hash hash;
 					block_wrapper hash_res[BLOCKS_FOR_HASH];
 					for (int i(0); i != batch_sz; ++i) {
 						for (int j(0); j != batch_sz; ++j) {
-							hash.put(&left_opvm[i][j], sizeof(block_wrapper));
+							hash.update(&left_opvm[i][j], sizeof(block_wrapper));
 						}
 					}
-					hash.digest(hash_res);
+					hash.final(reinterpret_cast<octet *>(hash_res), sizeof(hash_res));
 					for (int i(0); i != BLOCKS_FOR_HASH; ++i) opvm_hash.push_back(hash_res[i]);
 				}
 
 				std::vector<vectors<block_wrapper>> int_mat(veclen, vectors<block_wrapper>(batch_sz, batch_sz));
 				for (int i(0); i != batch_sz; ++i) {
 					for (int j(0); j != batch_sz; ++j) {
-						if (com.me == permuter && j == oblivious_pos[i]) {
-							if (!IS_ZERO_BLOCK(right_opvm[i][j])) {
+						if (me == permuter && j == oblivious_pos[i]) {
+							if (right_opvm[i][j].is_nonzero()) {
 								std::cerr << "chase2020::prepare_permute : Implementation error." << std::endl;
 								throw std::runtime_error("chase2020::prepare_permute : Implementation error.");
 							}
@@ -187,7 +190,7 @@ namespace chase2020 {
 						}
 					}
 				}
-				if (com.me == permuter) {
+				if (me == permuter) {
 					for (int entry(0); entry != veclen; ++entry) {
 						for (int i(0); i != batch_sz; ++i) {
 							ret.delta[entry].push_back(a[entry][small_perm[i]] + b[entry][i]);
@@ -203,16 +206,16 @@ namespace chase2020 {
 				}
 			}
 		}
-		if (com.me == permuter) {
+		if (me == permuter) {
 			// Send Hash value
 			com.send(sender, opvm_hash);
 		} else {
 			std::vector<block_wrapper> recv_hash(opvm_hash.size());
-			com.recv(permuter, recv_hash.data(), recv_hash.size());
+			com.recv(permuter, recv_hash);
 			for (size_t i(0); i != opvm_hash.size(); ++i) {
-				if (!IS_ZERO_BLOCK(opvm_hash[i] - recv_hash[i])) {
-					std::cerr << "Party " << com.me << " as sender in Chase::prepare_permute : incorrect OPVM Hash!" << std::endl;
-					std::cerr << "Party " << com.me << " : abort!" << std::endl;
+				if (opvm_hash[i] != recv_hash[i]) {
+					std::cerr << "Party " << me << " as sender in Chase::prepare_permute : incorrect OPVM Hash!" << std::endl;
+					std::cerr << "Party " << me << " : abort!" << std::endl;
 					std::abort();
 				}
 			}
@@ -227,12 +230,13 @@ namespace chase2020 {
 	void permute(mpc_comm& com, vectors<block_wrapper>& val, shuffle_pair& plan)
 	{
 		int sender = plan.sender, permuter = plan.permuter;
-		if (com.me != sender && com.me != permuter) return;
+		int me = com.get_my_number();
+		if (me != sender && me != permuter) return;
 		int sz = (1 << plan.logsz), logsz = plan.logsz, veclen = plan.veclen, batch = plan.bat;
 		int next_batch_ab(0);
 		std::vector<int> map(sz), inv_map(sz);
 		std::vector<int> dest(sz);
-		if (com.me == plan.permuter) {
+		if (me == plan.permuter) {
 			for (int i(0); i != sz; ++i) dest[plan.perm[i]] = i;
 		} else {
 			for (int i(0); i != sz; ++i) dest[i] = i;
@@ -248,8 +252,8 @@ namespace chase2020 {
 		data.resize(cnt_send);
 		int next_send(0);
 
-		if (com.me == permuter) {
-			com.recv(sender, data.data(), cnt_send);
+		if (me == permuter) {
+			com.recv(sender, data);
 		}
 
 		for (size_t bat(0); bat != sub_route.size(); ++bat) {
@@ -267,7 +271,7 @@ namespace chase2020 {
 				}
 				for (int entry(0); entry != veclen; ++entry) {
 					std::vector<block_wrapper> vec, next_vec(batch_sz);
-					if (com.me == sender) {
+					if (me == sender) {
 						vec.reserve(batch_sz);
 						for (int i(0); i != batch_sz; ++i) {
 							vec.push_back(val[touched[i]][entry] + plan.a[entry][next_batch_ab + i]);
@@ -292,8 +296,8 @@ namespace chase2020 {
 				next_batch_ab += batch_sz;
 			}
 		}
-		if (com.me == sender) {
-			com.send(permuter, data.data(), data.size());
+		if (me == sender) {
+			com.send(permuter, data);
 		}
 	}
 	

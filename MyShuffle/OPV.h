@@ -19,7 +19,14 @@ namespace gjcShuffle{
 		std::vector<prg_seed> data;
 	};
 
-	// the opv of length 2^n
+	/*
+	*	the opv of length 2^n
+	*	Caution: this implementation is not secure against active adversaries,
+	*			in the sense that selective faliure attack may be carried out.
+	*	This is fixed in Song::shuffle by cut-and-choose technique.
+	*	C.f. "Secret-Shared Shuffle with Malicious Security", https://eprint.iacr.org/2023/1794
+	*	See also Song_shuffle.h/cpp for the implementation of shuffle using this opv.
+	*/
 	class opv_2n {
 	public:
 		opv_2n() = default;
