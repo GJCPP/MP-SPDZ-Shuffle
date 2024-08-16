@@ -4,6 +4,7 @@
 #define MPC_COMMUNICATOR_H
 
 #include <span>
+#include <random>
 
 #include <cryptoTools/Network/Channel.h>
 #include <cryptoTools/Network/Session.h>
@@ -15,8 +16,11 @@
 #include "Protocols/ProtocolSet.h"
 #include "deps/libOTe/libOTe/Base/SimplestOT.h"
 // #include "deps/libOTe/libOTe/TwoChooseOne/OTExtInterface.h"
-#include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h"
-#include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h"
+// #include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h"
+// #include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h"
+#include "deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h"
+#include "deps/libOTe/libOTe/TwoChooseOne/KosOtExtReceiver.h"
+#include "libOTe/TwoChooseOne/SoftSpokenOT/TwoOneMalicious.h"
 
 #include "global.h"
 #include "vectors.h"
@@ -38,6 +42,8 @@ protected:
     Input<ShareType> *input;
     SPDZ<ShareType> *protocol;
     MAC_Check_<ShareType> *output;
+
+    osuCrypto::PRNG prng;
 public:
     mpc_comm(int n_party, int my_number);
     
@@ -66,13 +72,16 @@ public:
     void recv(int sender, void *data, size_t size);
 
     // void send_base_ot(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
-    void recv_base_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_msg, osuCrypto::Channel *channel = nullptr);
-    void send_base_ot(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel *channel = nullptr);
-    void send_base_ot(int recver, osuCrypto::span<std::array<block_wrapper,2 >> send_msg);
-    void recv_base_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_msg);
+    void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
+    void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
+    void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
+    void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
 
-    void send_ext_ot(int recver, osuCrypto::span<std::array<block_wrapper,2 >> send_msg);
-    void recv_ext_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_msg);
+    void send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
+    void recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
+
+    void send_ext_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg);
+    void recv_ext_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg);
 
     ~mpc_comm(void);
 };

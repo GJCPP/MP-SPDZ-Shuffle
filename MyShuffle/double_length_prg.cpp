@@ -3,14 +3,14 @@
 prg_seed random_seed() {
 	prg_seed ret;
 	PRNG prg;
+	prg.InitSeed();
 	prg.get_octets(ret.data, SEED_SIZE);
 	return ret;
 }
 
 PRNG prg_with_seed(const prg_seed& seed) {
-	octetStream os;
-	os.append(seed.data, SEED_SIZE);
-	PRNG prg(os);
+	PRNG prg;
+	prg.SetSeed(reinterpret_cast<const octet *>(&seed));
 	return prg;
 }
 
