@@ -19,6 +19,7 @@
 #include "Tools/random.h"
 #include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h"
 #include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h"
+#include "deps/libOTe/libOTe/Base/SimplestOT.h"
 
 #include "double_length_prg.h"
 #include "mpc_communicator.h"
@@ -52,6 +53,7 @@ int main(int argc, char** argv)
         cerr << "Unknown protocol: " << protocol << endl;
         exit(1);
     }
+    std::cout << "Main Exit." << std::endl;
     return 0;
 }
 
@@ -65,14 +67,39 @@ void run(char** argv, int prime_length)
     // set of protocols (input, multiplication, output)
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
     com.init(&set.input, &set.protocol, &set.output);
-    
-    const int numOTs = 10000;
-    using namespace osuCrypto;
-    osuCrypto::IOService ios;
+    const int numOTs = 50;
     if (my_number == 0) {
-        BaseOT baseOT;
+        for (int cnt(0); cnt != 10; ++cnt) {
+            std::vector<std::array<block_wrapper, 2>> send_msg(numOTs);
+            com.send_ext_ot(1, send_msg);
+            com.send(1, send_msg.data(), numOTs * 2 * sizeof(block_wrapper));
+        }
     }
     if (my_number == 1) {
-        ;
+        bool failed = false;
+        for (int cnt(0); cnt != 10 && !failed; ++cnt) {
+            std::vector<std::array<block_wrapper, 2>> send_msg(numOTs);
+            std::vector<block_wrapper> recv_msg(numOTs);
+            osuCrypto::BitVector choices(numOTs);
+            osuCrypto::PRNG prg(osuCrypto::block(1235123,3456123));
+            choices.randomize(prg);
+            com.recv_ext_ot(0, choices, recv_msg);
+            com.recv(0, send_msg.data(), numOTs * 2 * sizeof(block_wrapper));
+            for (int i = 0; i < numOTs; i++) {
+                std::cout << "Send " << i << ": " << send_msg[i][0] << " " << send_msg[i][1] << std::endl;
+                std::cout << "Recv " << i << ": " << choices[i] << " " << recv_msg[i];
+                if (recv_msg[i] != send_msg[i][choices[i]]) {
+                    std::cout << ", Error!";
+                    failed = true;
+                    break;
+                }
+                std::cout << std::endl;
+            }
+        }
+        if (failed) {
+            std::cout << "OT failed." << std::endl;
+        } else {
+            std::cout << "OT success." << std::endl;
+        }
     }
 }

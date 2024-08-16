@@ -394,6 +394,14 @@ MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
 run: my_shuffle_main.x
 	for i in 0 1 2; do ./my_shuffle_main.x $$i 3 & true; done
 
+kill:
+	pkill my_shuffle_main
+
+#./MyShuffle/run.sh
+
+
+
+
 # MY_SRC_DIR := MyShuffle
 # MY_OBJ_DIR := MyShuffle
 

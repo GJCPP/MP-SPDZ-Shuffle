@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+#include <iomanip>
+
 #include "Tools/random.h"
 #include "Tools/Hash.h"
 
@@ -16,6 +19,9 @@ public:
     block_wrapper operator-(const block_wrapper& b) const;
     block_wrapper& operator-=(const block_wrapper& b);
 
+    bool operator==(const block_wrapper& b) const;
+    bool operator!=(const block_wrapper& b) const;
+
     bool is_zero() const;
     bool is_nonzero() const;
 
@@ -23,3 +29,5 @@ public:
 };
 
 block_wrapper makeBlockWrapper(uint64_t high, uint64_t low);
+
+std::ostream& operator<<(std::ostream& os, const block_wrapper& b);
