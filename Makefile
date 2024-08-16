@@ -385,7 +385,7 @@ MY_OBJ_DIR := MyShuffle
 # MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
 MY_SRC = MyShuffle/my_shuffle_main.cpp MyShuffle/mpc_communicator.cpp MyShuffle/double_length_prg.cpp
 MY_SRC += MyShuffle/block_wrapper.cpp MyShuffle/math_gadget.cpp MyShuffle/Benes_network.cpp
-MY_SRC += MyShuffle/OPV.cpp
+MY_SRC += MyShuffle/OPV.cpp MyShuffle/unit_test.cpp
 MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
 
 %.x: MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)

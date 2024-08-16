@@ -26,6 +26,7 @@
 #include "math_gadget.h"
 #include "Benes_network.h"
 #include "OPV.h"
+#include "unit_test.h"
 
 #include "local/include/cryptoTools/Network/IOService.h"
 
@@ -62,48 +63,12 @@ void run(char** argv, int prime_length)
     // set up networking on localhost
     int my_number = atoi(argv[1]);
     int n_parties = atoi(argv[2]);
-    mpc_comm com(n_parties, my_number);
+    gjcShuffle::mpc_comm com(n_parties, my_number);
 
     // set of protocols (input, multiplication, output)
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
     com.init(&set.input, &set.protocol, &set.output);
-    const int numOTs = 10;
-    if (my_number == 0) {
-        for (int cnt(0); cnt != 10; ++cnt) {
-            std::vector<std::array<block_wrapper, 2>> send_msg(numOTs);
-            for (int i = 0; i < numOTs; i++) {
-                send_msg[i][0] = makeBlockWrapper(0, 0);
-                send_msg[i][1] = makeBlockWrapper(0xffffffffffffffff, 0xffffffffffffffff);
-            }
-            com.send_ext_ot(1, send_msg);
-            com.send(1, send_msg.data(), numOTs * 2 * sizeof(block_wrapper));
-        }
-    }
-    if (my_number == 1) {
-        bool failed = false;
-        osuCrypto::PRNG prg(osuCrypto::block(1235123,3456123));
-        for (int cnt(0); cnt != 10 && !failed; ++cnt) {
-            std::vector<std::array<block_wrapper, 2>> send_msg(numOTs);
-            std::vector<block_wrapper> recv_msg(numOTs);
-            osuCrypto::BitVector choices(numOTs);
-            choices.randomize(prg);
-            com.recv_ext_ot(0, choices, recv_msg);
-            com.recv(0, send_msg.data(), numOTs * 2 * sizeof(block_wrapper));
-            for (int i = 0; i < numOTs; i++) {
-                    std::cout << "Send " << i << ": " << send_msg[i][0] << " " << send_msg[i][1] << std::endl;
-                std::cout << "Recv " << i << ": " << choices[i] << " " << recv_msg[i];
-                if (recv_msg[i] != send_msg[i][choices[i]]) {
-                    std::cout << ", Error!";
-                    failed = true;
-                    break;
-                }
-                std::cout << std::endl;
-            }
-        }
-        if (failed) {
-            std::cout << "OT failed." << std::endl;
-        } else {
-            std::cout << "OT success." << std::endl;
-        }
-    }
+
+    // set up the protocol
+    gjcShuffle::test_broadcast(com);
 }

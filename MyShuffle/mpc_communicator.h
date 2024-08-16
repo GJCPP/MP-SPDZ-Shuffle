@@ -26,120 +26,182 @@
 #include "vectors.h"
 #include "block_wrapper.h"
 
+namespace gjcShuffle {
+    class mpc_comm {
+    protected:
+        int n_party, my_number;
+        std::vector<octetStream> out_buff, in_buff;
+        std::vector<osuCrypto::Session> sessions;
 
-class mpc_comm {
-protected:
-    int n_party, my_number;
-    std::vector<octetStream> out_buff, in_buff;
-    std::vector<osuCrypto::Session> sessions;
+        osuCrypto::IOService ios;
 
-    osuCrypto::IOService ios;
+        Names N;
+        CryptoPlayer P;
+        ProtocolSetup<ShareType> setup;
 
-    Names N;
-    CryptoPlayer P;
-    ProtocolSetup<ShareType> setup;
+        Input<ShareType> *input;
+        SPDZ<ShareType> *protocol;
+        MAC_Check_<ShareType> *output;
 
-    Input<ShareType> *input;
-    SPDZ<ShareType> *protocol;
-    MAC_Check_<ShareType> *output;
+        osuCrypto::PRNG prng;
+    public:
+        mpc_comm(int n_party, int my_number);
+        
+        void init(Input<ShareType> *input, SPDZ<ShareType> *protocol, MAC_Check_<ShareType> *output);
 
-    osuCrypto::PRNG prng;
-public:
-    mpc_comm(int n_party, int my_number);
+        CryptoPlayer& get_P();
+        ProtocolSetup<ShareType>& get_setup();
+        int get_port(int party = -1) const;
+        int get_my_number() const;
+        int get_n_party() const;
+        
+        template <typename T>
+        void send(int party, T val);
+        template <typename T>
+        void recv(int party, T& val);
+        template <typename T>
+        void unchecked_broadcast(int party, T& val);
+
+        template <typename T>
+        void send(int party, const vectors<T>& val);
+        template <typename T>
+        void recv(int party, vectors<T>& val);
+        template <typename T>
+        void send(int party, const std::vector<T>& val);
+        template <typename T>
+        void recv(int party, std::vector<T>& val);
+
+        template <typename T>
+        void send(int party, const osuCrypto::span<T> val);
+        template <typename T>
+        void recv(int party, osuCrypto::span<T> val);
+
+        void send(int recver, const void *data, size_t size);
+        void recv(int sender, void *data, size_t size);
+
+        // void send_base_ot(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
+        void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
+        void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
+        void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
+        void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
+
+        void send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
+        void recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
+
+        void send_ext_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg);
+        void recv_ext_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg);
+
+        ~mpc_comm(void);
+    };
+
+    template <typename T>
+    inline void mpc_comm::send(int party, T val)
+    {
+        octetStream o;
+        o.store(val);
+        P.send_to(party, o);
+    }
+    template <>
+    inline void mpc_comm::send<bool>(int party, bool val)
+    {
+        octetStream o;
+        o.store_bit(val);
+        P.send_to(party, o);
+    }
+
+    template <typename T>
+    inline void mpc_comm::recv(int party, T &val)
+    {
+        octetStream o;
+        P.receive_player(party, o);
+        o.get(val);
+    }
+
+    template <>
+    inline void mpc_comm::recv(int party, bool &val)
+    {
+        octetStream o;
+        P.receive_player(party, o);
+        val = o.get_bit();
+    }
+
+
+    template <typename T>
+    inline void mpc_comm::unchecked_broadcast(int party, T &val)
+    {
+        std::vector<octetStream> buff(n_party);
+        if (party == my_number) buff[party].store(val);
+        // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+        P.unchecked_broadcast(buff);
+        buff[party].get(val);
+    }
     
-    void init(Input<ShareType> *input, SPDZ<ShareType> *protocol, MAC_Check_<ShareType> *output);
-
-    CryptoPlayer& get_P();
-    ProtocolSetup<ShareType>& get_setup();
-    int get_port(int party = -1);
-    
-    template <typename T>
-    void send(int party, T val);
-    template <typename T>
-    void recv(int party, T& val);
-
-    template <typename T>
-    void send(int party, const vectors<T>& val);
-    template <typename T>
-    void recv(int party, vectors<T>& val);
-
-    template <typename T>
-    void send(int party, const osuCrypto::span<T> val);
-    template <typename T>
-    void recv(int party, osuCrypto::span<T> val);
-
-    void send(int recver, const void *data, size_t size);
-    void recv(int sender, void *data, size_t size);
-
-    // void send_base_ot(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
-    void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
-    void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
-    void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
-    void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
-
-    void send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
-    void recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
-
-    void send_ext_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg);
-    void recv_ext_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg);
-
-    ~mpc_comm(void);
-};
-
-template <typename T>
-void mpc_comm::send(int party, T val)
-{
-    octetStream o;
-    o.store(val);
-    P.send_to(party, o);
-}
-
-template <typename T>
-void mpc_comm::recv(int party, T &val)
-{
-    octetStream o;
-    P.receive_player(party, o);
-    o.get(val);
-}
-
-template <typename T>
-inline void mpc_comm::send(int party, const vectors<T> &val)
-{
-    octetStream o;
-    for (const T& v : val) {
-        o.store(v);
+    template <>
+    inline void mpc_comm::unchecked_broadcast<bool>(int party, bool &val)
+    {
+        int tmp = val;
+        unchecked_broadcast(party, tmp);
+        val = tmp;
     }
-    P.send_to(party, o);
-}
 
-template <typename T>
-inline void mpc_comm::recv(int party, vectors<T> &val)
-{
-    octetStream o;
-    P.receive_player(party, o);
-    for (T& v : val) {
-        o.get(v);
+    template <typename T>
+    inline void mpc_comm::send(int party, const vectors<T> &val)
+    {
+        octetStream o;
+        for (const T& v : val) {
+            o.store(v);
+        }
+        P.send_to(party, o);
+    }
+
+    template <typename T>
+    inline void mpc_comm::recv(int party, vectors<T> &val)
+    {
+        octetStream o;
+        P.receive_player(party, o);
+        for (T& v : val) {
+            o.get(v);
+        }
+    }
+
+    template <typename T>
+    inline void mpc_comm::send(int party, const std::vector<T> &val)
+    {
+        octetStream o;
+        for (const T& v : val) {
+            o.store(v);
+        }
+        P.send_to(party, o);
+    }
+
+    template <typename T>
+    inline void mpc_comm::recv(int party, std::vector<T> &val)
+    {
+        octetStream o;
+        P.receive_player(party, o);
+        for (T& v : val) {
+            o.get(v);
+        }
+    }
+
+    template <typename T>
+    inline void mpc_comm::send(int party, const osuCrypto::span<T> val)
+    {
+        octetStream o;
+        for (const T& v : val) {
+            o.store(v);
+        }
+        P.send_to(party, o);
+    }
+
+    template <typename T>
+    inline void mpc_comm::recv(int party, osuCrypto::span<T> val)
+    {
+        octetStream o;
+        P.receive_player(party, o);
+        for (T& v : val) {
+            o.get(v);
+        }
     }
 }
-
-template <typename T>
-inline void mpc_comm::send(int party, const osuCrypto::span<T> val)
-{
-    octetStream o;
-    for (const T& v : val) {
-        o.store(v);
-    }
-    P.send_to(party, o);
-}
-
-template <typename T>
-inline void mpc_comm::recv(int party, osuCrypto::span<T> val)
-{
-    octetStream o;
-    P.receive_player(party, o);
-    for (T& v : val) {
-        o.get(v);
-    }
-}
-
 #endif

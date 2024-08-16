@@ -1,0 +1,13 @@
+#pragma once
+
+#include "mpc_communicator.h"
+
+namespace gjcShuffle {
+    bool test_com(mpc_comm& com);
+
+    bool test_broadcast(mpc_comm &com);
+
+    bool test_ote(mpc_comm &com);
+
+    bool test_all(mpc_comm& com);
+}
