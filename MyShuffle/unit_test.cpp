@@ -8,7 +8,7 @@ namespace gjcShuffle {
         vectors<ClearType> arr(n, n), rec(n, n);
         size_t sz = arr.size();
         arr.at(0) = arr.at(1) = 1;
-        for (int i(2); i != sz; ++i) {
+        for (size_t i(2); i != sz; ++i) {
             arr.at(i) = arr.at(i - 1) + arr.at(i - 2);
         }
         bool failed = false;
@@ -127,6 +127,70 @@ namespace gjcShuffle {
             std::cout << "test_ote passed." << std::endl;
             return true;
         }
+    }
+
+    bool test_opv(mpc_comm& com) {
+        int me = com.get_my_number();
+        std::vector<int> logsz = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        size_t test_num = logsz.size();
+        bool failed = false;
+        if (me == 0) {
+            std::vector<prg_seed> msg0, msg1;
+            std::vector<block_wrapper> hash_val;
+            std::vector<opv_2n> opvs;
+            for (size_t i(0); i != test_num; ++i) {
+                sender_append_OPV(msg0, msg1, hash_val, logsz[i], opvs);
+            }
+            com.send_ext_ot(1, msg0, msg1);
+            com.send(1, hash_val.data(), hash_val.size() * sizeof(block_wrapper));
+            for (size_t i(0); i != test_num; ++i) {
+                com.send(1, opvs[i].data);
+            }
+        }
+        if (me == 1) {
+            std::vector<int> pos;
+            std::vector<opv_2n> opvs;
+            osuCrypto::BitVector choose;
+            std::vector<block_wrapper> hash_val, recv_msg;
+            std::vector<std::vector<block_wrapper>> ori_msg;
+            for (size_t i(0); i != test_num; ++i) {
+                pos.push_back(rand() % (1 << logsz[i]));
+                receiver_append_OPV(choose, hash_val, logsz[i], pos.back());
+            }
+            recv_msg.resize(choose.size());
+            com.recv_ext_ot(0, choose, recv_msg);
+            com.recv(0, hash_val.data(), hash_val.size() * sizeof(block_wrapper));
+            prg_seed* next_msg = recv_msg.data();
+            block_wrapper* next_hash = hash_val.data();
+            for (size_t i(0); i != test_num; ++i) {
+                opvs.push_back(opv_2n(logsz[i], pos[i], next_msg, next_hash));
+            }
+            for (size_t i(0); i != test_num; ++i) {
+                ori_msg.push_back(std::vector<block_wrapper>(opvs[i].data.size()));
+                com.recv(0, ori_msg[i].data(), ori_msg[i].size() * sizeof(block_wrapper));
+            }
+            for (size_t i(0); i != test_num; ++i) {
+                for (size_t j(0); j != opvs[i].data.size(); ++j) {
+                    if (opvs[i][j].is_nonzero() && j == opvs[i].pos) {
+                        std::cout << "test_opv : Error at " << i << " " << j << ", should be oblivious." << std::endl;
+                        failed = true;
+                    }
+                    if (j != opvs[i].pos && opvs[i][j] != ori_msg[i][j]) {
+                        std::cout << "test_opv : Error at " << i << " " << j << ", value incorrect." << std::endl;
+                        failed = true;
+                    }
+                }
+            }
+        }
+        com.unchecked_broadcast(1, failed);
+        if (me == 0) {
+            if (failed) {
+                std::cout << "test_opv failed." << std::endl;
+            } else {
+                std::cout << "test_opv passed." << std::endl;
+            }
+        }
+        return !failed;
     }
 
     bool test_all(mpc_comm& com)

@@ -79,7 +79,6 @@ namespace gjcShuffle {
     {
         assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
         using namespace osuCrypto;
-        size_t num_ot(sendKey.size());
         Channel *sendChannel;
         if (!channel) {
             sendChannel = new Channel;
@@ -107,12 +106,11 @@ namespace gjcShuffle {
                                 , osuCrypto::Channel *channel)
     {
         assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
-        if (choices.size() != recvKey.size()) {
+        if (choices.size() != static_cast<size_t>(recvKey.size())) {
             cerr << "mpc_comm::recv_base_ot : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
             throw std::runtime_error("mpc_comm::recv_base_ot : choices.size() != recvKey.size()");
         }
         using namespace osuCrypto;
-        size_t num_ot(recvKey.size());
         Channel *recvChannel;
         if (!channel) {
             recvChannel = new Channel;
@@ -167,7 +165,7 @@ namespace gjcShuffle {
     void mpc_comm::recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvKey)
     {
         assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
-        if (choices.size() != recvKey.size()) {
+        if (choices.size() != static_cast<size_t>(recvKey.size())) {
             cerr << "mpc_comm::recv_base_ot : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
             throw std::runtime_error("mpc_comm::recv_base_ot : choices.size() != recvKey.size()");
         }
@@ -200,6 +198,19 @@ namespace gjcShuffle {
         for (size_t i = 0; i < numOT; i++) {
             sendKey[i][0] ^= sendMsg[i][0];
             sendKey[i][1] ^= sendMsg[i][1];
+        }
+        send(recver, sendKey.data(), numOT * 2 * sizeof(block_wrapper));
+    }
+
+    void mpc_comm::send_ext_ot(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1)
+    {
+        assert(msg0.size() == msg1.size());
+        size_t numOT = msg0.size();
+        std::vector<std::array<block_wrapper, 2>> sendKey(numOT);
+        send_ext_cor_ot(recver, sendKey);
+        for (size_t i = 0; i < numOT; i++) {
+            sendKey[i][0] ^= msg0[i];
+            sendKey[i][1] ^= msg1[i];
         }
         send(recver, sendKey.data(), numOT * 2 * sizeof(block_wrapper));
     }

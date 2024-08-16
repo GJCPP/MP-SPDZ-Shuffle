@@ -70,5 +70,5 @@ void run(char** argv, int prime_length)
     com.init(&set.input, &set.protocol, &set.output);
 
     // set up the protocol
-    gjcShuffle::test_broadcast(com);
+    gjcShuffle::test_opv(com);
 }
