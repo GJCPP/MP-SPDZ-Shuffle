@@ -73,5 +73,5 @@ void run(char** argv, int prime_length)
     com.init(&set.input, &set.protocol, &set.output);
 
     // set up the protocol
-    test_Chase_shuffle(com);
+    test_Song_shuffle(com);
 }
