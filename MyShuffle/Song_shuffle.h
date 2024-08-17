@@ -22,10 +22,10 @@ namespace song2023 {
     class permute_pair {
     public:
         permute_pair() = default;
-        permute_pair(const permutation& perm, const vectors<block_wrapper>& a, const vectors<block_wrapper>& b, const vectors<block_wrapper>& delta);
+        permute_pair(const permutation& perm, const vectors<ClearType>& a, const vectors<ClearType>& b, const vectors<ClearType>& delta);
 
         permutation perm;
-        vectors<block_wrapper> a, b, delta;
+        vectors<ClearType> a, b, delta;
     };
 
     class permute_info {
@@ -49,13 +49,13 @@ namespace song2023 {
         All parties are involved in the permute protocol, each (except permuter) acts as a sender by turn.
     */
     class permute_session {
-    public:
-        permute_session() = default;
-        permute_session(int permuter, int logsz, size_t veclen, int batch, const permutation& perm);
 
-        // Perform the magic of permute protocol!
-        void perform(mpc_comm& com, vectors<block_wrapper>& val);
+            friend void book_permute_session(mpc_comm& com, permute_session* session);
+            
+            friend permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm);
 
+            friend void process_all_orders(mpc_comm& com);
+    protected:
         int permuter;
         int logsz;
         size_t veclen;
@@ -67,6 +67,31 @@ namespace song2023 {
             Otherwise, pairs[sender] is the permute_pair for (permuter, sender).
         */
         std::vector<permute_pair> pairs[MAXN][MAX_BATCH_SIZE];
+    public:
+        permute_session() = default;
+
+        template <typename T>
+        void book(int _permuter, int _logsz, int _veclen, int _batch, const permutation& _perm) {
+            permuter = _permuter;
+            logsz = _logsz;
+            veclen = _veclen;
+            batch = _batch;
+            perm = _perm;
+            if (typeid(T) == typeid(ClearType)) {
+                ;
+            } else if (typeid(T) == typeid(ShareType)) {
+                veclen <<= 1;
+            } else {
+                std::cerr << "permute_session::book : Unknown type." << std::endl;
+                throw std::runtime_error("permute_session::book : Unknown type.");
+            }
+        }
+
+        // Perform the magic of permute protocol!
+        void perform(mpc_comm& com, vectors<ClearType>& val);
+        void perform(mpc_comm& com, vectors<ShareType>& val);
+
+        const permutation& get_perm() const;
     };
 
     /*
@@ -93,7 +118,14 @@ namespace song2023 {
 
     // Book resource for a permute session.
     void book_permute_session(mpc_comm& com, permute_session* session);
-    permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm);
+
+    template <typename T>
+    permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm) {
+        permute_session *new_session = new permute_session();
+        new_session->book<T>(permuter, logsz, veclen, batch, perm);
+        book_permute_session(com, new_session);
+        return new_session;
+    }
 
     /*
         This function processes all orders in booked_permute.

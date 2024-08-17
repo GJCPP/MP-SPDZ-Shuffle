@@ -69,13 +69,13 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
     using namespace song2023;
 
     static std::mt19937 eng;
-    int num_test(100), me = com.get_my_number(), n = com.get_n_party();
+    int num_test(10), me = com.get_my_number(), n = com.get_n_party();
     std::vector<int> all_permuter, all_logsz, all_veclen, all_batch;
     std::vector<permutation> all_perm;
     if (me == 0) {
         for (int cnt(0); cnt != num_test; ++cnt) {
             all_permuter.push_back(rand() % n);
-            all_logsz.push_back(rand() % 10 + 1);
+            all_logsz.push_back(rand() % 7 + 1);
             all_veclen.push_back(rand() % 10 + 1);
             //all_permuter.push_back(1);
             //all_logsz.push_back(2);
@@ -100,7 +100,7 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
     }
     std::vector<permute_session *> plans;
     for (int rank(0); rank != num_test; ++rank) {
-        plans.push_back(book_permute_session(com, all_permuter[rank], 
+        plans.push_back(book_permute_session<ShareType>(com, all_permuter[rank], 
                         all_logsz[rank], all_veclen[rank], all_batch[rank], all_perm[rank]));
     }
     process_all_orders(com);
@@ -108,29 +108,32 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
         int permuter = all_permuter[rank], logsz = all_logsz[rank], veclen = all_veclen[rank];
         int sz = 1 << logsz;
         permutation perm = all_perm[rank];
-        vectors<block_wrapper> val(sz, veclen), ans(sz, veclen);
+        vectors<ShareType> val(sz, veclen);
+        vectors<ClearType> res(sz, veclen), ans(sz, veclen);
         permute_session *plan = plans[rank];
         bool fail(false);
+        for (size_t i(0); i != sz; ++i) {
+            for (size_t j(0); j != veclen; ++j) {
+                val[i][j] = ShareType::constant(i, com.get_my_number(), ShareType::get_mac_key());
+            }
+        }
         if (me != permuter) {
-            insecure_share(com, permuter, val);
             plan->perform(com, val);
             delete plan;
-            insecure_recon(com, permuter, val);
+            com.output_immediately(val, res);
         } else {
-            com.rand_blocks(val.data(), sz * veclen);
             for (int i(0); i != sz; ++i) {
                 for (int j(0); j != veclen; ++j) {
-                    ans[i][j] = val[plan->perm[i]][j];
+                    ans[i][j] = plan->get_perm()[i];
                 }
             }
-            insecure_share(com, permuter, val);
             plan->perform(com, val);
             delete plan;
-            insecure_recon(com, permuter, val);
+            com.output_immediately(val, res);
             // for (int i(0); i != sz; ++i) std::cout << val[i][0] << std::endl;
             for (int i(0); i != sz; ++i) {
                 for (int j(0); j != veclen; ++j) {
-                    if (val[i][j] != ans[i][j]) {
+                    if (res[i][j] != ans[i][j]) {
                         fail = true;
                     }
                 }

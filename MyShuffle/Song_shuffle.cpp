@@ -63,13 +63,6 @@ namespace song2023 {
 		}
     }
 
-    permute_session *book_permute_session(mpc_comm &com, int permuter, int logsz, int veclen, int batch, const permutation &perm)
-    {
-        permute_session *new_session = new permute_session(permuter, logsz, veclen, batch, perm);
-        book_permute_session(com, new_session);
-        return new_session;
-    }
-
     permute_pair pair_from_opvm(int veclen, const vectors<block_wrapper> &opvm, const permutation &perm, bool oblivious)
     {
         int sz = opvm.num;
@@ -82,14 +75,12 @@ namespace song2023 {
                 for (int j(0); j != sz; ++j) {
                     if (perm[i] == j) continue;
                     if (veclen > 1) { // Extend seed to veclen.
-                        block_string val = arbitrary_prg(opvm[i][j], veclen);
+                        vectors<ClearType> val(1, veclen);
+                        arbitrary_prg(opvm[i][j], val);
                         for (int k(0); k != veclen; ++k) {
-                            pair.delta[i][k] -= val[k];
-                            pair.delta[inv[j]][k] += val[k];
+                            pair.delta[i][k] -= val.at(k);
+                            pair.delta[inv[j]][k] += val.at(k);
                         }
-                    } else {
-                        pair.delta[i][0] -= opvm[i][j];
-                        pair.delta[inv[j]][0] += opvm[i][j];
                     }
                 }
             }
@@ -100,14 +91,12 @@ namespace song2023 {
             for (int i(0); i != sz; ++i) {
                 for (int j(0); j != sz; ++j) {
                     if (veclen > 1) { // Extend seed to veclen.
-                        block_string val = arbitrary_prg(opvm[i][j], veclen);
+                        vectors<ClearType> val(1, veclen);
+                        arbitrary_prg(opvm[i][j], val);
                         for (int k(0); k != veclen; ++k) {
-                            pair.a[j][k] += val[k];
-                            pair.b[i][k] -= val[k];
+                            pair.a[j][k] += val.at(k);
+                            pair.b[i][k] -= val.at(k);
                         }
-                    } else {
-                        pair.a[j][0] += opvm[i][j];
-                        pair.b[i][0] -= opvm[i][j];
                     }
                 }
             }
@@ -321,12 +310,7 @@ namespace song2023 {
     {
     }
 
-    permute_session::permute_session(int _permuter, int _logsz, size_t _veclen, int _batch, const permutation &_perm)
-        : permuter(_permuter), logsz(_logsz), veclen(_veclen), batch(_batch), perm(_perm)
-    {
-    }
-
-    void permute_session::perform(mpc_comm &com, vectors<block_wrapper> &val)
+    void permute_session::perform(mpc_comm &com, vectors<ClearType>& val)
     {
         int n = com.get_n_party(), me = com.get_my_number();
         size_t sz = (1 << logsz);
@@ -354,7 +338,7 @@ namespace song2023 {
         //     if (me == permuter) next_pair[i] = &pairs[bat][0][0];
         //     else next_pair[i] = &pairs[me][i][i];
         // }
-        vectors<block_wrapper> result(val.num, val.len);
+        vectors<ClearType> result(val.num, val.len);
         for (size_t i(0); i != val.num; ++i) {
             for (size_t j(0); j != val.len; ++j) {
                 result[i][j] = val[perm[i]][j];
@@ -364,7 +348,7 @@ namespace song2023 {
             if (sender == permuter) continue;
             if (me != permuter && me != sender) continue;
             std::vector<permute_pair>::iterator next_pair[MAX_BATCH_SIZE];
-            vectors<block_wrapper> dum_val(val.num, val.len); // Permuter only permutes dummy values.
+            vectors<ClearType> dum_val(val.num, val.len); // Permuter only permutes dummy values.
             if (me == permuter) {
                 for (int i(0); i != MAX_BATCH_SIZE; ++i) {
                     next_pair[i] = pairs[sender][i].begin();
@@ -384,7 +368,7 @@ namespace song2023 {
                         inv_map[next] = v; // map the position back.
                         map[v] = next++;
                     }
-                    vectors<block_wrapper> local_val(batch_sz, veclen), recv_val(batch_sz, veclen), temp_val(batch_sz, veclen);
+                    vectors<ClearType> local_val(batch_sz, veclen), recv_val(batch_sz, veclen), temp_val(batch_sz, veclen);
                     for (int v : touched) {
                         for (size_t j(0); j != veclen; ++j) {
                             if (me == permuter) local_val[map[v]][j] = dum_val[v][j];
@@ -417,7 +401,7 @@ namespace song2023 {
                                 std::cerr << "permute_session::perform : unexpected end of permute_pair." << std::endl;
                                 throw std::runtime_error("permute_session::perform : unexpected end of permute_pair.");
                             }
-                            vectors<block_wrapper> sum = next_pair[log_batch_sz]->a + local_val;
+                            vectors<ClearType> sum = next_pair[log_batch_sz]->a + local_val;
                             com.send(permuter, sum);
                             local_val = next_pair[log_batch_sz]->b;
                             ++next_pair[log_batch_sz];
@@ -438,7 +422,32 @@ namespace song2023 {
             val = result;
         }
     }
-    permute_pair::permute_pair(const permutation &perm, const vectors<block_wrapper> &a, const vectors<block_wrapper> &b, const vectors<block_wrapper> &delta)
+    
+    void permute_session::perform(mpc_comm &com, vectors<ShareType>& val)
+    {
+        vectors<ClearType> valMac(val.num, val.len * 2);
+        for (size_t i(0); i != val.num; ++i) {
+            for (size_t j(0); j != val.len; ++j) {
+                valMac[i][j * 2] = val[i][j].get_share();
+                valMac[i][j * 2 + 1] = val[i][j].get_mac();
+            }
+        }
+        perform(com, valMac);
+        for (size_t i(0); i != val.num; ++i) {
+            for (size_t j(0); j != val.len; ++j) {
+                val[i][j].set_share(valMac[i][j * 2]);
+                val[i][j].set_mac(valMac[i][j * 2 + 1]);
+            }
+        }
+        com.mac_check(val);
+    }
+
+    const permutation& permute_session::get_perm() const
+    {
+        return perm;
+    }
+    
+    permute_pair::permute_pair(const permutation &perm, const vectors<ClearType> &a, const vectors<ClearType> &b, const vectors<ClearType> &delta)
         : perm(perm), a(a), b(b), delta(delta)
     {
     }

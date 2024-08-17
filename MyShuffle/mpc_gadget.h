@@ -38,6 +38,8 @@ namespace gjcShuffle
 
 
     void insecure_share(mpc_comm& com, int owner, vectors<block_wrapper>& val);
+    void insecure_share(mpc_comm& com, int owner, vectors<ClearType>& val);
 
     void insecure_recon(mpc_comm& com, int towho, vectors<block_wrapper>& val);
+    void insecure_recon(mpc_comm& com, int towho, vectors<ClearType>& val);
 }

@@ -2,8 +2,12 @@
 
 prg_seed random_seed() {
 	prg_seed ret;
-	PRNG prg;
-	prg.InitSeed();
+	static PRNG prg;
+	static bool init = false;
+	if (!init) {
+		prg.InitSeed();
+		init = true;
+	}
 	prg.get_octets(ret.data, SEED_SIZE);
 	return ret;
 }
@@ -30,6 +34,14 @@ block_string arbitrary_prg(const prg_seed& seed, int length) {
 	ret.resize(length);
 	prg.get_octets(reinterpret_cast<octet *>(&ret[0]), length * SEED_SIZE);
 	return ret;
+}
+
+void arbitrary_prg(const prg_seed& seed, vectors<ClearType>& dest)
+{
+	PRNG prg = prg_with_seed(seed);
+	for (auto &i : dest) {
+		i.randomize(prg);
+	}
 }
 
 block_string& operator^=(block_string& a, const block_string& b) {

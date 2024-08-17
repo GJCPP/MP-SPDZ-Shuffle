@@ -22,5 +22,7 @@ typedef typename ShareType::clear ClearType;
 
 #define DEBUG
 
+#define DEFAULT_EXPAND_SIZE 500
+
 #endif
 

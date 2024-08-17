@@ -3,13 +3,15 @@
 #ifndef MPC_COMMUNICATOR_H
 #define MPC_COMMUNICATOR_H
 
-#include <span>
 #include <random>
+#include <vector>
+#include <algorithm>
 
 #include <cryptoTools/Network/Channel.h>
 #include <cryptoTools/Network/Session.h>
 #include <cryptoTools/Network/IOService.h>
 #include <cryptoTools/Common/BitVector.h>
+#include <Tools/Commit.h>
 
 #include "Math/gfp.hpp"
 #include "Machines/SPDZ.hpp"
@@ -30,7 +32,6 @@ namespace gjcShuffle {
     class mpc_comm {
     protected:
         int n_party, my_number;
-        std::vector<octetStream> out_buff, in_buff;
         std::vector<osuCrypto::Session> sessions;
 
         osuCrypto::IOService ios;
@@ -39,12 +40,19 @@ namespace gjcShuffle {
         CryptoPlayer P;
         ProtocolSetup<ShareType> setup;
 
+
         Input<ShareType> *input;
         SPDZ<ShareType> *protocol;
         MAC_Check_<ShareType> *output;
 
-        osuCrypto::PRNG prng;
+        osuCrypto::PRNG osuPrg;
+        ::PRNG prg;
+
+        std::vector<std::deque<ShareType>> shared_mask; // for private output.
+        std::deque<ClearType> clear_mask;
+        std::deque<ShareType> random_resource;
     public:
+        ShareType alpha;
         mpc_comm(int n_party, int my_number);
         
         void init(Input<ShareType> *input, SPDZ<ShareType> *protocol, MAC_Check_<ShareType> *output);
@@ -57,7 +65,56 @@ namespace gjcShuffle {
 
         void rand_bytes(octet *dest, size_t size);
         void rand_blocks(block_wrapper *dest, size_t num);
-        
+        ClearType rand_int();
+        void rand_int(ClearType &dest);
+        void rand_int(std::vector<ClearType> &dest);
+        void rand_int(vectors<ClearType> &dest);
+
+
+        void input_init();
+        void input_append(int party, const ClearType& val);
+        void input_append_all(const ClearType& val);
+        void input_append(int party, const vectors<ClearType>& val);
+        void input_append_all(const vectors<ClearType>& val);
+        void input_exchange();
+        void input_consume(int party, ShareType& val);
+        void input_consume(int party, vectors<ShareType>& val);
+        ShareType input_consume(int party);
+
+        void mul_init();
+        void mul_append(const ShareType& v1, const ShareType& v2);
+        void mul_append(const vectors<ShareType>& v1, const vectors<ShareType>& v2);
+        void mul_exchange();
+        void mul_consume(ShareType& val);
+        void mul_consume(vectors<ShareType>& val);
+        ShareType mul_consume();
+
+        void output_immediately(const ShareType& val, ClearType& res);
+        void output_immediately(const vectors<ShareType>& val, vectors<ClearType>& res);
+        void output_immediately(const std::vector<ShareType>& val, std::vector<ClearType>& res);
+        void output_init();
+        void output_append(const ShareType& val);
+        void output_append(const vectors<ShareType>& val);
+        void output_append(const std::vector<ShareType>& val);
+        void output_exchange();
+        void output_consume(ClearType& val);
+        void output_consume(vectors<ClearType>& val);
+        void output_consume(std::vector<ClearType>& val);
+        ClearType output_consume();
+
+        void prepare_more_random(size_t num = 0);
+        ShareType get_random();
+
+        void prepare_output_mask(size_t expand);
+
+        void private_output_init(size_t maxnum_per_party);
+        void private_output_append(int party, const ShareType& val);
+        void private_output_append(int party, const vectors<ShareType>& val);
+        void private_output_exchange();
+        void private_output_consume(int party, ClearType& val);
+        void private_output_consume(int party, vectors<ClearType>& val);
+        ClearType private_output_consume(int party);
+
         template <typename T>
         void send(int party, T val);
         template <typename T>
@@ -95,7 +152,28 @@ namespace gjcShuffle {
         void ext_ot_send(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1);
         void ext_ot_recv(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg);
 
-        ~mpc_comm(void);
+        /*
+        *   This function is used to commit a message and open it.
+        *   Each party commits its own content, and after all commitments are received,
+        *       open all messages and check.
+        */
+        template <typename T>
+        void commit_and_open(const T& message, std::vector<T>& open_msg) {
+            AllCommitments commitment(P);
+            octetStream os;
+            os.store(message);
+            commitment.commit(os);
+            commitment.open(os);
+            open_msg.resize(P.num_players());
+            for (int i = 0; i < P.num_players(); i++) {
+                commitment.messages[i].get(open_msg[i]);
+            }
+            commitment.check(my_number, os);
+        }
+
+        void mac_check(const vectors<ShareType>& valMac);
+
+        ~mpc_comm();
     };
 
     template <typename T>

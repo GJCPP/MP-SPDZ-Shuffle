@@ -1,10 +1,3 @@
-/*
- * paper-example.cpp
- *
- * Working example similar to Figure 2 in https://eprint.iacr.org/2020/521
- *
- */
-
 #define NO_MIXED_CIRCUITS
 
 #include "Math/gfp.hpp"
@@ -64,13 +57,20 @@ int main(int argc, char** argv)
 void run(char** argv, int prime_length)
 {
     // set up networking on localhost
-    int my_number = atoi(argv[1]);
-    int n_parties = atoi(argv[2]);
-    gjcShuffle::mpc_comm com(n_parties, my_number);
+    int me = atoi(argv[1]);
+    int n = atoi(argv[2]);
+    gjcShuffle::mpc_comm com(n, me);
+
 
     // set of protocols (input, multiplication, output)
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
     com.init(&set.input, &set.protocol, &set.output);
+    std::cout << "Player " << me << " of " << n << " started." << std::endl;
+    
+    CryptoPlayer& P = com.get_P();
+    auto& input = set.input;
+    auto& protocol = set.protocol;
+    auto& output = set.output;
 
     // set up the protocol
     test_Song_shuffle(com);
