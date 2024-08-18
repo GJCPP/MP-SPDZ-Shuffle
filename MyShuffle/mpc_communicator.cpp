@@ -11,7 +11,9 @@ namespace gjcShuffle {
             prg(),
             shared_mask(n_party),
             alpha(),
-            random_resource()
+            random_resource(),
+            expand_random_size(0),
+            cnt_private_output(n_party)
     {
         prg.InitSeed();
         int session_port_base = N.get_portnum_base() + 4 * n_party;
@@ -264,17 +266,26 @@ namespace gjcShuffle {
         return  output->finalize_open();
     }
 
-    void mpc_comm::prepare_more_random(size_t num)
+    void mpc_comm::prepare_more_random_lazy(size_t num)
     {
-        static size_t expand(DEFAULT_EXPAND_SIZE);
-        if (num > expand) {
-            expand = num;
-        } else {
-            expand <<= 1;
+        expand_random_size += num;
+    }
+
+    void mpc_comm::prepare_more_random_now(size_t num)
+    {
+        static size_t default_expand(DEFAULT_EXPAND_SIZE);
+        size_t expand = expand_random_size + num;
+        expand_random_size = 0;
+        if (expand == 0) { // Called under situation random_resourece.empty() && expand_random_size == 0
+            expand = default_expand;
+            default_expand <<= 1;
         }
+        // Generate random numbers
         input_init();
-        for (size_t i(0); i != expand; ++i) 
-            input_append_all(rand_int());
+        for (size_t i(0); i != expand; ++i) {
+            auto t = rand_int();
+            input_append_all(t);
+        }
         input_exchange();
         for (size_t i(0); i != expand; ++i) {
             ShareType sum = ShareType::constant(0, my_number, ShareType::get_mac_key());
@@ -288,7 +299,7 @@ namespace gjcShuffle {
     ShareType mpc_comm::get_random()
     {
         if (random_resource.empty()) {
-            prepare_more_random();
+            prepare_more_random_now();
         }
         ShareType res = random_resource.front();
         random_resource.pop_front();
@@ -311,22 +322,25 @@ namespace gjcShuffle {
         }
     }
 
-    void mpc_comm::private_output_init(size_t maxnumPerParty)
+    void mpc_comm::prepare_more_private_output_lazy(int party, size_t num)
     {
-        static size_t expand(DEFAULT_EXPAND_SIZE);
-        bool needExpand(false);
-        if (maxnumPerParty > expand) {
-            expand = maxnumPerParty;
-        }
-        for (int i(0); i != n_party; ++i) {
-            if (shared_mask[i].size() < maxnumPerParty) {
-                needExpand = true;
+        cnt_private_output[party] += num;
+    }
+
+    void mpc_comm::prepare_more_private_output_now(size_t num)
+    {
+        size_t expand = 0;
+        for (int party(0); party != n_party; ++party) {
+            if (cnt_private_output[party] + num > expand) {
+                expand = cnt_private_output[party] + num;
             }
         }
-        if (needExpand) {
-            prepare_output_mask(expand);
-            expand <<= 1;
-        }
+        prepare_output_mask(expand);
+    }
+
+    void mpc_comm::private_output_init()
+    {
+        prepare_more_private_output_now();
         output->init_open(P);
     }
 
@@ -346,6 +360,8 @@ namespace gjcShuffle {
 
     void mpc_comm::private_output_exchange()
     {
+        bool needExpand(false);
+        
         output_exchange();
     }
 

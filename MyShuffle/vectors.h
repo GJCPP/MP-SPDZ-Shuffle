@@ -36,6 +36,7 @@ public:
 
 	vectors<mpc_int>& operator=(const vectors<mpc_int>& other);
 	vectors<mpc_int> operator+(const vectors<mpc_int>& other) const;
+	vectors<mpc_int> operator-(const vectors<mpc_int>& other) const;
 	vectors<mpc_int>& operator+=(const vectors<mpc_int>& other);
 	vectors<mpc_int>& operator-=(const vectors<mpc_int>& other);
 
@@ -179,6 +180,22 @@ inline vectors<mpc_int> vectors<mpc_int>::operator+(const vectors<mpc_int> &othe
 	size_t sz = size();
 	for (size_t i(0); i != sz; ++i) {
 		res.vec[i] = vec[i] + other.vec[i];
+	}
+	return res;
+}
+
+template <typename mpc_int>
+inline vectors<mpc_int> vectors<mpc_int>::operator-(const vectors<mpc_int> &other) const
+{
+	if (num != other.num || len != other.len) {
+		std::cerr << "vectors::operator+ : shape mismatch,"
+			<< num << "x" << len << " vs " << other.num << "x" << other.len << std::endl;
+		throw std::runtime_error("vectors::operator+ : shape mismatch.");
+	}
+	vectors<mpc_int> res(num, len);
+	size_t sz = size();
+	for (size_t i(0); i != sz; ++i) {
+		res.vec[i] = vec[i] - other.vec[i];
 	}
 	return res;
 }

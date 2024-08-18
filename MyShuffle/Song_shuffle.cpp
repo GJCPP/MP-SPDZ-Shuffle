@@ -16,6 +16,9 @@ namespace song2023 {
         return veclen < info.veclen;
     }
 
+    /*
+    *   Decompose a permutation task into smaller tasks and record the resource required.
+    */
     void book_permute_session(mpc_comm &com, permute_session *session)
     {
         int me = com.get_my_number(), permuter = session->permuter,

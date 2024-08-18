@@ -71,7 +71,7 @@ namespace song2023 {
         permute_session() = default;
 
         template <typename T>
-        void book(int _permuter, int _logsz, int _veclen, int _batch, const permutation& _perm) {
+        void init(int _permuter, int _logsz, int _veclen, int _batch, const permutation& _perm) {
             permuter = _permuter;
             logsz = _logsz;
             veclen = _veclen;
@@ -122,7 +122,7 @@ namespace song2023 {
     template <typename T>
     permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm) {
         permute_session *new_session = new permute_session();
-        new_session->book<T>(permuter, logsz, veclen, batch, perm);
+        new_session->init<T>(permuter, logsz, veclen, batch, perm);
         book_permute_session(com, new_session);
         return new_session;
     }

@@ -42,24 +42,6 @@ public:
     // no checks yet
     void commit_and_open(const octetStream& message);
     void commit(const octetStream& message);
-    
-    template <typename T>
-    void commit_and_open(const T& message, std::vector<T>& open_msg) {
-        octetStream os;
-        os.store(message);
-        commit(os);
-        open(os);
-        open_msg.resize(P.num_players());
-        for (int i = 0; i < P.num_players(); i++) {
-            messages[i].get(open_msg[i]);
-        }
-    }
-    template <typename T>
-    void commit(const T& message) {
-        octetStream os;
-        os.append(message);
-        commit(os);
-    }
 
     // only open randomness
     void open();

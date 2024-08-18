@@ -1,12 +1,12 @@
 #include "permutation.h"
 
-permutation::permutation(int _n) 
+permutation::permutation(size_t _n) 
     : n(_n), perm(_n)
 {
     for (int i(0); i != n; ++i) perm[i] = i;
 }
 
-permutation::permutation(int _n, bool random)
+permutation::permutation(size_t _n, bool random)
     : n(_n), perm(_n)
 {
     for (int i(0); i != n; ++i) perm[i] = i;
@@ -29,7 +29,7 @@ bool permutation::operator!=(const permutation& beta) const
     return !(*this == beta);
 }
 
-int& permutation::operator[](int pos)
+size_t& permutation::operator[](size_t pos)
 {
 #ifdef DEBUG
     if (pos < 0 || pos >= n) {
@@ -39,7 +39,7 @@ int& permutation::operator[](int pos)
 #endif
     return perm[pos];
 }
-const int& permutation::operator[](int pos) const
+const size_t& permutation::operator[](size_t pos) const
 {
 #ifdef DEBUG
     if (pos < 0 || pos >= n) {

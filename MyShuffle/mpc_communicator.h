@@ -51,6 +51,9 @@ namespace gjcShuffle {
         std::vector<std::deque<ShareType>> shared_mask; // for private output.
         std::deque<ClearType> clear_mask;
         std::deque<ShareType> random_resource;
+
+        size_t expand_random_size;
+        std::vector<size_t> cnt_private_output;
     public:
         ShareType alpha;
         mpc_comm(int n_party, int my_number);
@@ -102,12 +105,15 @@ namespace gjcShuffle {
         void output_consume(std::vector<ClearType>& val);
         ClearType output_consume();
 
-        void prepare_more_random(size_t num = 0);
+        void prepare_more_random_lazy(size_t num);
+        void prepare_more_random_now(size_t num = 0);
         ShareType get_random();
 
         void prepare_output_mask(size_t expand);
 
-        void private_output_init(size_t maxnum_per_party);
+        void prepare_more_private_output_lazy(int party, size_t num);
+        void prepare_more_private_output_now(size_t num = 0);
+        void private_output_init();
         void private_output_append(int party, const ShareType& val);
         void private_output_append(int party, const vectors<ShareType>& val);
         void private_output_exchange();
@@ -121,6 +127,8 @@ namespace gjcShuffle {
         void recv(int party, T& val);
         template <typename T>
         void unchecked_broadcast(int party, T& val);
+        template <typename T>
+        void unchecked_broadcast(int party, vectors<T>& val);
 
         template <typename T>
         void send(int party, const vectors<T>& val);
@@ -216,6 +224,20 @@ namespace gjcShuffle {
         // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
         P.unchecked_broadcast(buff);
         buff[party].get(val);
+    }
+
+    template<typename T>
+    inline void mpc_comm::unchecked_broadcast(int party, vectors<T> & val)
+    {
+        std::vector<octetStream> buff(n_party);
+        if (party == my_number) {
+            for (const T& v : val)
+                buff[party].store(v);
+        }
+        // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+        P.unchecked_broadcast(buff);
+        for (T& v : val)
+            buff[party].get(v);
     }
     
     template <>

@@ -103,7 +103,7 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
         plans.push_back(book_permute_session<ShareType>(com, all_permuter[rank], 
                         all_logsz[rank], all_veclen[rank], all_batch[rank], all_perm[rank]));
     }
-    process_all_orders(com);
+    song2023::process_all_orders(com);
     for (int rank(0); rank != num_test; ++rank) {
         int permuter = all_permuter[rank], logsz = all_logsz[rank], veclen = all_veclen[rank];
         int sz = 1 << logsz;
@@ -147,5 +147,82 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
     }
     
     if (me == 1) std::cerr << "test_Song_shuffle : test passed." << std::endl;
+    return true;
+}
+
+bool check_shuffle(vectors<ClearType>& vec, vectors<ClearType>& ans) {
+    for (size_t i(0); i != vec.num; ++i) {
+        bool matched(false);
+        for (size_t j(0); j != vec.num && !matched; ++j) {
+            bool flag = true;
+            for (size_t k(0); k != vec.len; ++k) {
+                if (vec[i][k] != ans[j][k]) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) matched = true;
+        }
+        if (!matched) return false;
+    }
+    return true;
+}
+
+bool test_my_shuffle(gjcShuffle::mpc_comm &com)
+{
+    using namespace gjcShuffle;
+
+    static std::mt19937 eng;
+    int num_test(10), me = com.get_my_number(), n = com.get_n_party();
+    std::vector<int> all_logsz, all_veclen, all_batch;
+    if (me == 0) {
+        for (int cnt(0); cnt != num_test; ++cnt) {
+            all_logsz.push_back(rand() % 7 + 1);
+            all_veclen.push_back(rand() % 10 + 1);
+            //all_permuter.push_back(1);
+            //all_logsz.push_back(2);
+            //all_veclen.push_back(1);
+            all_batch.push_back(rand() % (all_logsz.back() / 2 + 1) + 1);
+        }
+    } else {
+        all_logsz.resize(num_test);
+        all_veclen.resize(num_test);
+        all_batch.resize(num_test);
+    }
+    com.unchecked_broadcast(0, all_logsz);
+    com.unchecked_broadcast(0, all_veclen);
+    com.unchecked_broadcast(0, all_batch);
+
+    std::vector<shuffle_session *> plans;
+    for (int rank(0); rank != num_test; ++rank) {
+        plans.push_back(book_shuffle_session<ShareType>(com, 
+                        all_logsz[rank], all_veclen[rank], all_batch[rank]));
+    }
+    process_all_orders(com);
+    for (int rank(0); rank != num_test; ++rank) {
+        int logsz = all_logsz[rank], veclen = all_veclen[rank];
+        int sz = 1 << logsz;
+        vectors<ShareType> val(sz, veclen);
+        vectors<ClearType> res(sz, veclen), ans(sz, veclen);
+        shuffle_session *plan = plans[rank];
+        bool fail(false);
+        for (size_t i(0); i != sz; ++i) {
+            for (size_t j(0); j != veclen; ++j) {
+                val[i][j] = ShareType::constant(i, com.get_my_number(), ShareType::get_mac_key());
+                ans[i][j] = i;
+            }
+        }
+        plan->perform(com, val);
+        delete plan;
+        com.output_immediately(val, res);
+        // for (int i(0); i != sz; ++i) std::cout << val[i][0] << std::endl;
+        fail = !check_shuffle(res, ans);
+        if (fail) {
+            std::cerr << "test_my_shuffle : test FAILED!!!!!" << std::endl;
+            return false;
+        }
+    }
+    
+    if (me == 1) std::cerr << "test_my_shuffle : test passed." << std::endl;
     return true;
 }
