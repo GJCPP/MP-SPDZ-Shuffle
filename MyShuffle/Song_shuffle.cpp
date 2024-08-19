@@ -65,6 +65,19 @@ namespace song2023 {
 		}
     }
 
+    void book_shuffle_session(mpc_comm &com, shuffle_session *session)
+    {
+        int me = com.get_my_number(), n = com.get_n_party();
+        for (int i(0); i != n; ++i) {
+            book_permute_session(com, &session->permute_sessions[i]);
+        }
+    }
+
+    void shuffle_session::destroy()
+    {
+        destroyed = true;
+    }
+
     permute_pair pair_from_opvm(int veclen, const vectors<block_wrapper> &opvm, const permutation &perm, bool oblivious)
     {
         int sz = opvm.num;
@@ -257,6 +270,14 @@ namespace song2023 {
 
     void process_all_orders(mpc_comm &com)
     {
+        for (auto& keyval : booked_permute) {
+            for (auto& session : keyval.second) {
+                if (session.session->destroyed) {
+                    std::cerr << FAIL_INFO << "Session destroyed." << std::endl;
+                    throw std::runtime_error("process_all_orders : Session destroyed.");
+                }
+            }
+        }
         int me = com.get_my_number(), n = com.get_n_party();
         for (auto keyval : booked_permute) {
             permute_info info = keyval.first;
@@ -306,6 +327,11 @@ namespace song2023 {
                 }
             }
         }
+        for (auto& keyval : booked_permute) {
+            for (auto& session : keyval.second) {
+                session.session->initialized = true;
+            }
+        }
         booked_permute.clear();
     }
 
@@ -314,8 +340,17 @@ namespace song2023 {
     {
     }
 
-    void permute_session::perform(mpc_comm &com, vectors<ClearType>& val)
+    void permute_session::destroy()
     {
+        destroyed = true;
+    }
+
+    void permute_session::perform(mpc_comm &com, vectors<ClearType> &val)
+    {
+        if (!initialized) {
+            std::cerr << FAIL_INFO << "Not initialized. Please call function process_all_orders." << std::endl;
+            throw std::runtime_error("permute_session::perform : Not initialized.");
+        }
         int n = com.get_n_party(), me = com.get_my_number();
         size_t sz = (1 << logsz);
 #ifdef DEBUG
@@ -425,6 +460,7 @@ namespace song2023 {
         if (me == permuter) {
             val = result;
         }
+        destroy();
     }
     
     void permute_session::perform(mpc_comm &com, vectors<ShareType>& val)
@@ -450,7 +486,17 @@ namespace song2023 {
     {
         return perm;
     }
-    
+
+    void permute_session::clear()
+    {
+        initialized = false;
+        for (int i(0); i != MAX_BATCH_SIZE; ++i) {
+            for (int j(0); j != MAX_BATCH_SIZE; ++j) {
+                pairs[i][j].clear();
+            }
+        }
+    }
+
     permute_pair::permute_pair(const permutation &perm, const vectors<ClearType> &a, const vectors<ClearType> &b, const vectors<ClearType> &delta)
         : perm(perm), a(a), b(b), delta(delta), opvm()
     {

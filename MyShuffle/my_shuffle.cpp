@@ -198,11 +198,24 @@ namespace gjcShuffle {
         }
     }
 
+    void set_init_flag() {
+        for (auto& info : booked_shuffle) {
+            for (auto& order : info.second) {
+                shuffle_session &session = *order.session;
+                session.set_init_flag();
+            }
+        }
+    }
+
     void process_all_orders(mpc_comm &com)
     {
         // Book all permute sessions and count the total number of secret random values.
         for (auto &info : booked_shuffle) {
             for (auto &order : info.second) {
+                if (order.session->destroyed) {
+                    std::cerr << FAIL_INFO << "destroyed shuffle session." << std::endl;
+                    throw std::runtime_error("process_all_orders : destroyed shuffle session.");
+                }
                 for (int i = 0; i < order.session->n_party; ++i) {
                     song2023::book_permute_session(com, &order.session->permute_sessions[i]);
                 }
@@ -215,7 +228,9 @@ namespace gjcShuffle {
         compute_beta_r(com);
         compute_permuted_random_resource(com);
         compute_z(com);
+        set_init_flag();
         clear_unused();
+        booked_shuffle.clear();
     }
 
     void verify(mpc_comm &com, ClearType a, ClearType b, ShareType beta, ShareType r)
@@ -259,12 +274,26 @@ namespace gjcShuffle {
         }
     }
 
+    void shuffle_session::set_init_flag()
+    {
+        cor.initialized = true;
+    }
+
+    void shuffle_session::destroy()
+    {
+        destroyed = true;;
+    }
+
     void shuffle_session::perform(mpc_comm &com, vectors<ShareType> &val)
     {
         if (val.num != (1 << logsz) || val.len != veclen) {
             std::cerr << "shuffle_session::perform : Invalid input size," << val
                     << " != " << (1 << logsz) << " or " << val.len << " != " << veclen << std::endl;
             throw std::runtime_error("shuffle_session::perform : Invalid input size.");
+        }
+        if (!cor.initialized) {
+            std::cerr << FAIL_INFO << "uninitialized shuffle session. Please call process_all_orders first." << std::endl;
+            throw std::runtime_error("shuffle_session::perform : uninitialized shuffle session.");
         }
         size_t num = 1 << logsz, len = veclen;
         vectors<ShareType> beta_val(num, len);
@@ -325,5 +354,11 @@ namespace gjcShuffle {
         }
         shared_y += cor.permuted_r[com.get_n_party() - 1];
         val = shared_y;
+        destroy();
+    }
+
+    const permutation &shuffle_session::get_perm() const
+    {
+        return perm;
     }
 }

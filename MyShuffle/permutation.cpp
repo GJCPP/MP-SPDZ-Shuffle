@@ -50,6 +50,7 @@ const size_t& permutation::operator[](size_t pos) const
     return perm[pos];
 }
 
+// The left permutation is perform BEFORE the right one.
 permutation permutation::operator*(const permutation& beta) const {
     permutation ret(n);
     if (beta.n != n) {

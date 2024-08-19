@@ -73,5 +73,10 @@ void run(char** argv, int prime_length)
     auto& output = set.output;
 
     // set up the protocol
+    clock_t t = clock();
+    test_Song_shuffle(com);
+    std::cout << "Song_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
+    t = clock();
     test_my_shuffle(com);
+    std::cout << "my_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
 }

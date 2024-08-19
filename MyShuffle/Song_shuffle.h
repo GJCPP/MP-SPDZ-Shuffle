@@ -17,7 +17,7 @@
 #define MAX_BATCH_SIZE 32
 
 namespace song2023 {
-    using namespace gjcShuffle;
+    using gjcShuffle::mpc_comm;
 
     class permute_pair {
     public:
@@ -65,12 +65,16 @@ namespace song2023 {
         size_t veclen;
         int batch;
         permutation perm;
+        bool initialized = false;
+        bool destroyed = false;
 
         /*
             If the party is not the permuter, only pairs[permuter] is non-empty.
             Otherwise, pairs[sender] is the permute_pair for (permuter, sender).
         */
         std::vector<permute_pair> pairs[MAXN][MAX_BATCH_SIZE];
+
+        void destroy();
     public:
         permute_session() = default;
 
@@ -81,6 +85,13 @@ namespace song2023 {
             veclen = _veclen;
             batch = _batch;
             perm = _perm;
+            for (int i = 0; i < MAXN; ++i) {
+                for (int j = 0; j < MAX_BATCH_SIZE; ++j) {
+                    pairs[i][j].clear();
+                }
+            }
+            initialized = false;
+            destroyed = false;
             if (typeid(T) == typeid(ClearType)) {
                 ;
             } else if (typeid(T) == typeid(ShareType)) {
@@ -96,6 +107,46 @@ namespace song2023 {
         void perform(mpc_comm& com, vectors<ShareType>& val);
 
         const permutation& get_perm() const;
+
+        void clear();
+    };
+
+    class shuffle_session {
+        friend void book_shuffle_session(mpc_comm &com, shuffle_session *session);
+    protected:
+        int n_party, logsz;
+        size_t veclen;
+        int batch;
+
+        std::vector<permute_session> permute_sessions;
+
+        bool destroyed = false;
+
+        void destroy();
+    public:
+        shuffle_session() = default;
+
+        // Perform the magic of shuffle protocol!
+        template <typename T>
+        void perform(mpc_comm& com, vectors<T>& val) {
+            for (int i = 0; i < n_party; ++i) {
+                permute_sessions[i].perform(com, val);
+            }
+            destroy();
+        }
+
+        template <typename T>
+        void init(int _n_party, int _logsz, size_t _veclen, int _batch, const permutation& perm) {
+            n_party = _n_party;
+            logsz = _logsz;
+            veclen = _veclen;
+            batch = _batch;
+            permute_sessions.resize(n_party);
+            for (int i = 0; i < n_party; ++i) {
+                permute_sessions[i].init<T>(i, logsz, veclen, batch, perm);
+            }
+            destroyed = false;
+        }
     };
 
     /*
@@ -122,12 +173,21 @@ namespace song2023 {
 
     // Book resource for a permute session.
     void book_permute_session(mpc_comm& com, permute_session* session);
+    // Book resource for a shuffle session.
+    void book_shuffle_session(mpc_comm& com, shuffle_session* session);
 
     template <typename T>
     permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm) {
         permute_session *new_session = new permute_session();
         new_session->init<T>(permuter, logsz, veclen, batch, perm);
         book_permute_session(com, new_session);
+        return new_session;
+    }
+    template <typename T>
+    shuffle_session *book_shuffle_session(mpc_comm& com, int logsz, int veclen, int batch, const permutation& perm) {
+        shuffle_session *new_session = new shuffle_session();
+        new_session->init<T>(com.get_n_party(), logsz, veclen, batch, perm);
+        book_shuffle_session(com, new_session);
         return new_session;
     }
 
