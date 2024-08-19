@@ -23,18 +23,22 @@ namespace song2023 {
     public:
         permute_pair() = default;
         permute_pair(const permutation& perm, const vectors<ClearType>& a, const vectors<ClearType>& b, const vectors<ClearType>& delta);
+        permute_pair(const permutation& perm, const vectors<prg_seed>& opvm);
+
+        void expand(size_t veclen, bool ovlivious);
 
         permutation perm;
         vectors<ClearType> a, b, delta;
+        vectors<prg_seed> opvm;
     };
 
     class permute_info {
     public:
         permute_info() = default;
-        permute_info(int permuter, int logsz, int veclen);
+        permute_info(int permuter, int logsz);
 
         int permuter;
-        int logsz, veclen;
+        int logsz;
 
         bool operator<(const permute_info& info) const;
     };

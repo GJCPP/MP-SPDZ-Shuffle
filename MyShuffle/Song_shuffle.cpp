@@ -4,16 +4,15 @@ namespace song2023 {
     using namespace gjcShuffle;
     std::map<permute_info, std::vector<order_info>> booked_permute;
 
-    permute_info::permute_info(int _permuter, int _logsz, int _veclen)
-        : permuter(_permuter), logsz(_logsz), veclen(_veclen)
+    permute_info::permute_info(int _permuter, int _logsz)
+        : permuter(_permuter), logsz(_logsz)
     {
     }
 
     bool permute_info::operator<(const permute_info &info) const
     {
         if (permuter != info.permuter) return permuter < info.permuter;
-        if (logsz != info.logsz) return logsz < info.logsz;
-        return veclen < info.veclen;
+        return logsz < info.logsz;
     }
 
     /*
@@ -54,12 +53,12 @@ namespace song2023 {
                         // Create extra permutation for statistical security.
                         permutation extra_perm(batch_sz, true);
                         small_perm = extra_perm.inverse() * small_perm;
-                        booked_permute[{permuter, log_batch_sz, veclen}].push_back({extra_perm, session});
+                        booked_permute[{permuter, log_batch_sz}].push_back({extra_perm, session});
                     }
-                    booked_permute[{permuter, log_batch_sz, veclen}].push_back({small_perm, session});
+                    booked_permute[{permuter, log_batch_sz}].push_back({small_perm, session});
 				} else {
 					for (int cnt(0); cnt != STATISTICAL_LAMBDA; ++cnt) {
-                        booked_permute[{permuter, log_batch_sz, veclen}].push_back({{}, session});
+                        booked_permute[{permuter, log_batch_sz}].push_back({{}, session});
                     }
 				}
 			}
@@ -141,7 +140,7 @@ namespace song2023 {
     {
         // Each order will produce a permute_pair as output.
         int me = com.get_my_number();
-        int permuter = info.permuter, logsz = info.logsz, veclen = info.veclen;
+        int permuter = info.permuter, logsz = info.logsz;
         int sz = 1 << logsz;
 
         osuCrypto::BitVector choose;
@@ -236,7 +235,7 @@ namespace song2023 {
             // Use left OPVM to check integrity.
 
             // Use right OPVM to build the permute_pair.
-            output.push_back(pair_from_opvm(veclen, right_opvm, order.perm, me == permuter));
+            output.push_back(permute_pair(order.perm, right_opvm));
         }
         // Permuter reporst hash value of left_opvm.
         if (me == permuter) {
@@ -285,6 +284,7 @@ namespace song2023 {
 
                     auto next_output(reordered_output.begin());
                     for (order_info &order : orders) {
+                        next_output->expand(order.session->veclen, true);
                         order.session->pairs[sender][info.logsz].push_back(*next_output++);
                     }
                 }
@@ -301,6 +301,7 @@ namespace song2023 {
 
                 auto next_output(reordered_output.begin());
                 for (order_info &order : orders) {
+                    next_output->expand(order.session->veclen, false);
                     order.session->pairs[info.permuter][info.logsz].push_back(*next_output++);
                 }
             }
@@ -451,7 +452,51 @@ namespace song2023 {
     }
     
     permute_pair::permute_pair(const permutation &perm, const vectors<ClearType> &a, const vectors<ClearType> &b, const vectors<ClearType> &delta)
-        : perm(perm), a(a), b(b), delta(delta)
+        : perm(perm), a(a), b(b), delta(delta), opvm()
     {
+    }
+
+    permute_pair::permute_pair(const permutation& _perm, const vectors<prg_seed> &_opvm)
+        : perm(_perm), a(), b(), delta(), opvm(_opvm)
+    {
+    }
+
+    void permute_pair::expand(size_t veclen, bool oblivious)
+    {
+        int sz = opvm.num;
+        if (oblivious) {
+            permutation inv = perm.inverse();
+            delta.resize(sz, veclen);
+            for (int i(0); i != sz; ++i) {
+                for (int j(0); j != sz; ++j) {
+                    if (perm[i] == j) continue;
+                    if (veclen > 1) { // Extend seed to veclen.
+                        vectors<ClearType> val(1, veclen);
+                        arbitrary_prg(opvm[i][j], val);
+                        for (int k(0); k != veclen; ++k) {
+                            delta[i][k] -= val.at(k);
+                            delta[inv[j]][k] += val.at(k);
+                        }
+                    }
+                }
+            }
+        } else {
+            perm = permutation(sz); // default initialization.
+            a.resize(sz, veclen);
+            b.resize(sz, veclen);
+            for (int i(0); i != sz; ++i) {
+                for (int j(0); j != sz; ++j) {
+                    if (veclen > 1) { // Extend seed to veclen.
+                        vectors<ClearType> val(1, veclen);
+                        arbitrary_prg(opvm[i][j], val);
+                        for (int k(0); k != veclen; ++k) {
+                            a[j][k] += val.at(k);
+                            b[i][k] -= val.at(k);
+                        }
+                    }
+                }
+            }
+        }
+        opvm.clear();
     }
 }
