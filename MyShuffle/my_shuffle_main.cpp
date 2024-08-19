@@ -73,5 +73,5 @@ void run(char** argv, int prime_length)
     auto& output = set.output;
 
     // set up the protocol
-    test_Song_shuffle(com);
+    test_my_shuffle(com);
 }

@@ -395,6 +395,11 @@ namespace gjcShuffle {
         return res;
     }
 
+    void mpc_comm::output_check()
+    {
+        output->Check(P);
+    }
+
     void mpc_comm::send(int recver, const void * data, size_t size)
     {
         octetStream o;

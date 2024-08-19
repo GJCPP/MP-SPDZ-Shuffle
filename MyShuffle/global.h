@@ -24,5 +24,7 @@ typedef typename ShareType::clear ClearType;
 
 #define DEFAULT_EXPAND_SIZE 500
 
+#define FAIL_INFO __FILE__ << __FUNCTION__ << ", " << __LINE__ << " : "
+
 #endif
 

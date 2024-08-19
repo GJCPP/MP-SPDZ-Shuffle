@@ -103,6 +103,7 @@ namespace gjcShuffle {
         void output_consume(ClearType& val);
         void output_consume(vectors<ClearType>& val);
         void output_consume(std::vector<ClearType>& val);
+        void output_check();
         ClearType output_consume();
 
         void prepare_more_random_lazy(size_t num);
@@ -121,6 +122,7 @@ namespace gjcShuffle {
         void private_output_consume(int party, vectors<ClearType>& val);
         ClearType private_output_consume(int party);
 
+
         template <typename T>
         void send(int party, T val);
         template <typename T>
@@ -129,6 +131,10 @@ namespace gjcShuffle {
         void unchecked_broadcast(int party, T& val);
         template <typename T>
         void unchecked_broadcast(int party, vectors<T>& val);
+        template <typename T>
+        void broadcast(int party, T& val);
+        template <typename T>
+        void broadcast(int party, vectors<T>& val);
 
         template <typename T>
         void send(int party, const vectors<T>& val);
@@ -245,6 +251,39 @@ namespace gjcShuffle {
     {
         int tmp = val;
         unchecked_broadcast(party, tmp);
+        val = tmp;
+    }
+
+
+    template <typename T>
+    inline void mpc_comm::broadcast(int party, T &val)
+    {
+        std::vector<octetStream> buff(n_party);
+        if (party == my_number) buff[party].store(val);
+        // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+        P.Broadcast_Receive(buff);
+        buff[party].get(val);
+    }
+
+    template<typename T>
+    inline void mpc_comm::broadcast(int party, vectors<T> & val)
+    {
+        std::vector<octetStream> buff(n_party);
+        if (party == my_number) {
+            for (const T& v : val)
+                buff[party].store(v);
+        }
+        // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+        P.Broadcast_Receive(buff);
+        for (T& v : val)
+            buff[party].get(v);
+    }
+    
+    template <>
+    inline void mpc_comm::broadcast<bool>(int party, bool &val)
+    {
+        int tmp = val;
+        broadcast(party, tmp);
         val = tmp;
     }
 

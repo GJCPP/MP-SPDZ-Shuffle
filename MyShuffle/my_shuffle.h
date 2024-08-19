@@ -106,4 +106,9 @@ namespace gjcShuffle {
         This function processes all orders in booked_permute.
     */
     void process_all_orders(mpc_comm& com);
+
+    // Check if beta * a = b + r
+    void verify(mpc_comm& com, ClearType a, ClearType b, ShareType beta, ShareType r);
+    // Check if beta * a = b + r
+    void verify(mpc_comm & com, int who, const vectors<ClearType>& a, const vectors<ClearType>& b, ShareType beta, const vectors<ShareType>& r);
 }

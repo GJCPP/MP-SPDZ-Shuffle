@@ -218,6 +218,47 @@ namespace gjcShuffle {
         clear_unused();
     }
 
+    void verify(mpc_comm &com, ClearType a, ClearType b, ShareType beta, ShareType r)
+    {
+        ClearType res;
+        ShareType val = a * beta - ShareType::constant(b, com.get_my_number(), ShareType::get_mac_key()) - r;
+        com.output_immediately(val, res);
+        if (res.is_zero() == false) {
+            std::cerr << __FUNCTION__ << " : Verification failed." << std::endl;
+            throw std::runtime_error("verify : Verification failed.");
+        }
+        com.output_check();
+    }
+
+    void verify(mpc_comm & com, int who, const vectors<ClearType>& a, const vectors<ClearType>& b, ShareType beta, const vectors<ShareType>& r)
+    {
+        ClearType c(com.rand_int()), w1(0), w2(0); // Challenge.
+        std::vector<ClearType> msg;
+        if (com.get_my_number() == who) {
+            for (auto& v : a) {
+                w1 = w1 * c + v;
+            }
+            for (auto& v : b) {
+                w2 = w2 * c + v;
+            }
+        }
+        msg = { c, w1, w2 };
+        com.broadcast(who, msg);
+        c = msg[0], w1 = msg[1], w2 = msg[2];
+        ShareType val = w1 * beta - ShareType::constant(w2, com.get_my_number(), ShareType::get_mac_key());
+        ShareType sum_r = r.at(0);
+        for (size_t i(1); i != r.size(); ++i) {
+            sum_r = c * sum_r + r.at(i);
+        }
+        ClearType res;
+        com.output_immediately(val - sum_r, res);
+        com.output_check();
+        if (res.is_zero() == false) {
+            std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
+            throw std::runtime_error("verify : Verification failed.");
+        }
+    }
+
     void shuffle_session::perform(mpc_comm &com, vectors<ShareType> &val)
     {
         if (val.num != (1 << logsz) || val.len != veclen) {
@@ -252,9 +293,16 @@ namespace gjcShuffle {
             cor.perm.perform(z01);
             com.send(1, z00);
             com.send(1, z01);
+            for (int who(1); who != com.get_n_party(); ++who) {
+                verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
+            }
         } else {
+            for (int who(1); who != me; ++who) {
+                verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
+            }
             com.recv(me - 1, z00);
             com.recv(me - 1, z01);
+            verify(com, me, z00, z01, cor.beta, cor.permuted_rp[me - 1]);
             z00 += cor.z[0];
             z01 += cor.z[1];
             cor.perm.perform(z00);
@@ -263,9 +311,12 @@ namespace gjcShuffle {
                 com.send(me + 1, z00);
                 com.send(me + 1, z01);
             }
+            for (int who(me + 1); who != com.get_n_party(); ++who) {
+                verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
+            }
         }
-        com.unchecked_broadcast(com.get_n_party() - 1, z00);
-        com.unchecked_broadcast(com.get_n_party() - 1, z01);
+        com.broadcast(com.get_n_party() - 1, z00);
+        com.broadcast(com.get_n_party() - 1, z01);
         vectors<ShareType> shared_y(num, len);
         for (size_t i(0); i != num; ++i) {
             for (size_t j(0); j != len; ++j) {
