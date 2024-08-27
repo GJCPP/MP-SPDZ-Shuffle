@@ -306,7 +306,7 @@ namespace gjcShuffle {
         vectors<ShareType> shared_z00(num, len), shared_z01(num, len);
         shared_z00 = val - cor.r[0];
         shared_z01 = beta_val - cor.beta_r[0] - cor.rp[0];
-        vectors<ClearType> z00(num, len), z01(num, len);
+        vectors<ClearType> z00(num, len), z01(num, len), z(num * 2, len);
         com.prepare_more_private_output_lazy(0, z00.size() + z01.size());
         com.private_output_init();
         com.private_output_append(0, shared_z00);
@@ -320,8 +320,8 @@ namespace gjcShuffle {
             // perform permute on z00 and z01
             cor.perm.perform(z00);
             cor.perm.perform(z01);
-            com.send(1, z00);
-            com.send(1, z01);
+            z = vectors<ClearType>::cat(z00, z01);
+            com.send(1, z);
             for (int who(1); who != com.get_n_party(); ++who) {
                 verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
             }
@@ -329,23 +329,24 @@ namespace gjcShuffle {
             for (int who(1); who != me; ++who) {
                 verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
             }
-            com.recv(me - 1, z00);
-            com.recv(me - 1, z01);
+            com.recv(me - 1, z);
+            z.split(num, z00, z01);
             verify(com, me, z00, z01, cor.beta, cor.permuted_rp[me - 1]);
             z00 += cor.z[0];
             z01 += cor.z[1];
             cor.perm.perform(z00);
             cor.perm.perform(z01);
             if (me + 1 != com.get_n_party()) {
-                com.send(me + 1, z00);
-                com.send(me + 1, z01);
+                z = vectors<ClearType>::cat(z00, z01);
+                com.send(me + 1, z);
             }
             for (int who(me + 1); who != com.get_n_party(); ++who) {
                 verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
             }
         }
-        com.broadcast(com.get_n_party() - 1, z00);
-        com.broadcast(com.get_n_party() - 1, z01);
+        z = vectors<ClearType>::cat(z00, z01);
+        com.broadcast(com.get_n_party() - 1, z);
+        z.split(num, z00, z01);
         vectors<ShareType> shared_y(num, len);
         for (size_t i(0); i != num; ++i) {
             for (size_t j(0); j != len; ++j) {

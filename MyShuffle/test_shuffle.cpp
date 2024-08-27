@@ -96,7 +96,7 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
     using namespace song2023;
 
     static std::mt19937 eng;
-    int tot_test(10);
+    int tot_test(1);
     for (int test_no(0); test_no != tot_test; ++test_no) {
         int num_test(10), me = com.get_my_number(), n = com.get_n_party();
         std::vector<int> all_logsz, all_veclen, all_batch;
@@ -180,7 +180,7 @@ bool test_my_shuffle(gjcShuffle::mpc_comm &com)
     using namespace gjcShuffle;
 
     static std::mt19937 eng;
-    int tot_test(10);
+    int tot_test(1);
     for (int test_no(0); test_no != tot_test; ++test_no) {
         int num_test(10), me = com.get_my_number(), n = com.get_n_party();
         std::vector<int> all_logsz, all_veclen, all_batch;

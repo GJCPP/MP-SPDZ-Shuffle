@@ -103,6 +103,44 @@ public:
 		return false;
 	}
 
+	static vectors<mpc_int> cat(const vectors<mpc_int>& a, const vectors<mpc_int>& b) {
+		if (a.len != b.len) {
+			std::cerr << "vectors::cat : shape mismatch, " << a.num << "x" << a.len << " vs " << b.num << "x" << b.len << std::endl;
+			throw std::runtime_error("vectors::cat : shape mismatch.");
+		}
+		vectors<mpc_int> res(a.num + b.num, a.len);
+		for (size_t i(0); i != a.num; ++i) {
+			for (size_t j(0); j != a.len; ++j) {
+				res[i][j] = a[i][j];
+			}
+		}
+		for (size_t i(0); i != b.num; ++i) {
+			for (size_t j(0); j != b.len; ++j) {
+				res[i + a.num][j] = b[i][j];
+			}
+		}
+		return res;
+	}
+
+	void split(size_t pos, vectors<mpc_int>& vec1, vectors<mpc_int>& vec2) {
+		if (pos >= num) {
+			std::cerr << "vectors::split : shape mismatch, " << pos << " >= " << num << std::endl;
+			throw std::runtime_error("vectors::split : shape mismatch.");
+		}
+		vec1.resize(pos, len);
+		vec2.resize(num - pos, len);
+		for (size_t i(0); i != pos; ++i) {
+			for (size_t j(0); j != len; ++j) {
+				vec1[i][j] = vec[i * len + j];
+			}
+		}
+		for (size_t i(0); i != num - pos; ++i) {
+			for (size_t j(0); j != len; ++j) {
+				vec2[i][j] = vec[(i + pos) * len + j];
+			}
+		}
+	}
+
 	const mpc_int * data() const;
 	mpc_int* data();
 
