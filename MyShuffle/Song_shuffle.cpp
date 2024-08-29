@@ -3,6 +3,39 @@
 namespace song2023 {
     using namespace gjcShuffle;
     std::map<permute_info, std::vector<order_info>> booked_permute;
+    std::map<int, size_t> count_permute_task;
+    std::vector<permute_session *> booked_sessions;
+
+    /*
+    *  This is the bucket size table by Song et al, specified for security parameter lambda = 40.
+    *  bucket_size[logsz - 4][log  batch size - 4] is the size of each bucket.
+    *  
+    *  For example, bucket_size[0][1] = 24, which means that when
+    *       - logsz = 4, i.e. the size of permutation is 2^4 = 16,
+    *       - log batch size = 5, i.e. there are in total 2^5 = 32 permutation task (of logsize 4),
+    *  then each bucket contains 24 permutation tasks, which is in total 24 * 32 = 768 permutation tasks.
+    * 
+    *  C.f. Table V of the paper "Secret-Shared Shuffle with Malicious Security" by Sont et al.
+    */
+    const int bucket_size[7][17] = {
+        {27, 24, 21, 20, 19, 18, 17, 16, 15, 15, 15, 14, 14, 14, 14, 13, 13},
+        {25, 22, 19, 18, 16, 15, 15, 13, 13, 13, 12, 12, 12, 12, 12, 11, 11},
+        {23, 20, 18, 17, 15, 14, 14, 13, 12, 12, 12, 11, 11, 11, 11, 10, 10},
+        {22, 19, 17, 16, 14, 13, 13, 12, 11, 11, 11, 10, 10, 10, 10,  9,  9},
+        {21, 18, 16, 14, 13, 12, 12, 11, 10, 10, 10,  9,  9,  9,  9,  8,  8},
+        {21, 18, 16, 14, 13, 12, 12, 11, 10, 10, 10,  9,  9,  9,  9,  8,  8},
+        {20, 17, 15, 13, 12, 11, 10, 10,  9,  9,  9,  8,  8,  8,  8,  7,  7}
+    };
+
+    
+    int get_bucket_size(int logsz, int batch_sz)
+    {
+        int log_batch_sz = math_gadget::log2(batch_sz);
+        if (logsz < 4 || log_batch_sz < 4 || logsz > 11 || log_batch_sz > 20) {
+            return DEFAULT_BUCKET_SIZE;
+        }
+        return bucket_size[logsz - 4][log_batch_sz - 4];
+    }
 
     permute_info::permute_info(int _permuter, int _logsz)
         : permuter(_permuter), logsz(_logsz)
@@ -17,6 +50,7 @@ namespace song2023 {
 
     /*
     *   Decompose a permutation task into smaller tasks and record the resource required.
+    *   Note that only after all sessions are booked can bucket size be determined.
     */
     void book_permute_session(mpc_comm &com, permute_session *session)
     {
@@ -39,30 +73,62 @@ namespace song2023 {
 			int next(0), batch_sz(task[0].size());
 			int log_batch_sz = math_gadget::log2(batch_sz);
 			for (const auto& touched : task) {
-				next = 0;
-				for (int v : touched) { // touched is the component specified by (depth, rank of task)
-					inv_map[next] = v; // map the position back.
-					map[v] = next++;
-				}
-				if (me == permuter) {
-                    permutation small_perm(batch_sz);
-					for (int v : touched) {
-                        small_perm[map[v]] = map[sub_route[bat][v]];
-					}
-                    for (int cnt(1); cnt != STATISTICAL_LAMBDA; ++cnt) {
-                        // Create extra permutation for statistical security.
-                        permutation extra_perm(batch_sz, true);
-                        small_perm = extra_perm.inverse() * small_perm;
-                        booked_permute[{permuter, log_batch_sz}].push_back({extra_perm, session});
-                    }
-                    booked_permute[{permuter, log_batch_sz}].push_back({small_perm, session});
-				} else {
-					for (int cnt(0); cnt != STATISTICAL_LAMBDA; ++cnt) {
-                        booked_permute[{permuter, log_batch_sz}].push_back({{}, session});
-                    }
-				}
+                count_permute_task[log_batch_sz] = count_permute_task[log_batch_sz] + 1;
 			}
 		}
+        booked_sessions.push_back(session);
+    }
+
+    void decompose_permute_sessions(mpc_comm &com)
+    {
+        for (auto session : booked_sessions) {
+            int me = com.get_my_number(), permuter = session->permuter,
+                logsz = session->logsz, veclen = session->veclen, batch = session->batch;
+            int sz = 1 << logsz;
+            std::vector<int> dest(sz);
+            if (me == permuter) {
+                for (int i(0); i != sz; ++i) dest[session->perm[i]] = i;
+            } else {
+                for (int i(0); i != sz; ++i) dest[i] = i;
+            }
+            const auto& all_tasks = BenesNetwork::task_decompose(logsz, batch);
+            auto route = BenesNetwork::route(logsz, dest);
+            auto sub_route = BenesNetwork::decompose(route, batch);
+            BenesNetwork::desttask_to_permtask(sz, sub_route);
+            std::vector<int> map(sz), inv_map(sz);
+            for (size_t bat(0); bat != sub_route.size(); ++bat) {
+                const auto& task = all_tasks[bat];
+                int next(0), batch_sz(task[0].size());
+                int log_batch_sz = math_gadget::log2(batch_sz);
+                for (const auto& touched : task) {
+                    next = 0;
+                    for (int v : touched) { // touched is the component specified by (depth, rank of task)
+                        inv_map[next] = v; // map the position back.
+                        map[v] = next++;
+                    }
+                    int bucket_size = get_bucket_size(log_batch_sz, count_permute_task[log_batch_sz]);
+                    session->bucket_size[log_batch_sz] = bucket_size;
+                    if (me == permuter) {
+                        permutation small_perm(batch_sz);
+                        for (int v : touched) {
+                            small_perm[map[v]] = map[sub_route[bat][v]];
+                        }
+                        for (int cnt(1); cnt != bucket_size; ++cnt) {
+                            // Create extra permutation for statistical security.
+                            permutation extra_perm(batch_sz, true);
+                            small_perm = extra_perm.inverse() * small_perm;
+                            booked_permute[{permuter, log_batch_sz}].push_back({extra_perm, session});
+                        }
+                        booked_permute[{permuter, log_batch_sz}].push_back({small_perm, session});
+                    } else {
+                        for (int cnt(0); cnt != bucket_size; ++cnt) {
+                            booked_permute[{permuter, log_batch_sz}].push_back({{}, session});
+                        }
+                    }
+                }
+            }
+        }
+        booked_sessions.clear();
     }
 
     void book_shuffle_session(mpc_comm &com, shuffle_session *session)
@@ -76,6 +142,11 @@ namespace song2023 {
     void shuffle_session::destroy()
     {
         destroyed = true;
+    }
+
+    const permutation & shuffle_session::get_perm(int who) const
+    {
+        return permute_sessions[who].get_perm();
     }
 
     permute_pair pair_from_opvm(int veclen, const vectors<block_wrapper> &opvm, const permutation &perm, bool oblivious)
@@ -250,7 +321,7 @@ namespace song2023 {
             // Use right OPVM to build the permute_pair.
             output.push_back(permute_pair(order.perm, right_opvm));
         }
-        // Permuter reporst hash value of left_opvm.
+        // Permuter reports hash value of left_opvm.
         if (me == permuter) {
             block_wrapper hash_val[BLOCKS_FOR_HASH];
             left_hash.final(reinterpret_cast<octet *>(hash_val), sizeof(hash_val));
@@ -278,6 +349,7 @@ namespace song2023 {
                 }
             }
         }
+        decompose_permute_sessions(com);
         int me = com.get_my_number(), n = com.get_n_party();
         for (auto keyval : booked_permute) {
             permute_info info = keyval.first;
@@ -333,6 +405,7 @@ namespace song2023 {
             }
         }
         booked_permute.clear();
+        count_permute_task.clear();
     }
 
     order_info::order_info(const permutation &_perm, permute_session *_session)
@@ -414,8 +487,9 @@ namespace song2023 {
                             else local_val[map[v]][j] = val[v][j];
                         }
                     }
+                    int rep = bucket_size[log_batch_sz];
                     if (me == permuter) { // Receiver of OT
-                        for (int cnt(0); cnt != STATISTICAL_LAMBDA; ++cnt) {
+                        for (int cnt(0); cnt != rep; ++cnt) {
                             // Create extra permutation for statistical security.
                             if (next_pair[log_batch_sz] == pairs[sender][log_batch_sz].end()) {
                                 std::cerr << "permute_session::perform : unexpected end of permute_pair." << std::endl;
@@ -435,7 +509,7 @@ namespace song2023 {
                         }
                         // booked_permute[{permuter, logsz, veclen}].push_back({small_perm, session});
                     } else {
-                        for (int cnt(0); cnt != STATISTICAL_LAMBDA; ++cnt) {
+                        for (int cnt(0); cnt != rep; ++cnt) {
                             if (next_pair[log_batch_sz] == pairs[permuter][log_batch_sz].end()) {
                                 std::cerr << "permute_session::perform : unexpected end of permute_pair." << std::endl;
                                 throw std::runtime_error("permute_session::perform : unexpected end of permute_pair.");
@@ -461,6 +535,7 @@ namespace song2023 {
             val = result;
         }
         destroy();
+        com.output_check();
     }
     
     void permute_session::perform(mpc_comm &com, vectors<ShareType>& val)

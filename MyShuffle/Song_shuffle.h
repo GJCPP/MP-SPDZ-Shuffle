@@ -1,3 +1,13 @@
+/*
+    This file implements the secure shuffle protocol designed in the paper:
+        @article{song2023secret,
+        title={Secret-Shared Shuffle with Malicious Security},
+        author={Song, Xiangfu and Yin, Dong and Bai, Jianli and Dong, Changyu and Chang, Ee-Chien},
+        journal={Cryptology ePrint Archive},
+        year={2023}
+        }
+*/
+
 #pragma once
 #include <map>
 
@@ -5,6 +15,7 @@
 
 #include "global.h"
 
+#include "permutation.h"
 #include "math_gadget.h"
 #include "vectors.h"
 #include "Benes_network.h"
@@ -18,6 +29,11 @@
 
 namespace song2023 {
     using gjcShuffle::mpc_comm;
+
+    #define DEFAULT_BUCKET_SIZE 40
+    extern const int bucket_size[7][17];
+
+    int get_bucket_size(int logsz, int log_batch_sz);
 
     class permute_pair {
     public:
@@ -58,6 +74,8 @@ namespace song2023 {
             
             friend permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm);
 
+            friend void decompose_permute_sessions(mpc_comm& com);
+
             friend void process_all_orders(mpc_comm& com);
     protected:
         int permuter;
@@ -67,6 +85,7 @@ namespace song2023 {
         permutation perm;
         bool initialized = false;
         bool destroyed = false;
+        std::map<int, int> bucket_size = {};
 
         /*
             If the party is not the permuter, only pairs[permuter] is non-empty.
@@ -92,6 +111,7 @@ namespace song2023 {
             }
             initialized = false;
             destroyed = false;
+            bucket_size = {};
             if (typeid(T) == typeid(ClearType)) {
                 ;
             } else if (typeid(T) == typeid(ShareType)) {
@@ -147,6 +167,8 @@ namespace song2023 {
             }
             destroyed = false;
         }
+
+        const permutation& get_perm(int who) const;
     };
 
     /*
@@ -170,6 +192,7 @@ namespace song2023 {
         When orders are processed, resource will be allocate to each session (specified by pointer).
     */
     extern std::map<permute_info, std::vector<order_info>> booked_permute;
+    extern std::map<int, size_t> count_permute_task;
 
     // Book resource for a permute session.
     void book_permute_session(mpc_comm& com, permute_session* session);
@@ -190,6 +213,7 @@ namespace song2023 {
         book_shuffle_session(com, new_session);
         return new_session;
     }
+
 
     /*
         This function processes all orders in booked_permute.

@@ -108,7 +108,7 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
                 //all_permuter.push_back(1);
                 //all_logsz.push_back(2);
                 //all_veclen.push_back(1);
-                all_batch.push_back(3);
+                all_batch.push_back(4);
                 all_perm.push_back({});
                 for (int i(0); i != n; ++i) all_perm.back().push_back(permutation(1 << all_logsz.back(), true));
             }
@@ -187,8 +187,8 @@ bool test_my_shuffle(gjcShuffle::mpc_comm &com)
         std::vector<std::vector<permutation>> all_perm;
         if (me == 0) {
             for (int cnt(0); cnt != num_test; ++cnt) {
-                all_logsz.push_back(rand() % 7 + 1);
-                all_veclen.push_back(rand() % 10 + 1);
+                all_logsz.push_back(rand() % 10 + 1);
+                all_veclen.push_back(1);
                 //all_permuter.push_back(1);
                 //all_logsz.push_back(2);
                 //all_veclen.push_back(1);

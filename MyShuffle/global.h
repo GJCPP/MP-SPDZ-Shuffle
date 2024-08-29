@@ -14,7 +14,7 @@ typedef Share<gfp_<0, n_limbs>> ShareType;
 typedef typename ShareType::clear ClearType;
 
 // statistical security parameter
-#define STATISTICAL_LAMBDA 30
+#define STATISTICAL_LAMBDA 40
 
 #define MAXN 40
 

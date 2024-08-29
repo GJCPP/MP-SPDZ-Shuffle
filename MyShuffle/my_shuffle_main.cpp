@@ -23,6 +23,7 @@
 #include "Song_shuffle.h"
 #include "test_shuffle.h"
 #include "unit_test.h"
+#include "my_benchmark.h"
 
 #include "local/include/cryptoTools/Network/IOService.h"
 
@@ -73,11 +74,15 @@ void run(char** argv, int prime_length)
     auto& protocol = set.protocol;
     auto& output = set.output;
 
-    // set up the protocol
-    clock_t t = clock();
-    test_Song_shuffle(com);
-    std::cout << "Song_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
-    t = clock();
-    test_my_shuffle(com);
-    std::cout << "my_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
+    benchmark_my_shuffle(com);
+    benchmark_Song_shuffle(com);
+
+    // // set up the protocol
+    // clock_t t = clock();
+    // test_Song_shuffle(com);
+    // std::cout << "Song_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
+    // std::cout << com.count_total_comm() << " bytes sent." << std::endl;
+    // t = clock();
+    // test_my_shuffle(com);
+    // std::cout << "my_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
 }

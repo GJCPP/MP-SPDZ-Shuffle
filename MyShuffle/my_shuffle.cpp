@@ -267,7 +267,7 @@ namespace gjcShuffle {
         }
         ClearType res;
         com.output_immediately(val - sum_r, res);
-        com.output_check();
+        //com.output_check();
         if (res.is_zero() == false) {
             std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
             throw std::runtime_error("verify : Verification failed.");

@@ -29,6 +29,7 @@ namespace gjcShuffle {
                 sessions[i].start(ios, N.get_name(i), session_port_base + i, osuCrypto::SessionMode::Client);
             }
         }
+        P.reset_stats();
         // setup = new ProtocolSetup<ShareType>(P, prime_length);
     }
 
@@ -49,7 +50,7 @@ namespace gjcShuffle {
 
     CryptoPlayer &mpc_comm::get_P()
     {
-    return P;
+        return P;
     }
 
     ProtocolSetup<ShareType> &mpc_comm::get_setup()
