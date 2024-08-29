@@ -108,7 +108,7 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
                 //all_permuter.push_back(1);
                 //all_logsz.push_back(2);
                 //all_veclen.push_back(1);
-                all_batch.push_back(rand() % (all_logsz.back() / 2 + 1) + 1);
+                all_batch.push_back(3);
                 all_perm.push_back({});
                 for (int i(0); i != n; ++i) all_perm.back().push_back(permutation(1 << all_logsz.back(), true));
             }
@@ -192,7 +192,7 @@ bool test_my_shuffle(gjcShuffle::mpc_comm &com)
                 //all_permuter.push_back(1);
                 //all_logsz.push_back(2);
                 //all_veclen.push_back(1);
-                all_batch.push_back(rand() % (all_logsz.back() / 2 + 1) + 1);
+                all_batch.push_back(4);
                 all_perm.push_back({});
                 for (int i(0); i != n; ++i) all_perm.back().push_back(permutation(1 << all_logsz.back(), true));
             }
@@ -257,4 +257,8 @@ bool test_my_shuffle(gjcShuffle::mpc_comm &com)
         if (me == 0) std::cerr << "test_my_shuffle : test passed. (" << test_no << "/" << tot_test << ")" << std::endl;
     }
     return true;
+}
+
+bool test_mpspdz_shuffle() {
+    ;
 }

@@ -27,6 +27,7 @@
 #include "global.h"
 #include "vectors.h"
 #include "block_wrapper.h"
+#include "my_ote.h"
 
 namespace gjcShuffle {
     class mpc_comm {
@@ -54,6 +55,14 @@ namespace gjcShuffle {
 
         size_t expand_random_size;
         std::vector<size_t> cnt_private_output;
+        
+        std::vector<osuCrypto::Channel *> otSendChannel, otRecvChannel;
+
+        // void base_ot_send(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
+        void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
+        void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
+        void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
+        void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
     public:
         ShareType alpha;
         mpc_comm(int n_party, int my_number);
@@ -153,12 +162,6 @@ namespace gjcShuffle {
         void send(int recver, const void *data, size_t size);
         void recv(int sender, void *data, size_t size);
 
-        // void base_ot_send(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
-        void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
-        void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
-        void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
-        void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
-
         void send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
         void recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
 
@@ -186,6 +189,9 @@ namespace gjcShuffle {
         }
 
         void mac_check(const vectors<ShareType>& valMac);
+
+        size_t count_total_comm() const;
+        void reset_total_comm();
 
         ~mpc_comm();
     };

@@ -64,6 +64,7 @@ void run(char** argv, int prime_length)
 
     // set of protocols (input, multiplication, output)
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
+    
     com.init(&set.input, &set.protocol, &set.output);
     std::cout << "Player " << me << " of " << n << " started." << std::endl;
     

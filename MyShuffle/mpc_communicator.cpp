@@ -13,7 +13,9 @@ namespace gjcShuffle {
             alpha(),
             random_resource(),
             expand_random_size(0),
-            cnt_private_output(n_party)
+            cnt_private_output(n_party),
+            otSendChannel(n_party, nullptr),
+            otRecvChannel(n_party, nullptr)
     {
         prg.InitSeed();
         int session_port_base = N.get_portnum_base() + 4 * n_party;
@@ -423,11 +425,14 @@ namespace gjcShuffle {
         if (!channel) {
             sendChannel = new Channel;
             *sendChannel = sessions[recver].addChannel();
-        } else
+        } else {
             sendChannel = channel;
+        }
 
-        AsmSimplestOT baseOT;
-        baseOT.send(sendKey, osuPrg, *sendChannel);
+
+        my_ote::send_base_cor_ot(sendKey, osuPrg, sendChannel);
+
+
         if (!channel) delete sendChannel;
     }
 
@@ -455,11 +460,14 @@ namespace gjcShuffle {
         if (!channel) {
             recvChannel = new Channel;
             *recvChannel = sessions[sender].addChannel();
-        } else
+        } else {
             recvChannel = channel;
-        AsmSimplestOT baseOT;
+        }
+        
 
-        baseOT.receive(choices, recvKey, osuPrg, *recvChannel);
+        my_ote::recv_base_cor_ot(choices, recvKey, osuPrg, recvChannel);
+
+
         if (!channel) delete recvChannel;
     }
 
@@ -480,21 +488,32 @@ namespace gjcShuffle {
         using namespace osuCrypto;
         size_t num_ot(sendKey.size());
 
-        Channel sendChannel = sessions[recver].addChannel();
+        std::vector<Channel*>& allSendChannel = otSendChannel;
+        static std::vector<KosOtExtSender*> allExtOT;
+        if (allExtOT.empty()) {
+            allExtOT.resize(n_party);
+        }
+        if (allSendChannel[recver] == nullptr) {
+            allSendChannel[recver] = new Channel;
+            *allSendChannel[recver] = sessions[recver].addChannel();
+            allExtOT[recver] = new KosOtExtSender;
+
+
+            Channel& sendChannel = *allSendChannel[recver];
+            KosOtExtSender& extOT = *allExtOT[recver];
+
+            // Perform base ot
+            size_t cnt_base_ot = extOT.baseOtCount();
+            osuCrypto::BitVector base_choices(cnt_base_ot);
+            std::vector<block> baseRecv(cnt_base_ot);
+            recv_base_cor_ot(recver, base_choices, baseRecv, &sendChannel);
+
+            allExtOT[recver]->setBaseOts(baseRecv, base_choices, osuPrg, sendChannel);
+        }
+        Channel& sendChannel = *allSendChannel[recver];
+        KosOtExtSender& extOT = *allExtOT[recver];
 
         std::vector<std::array<block, 2>> sendBlockMsg(num_ot);
-
-        // IknpOtExtSender extOT;
-        KosOtExtSender extOT;
-        //SoftSpokenOT::TwoOneMaliciousSender extOT(10);
-
-        // Perform base ot
-        size_t cnt_base_ot = extOT.baseOtCount();
-        osuCrypto::BitVector base_choices(cnt_base_ot);
-        std::vector<block> baseRecv(cnt_base_ot);
-        recv_base_cor_ot(recver, base_choices, baseRecv, &sendChannel);
-
-        extOT.setBaseOts(baseRecv, base_choices, osuPrg, sendChannel);
 
         // Perform extened ot
         memcpy(sendBlockMsg.data(), sendKey.data(), 2 * num_ot * sizeof(block));
@@ -511,17 +530,32 @@ namespace gjcShuffle {
         }
         using namespace osuCrypto;
         size_t num_ot(recvKey.size());
-        Channel recvChannel = sessions[sender].addChannel();
-        // SoftSpokenOT::TwoOneMaliciousReceiver extOT(10);
-        KosOtExtReceiver extOT;
-        
 
-        // Perform base ot
-        size_t cnt_base_ot = extOT.baseOtCount();
-        std::vector<std::array<block, 2>> baseSend(cnt_base_ot);
-        osuPrg.get((unsigned char *)baseSend.data(), cnt_base_ot * 2 * sizeof(block));
-        send_base_cor_ot(sender, baseSend, &recvChannel);
-        extOT.setBaseOts(baseSend, osuPrg, recvChannel);
+        
+        std::vector<Channel*>& allRecvChannel = otRecvChannel;
+        static std::vector<KosOtExtReceiver*> allExtOT;
+        if (allExtOT.empty()) {
+            allExtOT.resize(n_party);
+        }
+        if (allRecvChannel[sender] == nullptr) {
+            allRecvChannel[sender] = new Channel;
+            *allRecvChannel[sender] = sessions[sender].addChannel();
+            allExtOT[sender] = new KosOtExtReceiver;
+            
+
+            Channel& recvChannel = *allRecvChannel[sender];
+            KosOtExtReceiver& extOT = *allExtOT[sender];
+
+            // Perform base ot
+            size_t cnt_base_ot = extOT.baseOtCount();
+            std::vector<std::array<block, 2>> baseSend(cnt_base_ot);
+            osuPrg.get((unsigned char *)baseSend.data(), cnt_base_ot * 2 * sizeof(block));
+            send_base_cor_ot(sender, baseSend, &recvChannel);
+            extOT.setBaseOts(baseSend, osuPrg, recvChannel);
+        }
+
+        Channel& recvChannel = *allRecvChannel[sender];
+        KosOtExtReceiver& extOT = *allExtOT[sender];
 
         // Perform extened ot
         std::vector<block> recvBlockMsg(num_ot);
@@ -601,11 +635,36 @@ namespace gjcShuffle {
             throw std::runtime_error("mpc_comm::mac_check : MAC check failed.");
         }
     }
+
+    size_t mpc_comm::count_total_comm() const
+    {
+        size_t ret = 0;
+        for (auto channel : otSendChannel) {
+            if (channel) ret += channel->getTotalDataSent();
+        }
+        ret += P.total_comm().sent;
+        return ret;
+    }
+
+    void mpc_comm::reset_total_comm()
+    {
+        for (auto channel : otSendChannel) {
+            if (channel) channel->resetStats();
+        }
+        P.reset_stats();
+    }
+
     mpc_comm::~mpc_comm()
     {
         for (int i(0); i != n_party; ++i) {
             sessions[i].stop();
         }
         ios.stop();
+        for (auto channel : otSendChannel) {
+            if (channel) delete channel;
+        }
+        for (auto channel : otRecvChannel) {
+            if (channel) delete channel;
+        }
     }
 }
