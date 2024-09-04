@@ -5,7 +5,7 @@
 #include "Protocols/Share.h"
 
 // bit length of prime
-const int prime_length = 128;
+const int prime_length = 40;
 
 // compute number of 64-bit words needed
 const int n_limbs = (prime_length + 63) / 64;

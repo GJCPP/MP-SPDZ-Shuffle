@@ -30,7 +30,7 @@
 namespace song2023 {
     using gjcShuffle::mpc_comm;
 
-    #define DEFAULT_BUCKET_SIZE 40
+    #define DEFAULT_BUCKET_SIZE 30
     extern const int bucket_size[7][17];
 
     int get_bucket_size(int logsz, int log_batch_sz);
@@ -72,7 +72,7 @@ namespace song2023 {
 
             friend void book_permute_session(mpc_comm& com, permute_session* session);
             
-            friend permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm);
+            friend permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, size_t veclen, int batch, const permutation& perm);
 
             friend void decompose_permute_sessions(mpc_comm& com);
 
@@ -98,7 +98,7 @@ namespace song2023 {
         permute_session() = default;
 
         template <typename T>
-        void init(int _permuter, int _logsz, int _veclen, int _batch, const permutation& _perm) {
+        void init(int _permuter, int _logsz, size_t _veclen, int _batch, const permutation& _perm) {
             permuter = _permuter;
             logsz = _logsz;
             veclen = _veclen;
@@ -200,14 +200,14 @@ namespace song2023 {
     void book_shuffle_session(mpc_comm& com, shuffle_session* session);
 
     template <typename T>
-    permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, int veclen, int batch, const permutation& perm) {
+    permute_session *book_permute_session(mpc_comm& com, int permuter, int logsz, size_t veclen, int batch, const permutation& perm) {
         permute_session *new_session = new permute_session();
         new_session->init<T>(permuter, logsz, veclen, batch, perm);
         book_permute_session(com, new_session);
         return new_session;
     }
     template <typename T>
-    shuffle_session *book_shuffle_session(mpc_comm& com, int logsz, int veclen, int batch, const permutation& perm) {
+    shuffle_session *book_shuffle_session(mpc_comm& com, int logsz, size_t veclen, int batch, const permutation& perm) {
         shuffle_session *new_session = new shuffle_session();
         new_session->init<T>(com.get_n_party(), logsz, veclen, batch, perm);
         book_shuffle_session(com, new_session);

@@ -28,9 +28,10 @@ namespace gjcShuffle {
     class shuffle_info {
     public:
         shuffle_info() = default;
-        shuffle_info(int logsz, int veclen);
+        shuffle_info(int logsz, size_t veclen);
 
-        int logsz, veclen;
+        int logsz;
+        size_t veclen;
 
         bool operator<(const shuffle_info& info) const;
     };
@@ -113,7 +114,7 @@ namespace gjcShuffle {
 
     // Create new shuffle session and book resource for it.
     template <typename T>
-    shuffle_session *book_shuffle_session(mpc_comm& com, int logsz, int veclen, int batch, const permutation& perm = {}) {
+    shuffle_session *book_shuffle_session(mpc_comm& com, int logsz, size_t veclen, int batch, const permutation& perm = {}) {
         shuffle_session *new_session = new shuffle_session();
         new_session->init<T>(com.get_n_party(), logsz, veclen, batch, perm);
         book_shuffle_session(com, new_session);

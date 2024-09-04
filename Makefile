@@ -391,6 +391,9 @@ MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
 run: my_shuffle_main.x
 	for i in 0 1 2; do ./my_shuffle_main.x $$i 3 & true; done
 
+benchmark: my_shuffle_main.x
+	python my_benchmark.py
+
 kill:
 	pkill my_shuffle_main
 

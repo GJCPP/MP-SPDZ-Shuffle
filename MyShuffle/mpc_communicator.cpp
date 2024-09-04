@@ -2,9 +2,9 @@
 
 namespace gjcShuffle {
 
-    mpc_comm::mpc_comm(int _n_party, int _my_number)
+    mpc_comm::mpc_comm(int _n_party, int _my_number, int _port_base)
         : n_party(_n_party), my_number(_my_number), sessions(n_party), ios(),
-            N(my_number, n_party, "localhost", 9999),
+            N(my_number, n_party, "localhost", _port_base),
             P(N),
             setup(P, prime_length),
             osuPrg(osuCrypto::sysRandomSeed()),
@@ -13,6 +13,7 @@ namespace gjcShuffle {
             alpha(),
             random_resource(),
             expand_random_size(0),
+            expand_triple_size(0),
             cnt_private_output(n_party),
             otSendChannel(n_party, nullptr),
             otRecvChannel(n_party, nullptr)
@@ -33,8 +34,9 @@ namespace gjcShuffle {
         // setup = new ProtocolSetup<ShareType>(P, prime_length);
     }
 
-    void mpc_comm::init(Input<ShareType> *_input, SPDZ<ShareType> *_protocol, MAC_Check_<ShareType> *_output)
+    void mpc_comm::init(MascotFieldPrep<ShareType> *_prep, Input<ShareType> *_input, SPDZ<ShareType> *_protocol, MAC_Check_<ShareType> *_output)
     {
+        prep = _prep;
         input = _input;
         protocol = _protocol;
         output = _output;
@@ -46,6 +48,11 @@ namespace gjcShuffle {
         for (int i(0); i != n_party; ++i) {
             alpha += input_consume(i);
         }
+    }
+
+    void mpc_comm::stop()
+    {
+        protocol->stop_exchange();
     }
 
     CryptoPlayer &mpc_comm::get_P()
@@ -161,6 +168,32 @@ namespace gjcShuffle {
         return input->finalize(party);
     }
 
+    void mpc_comm::prepare_more_mul(size_t num)
+    {
+        if (my_number == 0 && online_phase) {
+            std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << num << std::endl;
+        }
+        prep->buffer_extra(DATA_TRIPLE, num);
+        accumulate_triple_size += num;
+    }
+
+    void mpc_comm::prepare_more_mul_lazy(size_t num)
+    {
+        expand_triple_size += num;
+    }
+
+    void mpc_comm::prepare_more_mul_now(size_t num)
+    {
+        static size_t default_expand = DEFAULT_EXPAND_SIZE;
+        size_t expand = expand_triple_size + num;
+        expand_triple_size = 0;
+        if (expand == 0) {
+            expand = default_expand;
+            default_expand <<= 1;
+        }
+        prepare_more_mul(expand);
+    }
+
     void mpc_comm::mul_init()
     {
         protocol->init_mul();
@@ -188,6 +221,14 @@ namespace gjcShuffle {
 
     void mpc_comm::mul_append(const vectors<ShareType> &v1, const vectors<ShareType> &v2)
     {
+        if (accumulate_triple_size < v1.size()) {
+            if (my_number == 0) {
+                std::cerr << "Warning: " << __FUNCTION__ << " is called with insufficient triples, size = " << v1.size() << std::endl;
+            }
+            prepare_more_mul_now(v1.size());
+        } else {
+            accumulate_triple_size -= v1.size();
+        }
         for (size_t i(0); i != v1.size(); ++i) {
             protocol->prepare_mul(v1.at(i), v2.at(i));
         }
@@ -195,6 +236,14 @@ namespace gjcShuffle {
 
     void mpc_comm::mul_append(const ShareType &v1, const ShareType &v2)
     {
+        if (accumulate_triple_size < 1) {
+            if (my_number == 0) {
+                std::cerr << "Warning: " << __FUNCTION__ << " is called with insufficient triples, size = " << 1 << std::endl;
+            }
+            prepare_more_mul_now(1);
+        } else {
+            --accumulate_triple_size;
+        }
         protocol->prepare_mul(v1, v2);
     }
 
@@ -276,6 +325,9 @@ namespace gjcShuffle {
 
     void mpc_comm::prepare_more_random_now(size_t num)
     {
+        if (my_number == 0 && online_phase) {
+            std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << num << std::endl;
+        }
         static size_t default_expand(DEFAULT_EXPAND_SIZE);
         size_t expand = expand_random_size + num;
         expand_random_size = 0;
@@ -284,18 +336,8 @@ namespace gjcShuffle {
             default_expand <<= 1;
         }
         // Generate random numbers
-        input_init();
         for (size_t i(0); i != expand; ++i) {
-            auto t = rand_int();
-            input_append_all(t);
-        }
-        input_exchange();
-        for (size_t i(0); i != expand; ++i) {
-            ShareType sum = ShareType::constant(0, my_number, ShareType::get_mac_key());
-            for (int j(0); j != n_party; ++j) {
-                sum += input_consume(j);
-            }
-            random_resource.push_back(sum);
+            random_resource.push_back(prep->get_random());
         }
     }
 
@@ -311,6 +353,9 @@ namespace gjcShuffle {
 
     void mpc_comm::prepare_output_mask(size_t expand)
     {
+        if (my_number == 0 && online_phase) {
+            std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << expand << std::endl;
+        }
         input_init();
         for (size_t i(0); i != expand; ++i) {
             ClearType tmp = rand_int();
@@ -337,8 +382,10 @@ namespace gjcShuffle {
             if (cnt_private_output[party] + num > expand) {
                 expand = cnt_private_output[party] + num;
             }
+            cnt_private_output[party] = 0;
         }
-        prepare_output_mask(expand);
+        if (expand != 0)
+            prepare_output_mask(expand);
     }
 
     void mpc_comm::private_output_init()
@@ -653,6 +700,25 @@ namespace gjcShuffle {
             if (channel) channel->resetStats();
         }
         P.reset_stats();
+    }
+
+    void mpc_comm::set_online()
+    {
+        online_phase = true;
+    }
+
+    void mpc_comm::set_offline()
+    {
+        online_phase = false;
+    }
+
+    void mpc_comm::unchecked_broadcast(int party, octet* val, size_t len)
+    {
+        std::vector<octetStream> buff(n_party);
+        if (party == my_number) buff[party].store_bytes(val, len);
+        // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+        P.unchecked_broadcast(buff);
+        buff[party].get_bytes(val, len);
     }
 
     mpc_comm::~mpc_comm()

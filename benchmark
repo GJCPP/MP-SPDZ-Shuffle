@@ -1,0 +1,810 @@
+[01;32mgaojc@test-PowerEdge-R940xa[00m:[01;34m~/Desktop/MP-SPDZ[00m$ make benchmark.[K -j
+clang++ -o MyShuffle/my_shuffle_main.o MyShuffle/my_shuffle_main.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/ThreadQueue.o Processor/ThreadQueue.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/Program.o Processor/Program.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/RingOptions.o Processor/RingOptions.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/FloatInput.o Processor/FloatInput.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/ThreadQueues.o Processor/ThreadQueues.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/PrepBase.o Processor/PrepBase.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/Instruction.o Processor/Instruction.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/OnlineOptions.o Processor/OnlineOptions.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/ProcessorBase.o Processor/ProcessorBase.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/ExternalClients.o Processor/ExternalClients.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/HonestMajorityMachine.o Processor/HonestMajorityMachine.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/DataPositions.o Processor/DataPositions.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/FixInput.o Processor/FixInput.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Processor/BaseMachine.o Processor/BaseMachine.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/Zp_Data.o Math/Zp_Data.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/gf2nlong.o Math/gf2nlong.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/square128.o Math/square128.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/Setup.o Math/Setup.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/gfpvar.o Math/gfpvar.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/Bit.o Math/Bit.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/ValueInterface.o Math/ValueInterface.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/bigint.o Math/bigint.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/Square.o Math/Square.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Math/gf2n.o Math/gf2n.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Exceptions.o Tools/Exceptions.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/aes.o Tools/aes.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/benchmarking.o Tools/benchmarking.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/ExecutionStats.o Tools/ExecutionStats.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/OfflineMachineBase.o Tools/OfflineMachineBase.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Waksman.o Tools/Waksman.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/DiskVector.o Tools/DiskVector.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Subroutines.o Tools/Subroutines.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/TimerWithComm.o Tools/TimerWithComm.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/random.o Tools/random.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/aes-ni.o Tools/aes-ni.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/FlexBuffer.o Tools/FlexBuffer.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/names.o Tools/names.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Commit.o Tools/Commit.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/octetStream.o Tools/octetStream.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/NetworkOptions.o Tools/NetworkOptions.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Coordinator.o Tools/Coordinator.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/time-func.o Tools/time-func.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Lock.o Tools/Lock.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/NamedStats.o Tools/NamedStats.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/BitVector.o Tools/BitVector.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Signal.o Tools/Signal.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/mkpath.o Tools/mkpath.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Hash.o Tools/Hash.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Tools/Buffer.o Tools/Buffer.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Networking/sockets.o Networking/sockets.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Networking/Server.o Networking/Server.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Networking/CryptoPlayer.o Networking/CryptoPlayer.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Networking/Player.o Networking/Player.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Networking/ServerSocket.o Networking/ServerSocket.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Networking/Receiver.o Networking/Receiver.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Networking/Sender.o Networking/Sender.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o GC/square64.o GC/square64.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o GC/Instruction.o GC/Instruction.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/double_length_prg.o MyShuffle/double_length_prg.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/Song_shuffle.o MyShuffle/Song_shuffle.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/mpc_gadget.o MyShuffle/mpc_gadget.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/block_wrapper.o MyShuffle/block_wrapper.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/math_gadget.o MyShuffle/math_gadget.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/my_benchmark.o MyShuffle/my_benchmark.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/my_shuffle.o MyShuffle/my_shuffle.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/test_shuffle.o MyShuffle/test_shuffle.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/permutation.o MyShuffle/permutation.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/Benes_network.o MyShuffle/Benes_network.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/Chase_shuffle.o MyShuffle/Chase_shuffle.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/my_ote.o MyShuffle/my_ote.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/mpc_communicator.o MyShuffle/mpc_communicator.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/unit_test.o MyShuffle/unit_test.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/OPV.o MyShuffle/OPV.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o OT/OTTripleSetup.o OT/OTTripleSetup.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o OT/MascotParams.o OT/MascotParams.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o OT/BitDiagonal.o OT/BitDiagonal.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+make maybe-boost; \
+cd deps/libOTe; \
+PATH="/home/gaojc/Desktop/MP-SPDZ/local/bin:/home/gaojc/.vscode-server/cli/servers/Stable-fee1edb8d6d72a0ddff41e5f71a671c23ed924b9/server/bin/remote-cli:/home/gaojc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/gaojc/.dotnet/tools" python3 build.py --install=/home/gaojc/Desktop/MP-SPDZ/local -- -DBUILD_SHARED_LIBS=0 -DENABLE_SOFTSPOKEN_OT=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_AVX=ON -DENABLE_SSE=ON && \
+touch ../../local/lib/liblibOTe.a
+clang++ -o OT/OTExtension.o OT/OTExtension.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o OT/BaseOT.o OT/BaseOT.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/Producer.o FHEOffline/Producer.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/Verifier.o FHEOffline/Verifier.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/FHE-Subroutines.o FHEOffline/FHE-Subroutines.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/Sacrificing.o FHEOffline/Sacrificing.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/SimpleDistDecrypt.o FHEOffline/SimpleDistDecrypt.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/EncCommit.o FHEOffline/EncCommit.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/SimpleEncCommit.o FHEOffline/SimpleEncCommit.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/DataSetup.o FHEOffline/DataSetup.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/Proof.o FHEOffline/Proof.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/Multiplier.o FHEOffline/Multiplier.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/Reshare.o FHEOffline/Reshare.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/PairwiseSetup.o FHEOffline/PairwiseSetup.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/TemiSetup.o FHEOffline/TemiSetup.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/DistDecrypt.o FHEOffline/DistDecrypt.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/DistKeyGen.o FHEOffline/DistKeyGen.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/Prover.o FHEOffline/Prover.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/CutAndChooseMachine.o FHEOffline/CutAndChooseMachine.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/SimpleGenerator.o FHEOffline/SimpleGenerator.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/PairwiseGenerator.o FHEOffline/PairwiseGenerator.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/SimpleMachine.o FHEOffline/SimpleMachine.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHEOffline/PairwiseMachine.o FHEOffline/PairwiseMachine.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/NTL-Subs.o FHE/NTL-Subs.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Plaintext.o FHE/Plaintext.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Ciphertext.o FHE/Ciphertext.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/NoiseBounds.o FHE/NoiseBounds.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/QGroup.o FHE/QGroup.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Ring_Element.o FHE/Ring_Element.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Diagonalizer.o FHE/Diagonalizer.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Ring.o FHE/Ring.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Matrix.o FHE/Matrix.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/FFT.o FHE/FFT.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Random_Coins.o FHE/Random_Coins.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Rq_Element.o FHE/Rq_Element.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/DiscreteGauss.o FHE/DiscreteGauss.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/P2Data.o FHE/P2Data.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+make[1]: Entering directory '/home/gaojc/Desktop/MP-SPDZ'
+clang++ -o FHE/FHE_Keys.o FHE/FHE_Keys.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/Subroutines.o FHE/Subroutines.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/FFT_Data.o FHE/FFT_Data.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o FHE/FHE_Params.o FHE/FHE_Params.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o Protocols/CowGearOptions.o Protocols/CowGearOptions.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+cd `mktemp -d`; \
+PATH="/home/gaojc/Desktop/MP-SPDZ/local/bin:/home/gaojc/.vscode-server/cli/servers/Stable-fee1edb8d6d72a0ddff41e5f71a671c23ed924b9/server/bin/remote-cli:/home/gaojc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/gaojc/.dotnet/tools" cmake /home/gaojc/Desktop/MP-SPDZ/deps/libOTe || \
+{ cd -; make boost; }
+-- The C compiler identification is GNU 13.1.0
+-- The CXX compiler identification is Clang 6.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- cryptoTools options
+=======================================================
+-- Option: CMAKE_BUILD_TYPE = Release
+	Release
+	Debug
+	RelWithDebInfo
+-- Option: ENABLE_RELIC      = OFF
+-- Option: ENABLE_SODIUM     = OFF
+-- Option: ENABLE_CIRCUITS   = OFF
+-- Option: ENABLE_NET_LOG    = OFF
+-- Option: ENABLE_WOLFSSL    = OFF
+-- Option: ENABLE_SSE        = ON
+-- Option: ENABLE_AVX        = ON
+-- Option: ENABLE_BOOST      = ON
+
+
+-- Found Boost: /usr/local/lib/cmake/Boost-1.75.0/BoostConfig.cmake (found suitable version "1.75.0", minimum required is "1.75") found components: system thread 
+-- Boost_LIB: Boost::system;Boost::thread
+-- Boost_INC: /usr/local/include
+
+
+-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1") 
+-- General Options
+=======================================================
+-- Option: ENABLE_ALL_OT         = ON/OFF
+-- Option: ENABLE_BITPOLYMUL     = OFF
+
+
+-- Base OT protocols
+=======================================================
+-- Option: ENABLE_SIMPLESTOT     = OFF
+-- Option: ENABLE_SIMPLESTOT_ASM = TRUE
+-- Option: ENABLE_MRR            = OFF
+-- Option: ENABLE_MRR_TWIST      = OFF
+-- Option: ENABLE_MR             = OFF
+-- Option: ENABLE_MR_KYBER       = TRUE
+-- Option: ENABLE_NP             = OFF
+
+
+-- 1-out-of-2 OT Extension protocols
+=======================================================
+-- Option: ENABLE_KOS            = TRUE
+-- Option: ENABLE_IKNP           = TRUE
+-- Option: ENABLE_SILENTOT       = TRUE
+
+
+-- Option: ENABLE_SOFTSPOKEN_OT  = TRUE
+
+
+-- 1-out-of-2 Delta-OT Extension protocols
+=======================================================
+-- Option: ENABLE_DELTA_KOS      = TRUE
+
+
+-- 1-out-of-N OT Extension protocols
+=======================================================
+-- Option: ENABLE_OOS            = TRUE
+-- Option: ENABLE_KKRT           = TRUE
+-- Option: ENABLE_RR             = TRUE
+
+
+-- Vole protocols
+=======================================================
+-- Option: ENABLE_SILENT_VOLE    = TRUE
+
+
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/cc
+-- Configuring done (4.4s)
+-- Generating done (0.1s)
+-- Build files have been written to: /tmp/tmp.dK7aQKF7Kd
+make[1]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ'
+
+
+====== build.py (libOTe) ========
+mkdir -p out/build/linux
+cmake -B out/build/linux -S .  -DBUILD_SHARED_LIBS=0 -DENABLE_SOFTSPOKEN_OT=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_AVX=ON -DENABLE_SSE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/home/gaojc/Desktop/MP-SPDZ/local 
+cmake --build out/build/linux   --parallel 32 
+cmake --install out/build/linux   --prefix /home/gaojc/Desktop/MP-SPDZ/local 
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+
+-- cryptoTools options
+=======================================================
+-- Option: CMAKE_BUILD_TYPE = Release
+	Release
+	Debug
+	RelWithDebInfo
+-- Option: ENABLE_RELIC      = OFF
+-- Option: ENABLE_SODIUM     = OFF
+-- Option: ENABLE_CIRCUITS   = OFF
+-- Option: ENABLE_NET_LOG    = OFF
+-- Option: ENABLE_WOLFSSL    = OFF
+-- Option: ENABLE_SSE        = ON
+-- Option: ENABLE_AVX        = ON
+-- Option: ENABLE_BOOST      = ON
+
+
+-- Boost_LIB: Boost::system;Boost::thread
+-- Boost_INC: /usr/local/include
+
+
+-- General Options
+=======================================================
+-- Option: ENABLE_ALL_OT         = ON/OFF
+-- Option: ENABLE_BITPOLYMUL     = OFF
+
+
+-- Base OT protocols
+=======================================================
+-- Option: ENABLE_SIMPLESTOT     = OFF
+-- Option: ENABLE_SIMPLESTOT_ASM = TRUE
+-- Option: ENABLE_MRR            = OFF
+-- Option: ENABLE_MRR_TWIST      = OFF
+-- Option: ENABLE_MR             = OFF
+-- Option: ENABLE_MR_KYBER       = TRUE
+-- Option: ENABLE_NP             = OFF
+
+
+-- 1-out-of-2 OT Extension protocols
+=======================================================
+-- Option: ENABLE_KOS            = TRUE
+-- Option: ENABLE_IKNP           = TRUE
+-- Option: ENABLE_SILENTOT       = TRUE
+
+
+-- Option: ENABLE_SOFTSPOKEN_OT  = TRUE
+
+
+-- 1-out-of-2 Delta-OT Extension protocols
+=======================================================
+-- Option: ENABLE_DELTA_KOS      = TRUE
+
+
+-- 1-out-of-N OT Extension protocols
+=======================================================
+-- Option: ENABLE_OOS            = TRUE
+-- Option: ENABLE_KKRT           = TRUE
+-- Option: ENABLE_RR             = TRUE
+
+
+-- Vole protocols
+=======================================================
+-- Option: ENABLE_SILENT_VOLE    = TRUE
+
+
+-- Configuring done (0.2s)
+-- Generating done (0.2s)
+-- Build files have been written to: /home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux
+make[1]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[2]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[ 10%] Built target KyberOT
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[ 28%] Built target cryptoTools
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[ 60%] Built target SimplestOT
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[ 69%] Built target tests_cryptoTools
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[ 71%] Built target frontend_cryptoTools
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[ 93%] Built target libOTe
+In file included from MyShuffle/my_ote.cpp:1:
+In file included from MyShuffle/my_ote.h:10:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mmake[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/my_ote.cpp:1:
+In file included from MyShuffle/my_ote.h:11:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mmake[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[ 98%] Built target libOTe_Tests
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+[100%] Built target frontend_libOTe
+make[2]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[1]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+-- Install configuration: "Release"
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/cryptoTools/cryptoToolsConfig.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/cryptoTools/cryptoToolsConfigVersion.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/cryptoTools/cryptoToolsDepHelper.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/libcryptoTools.a
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/libtests_cryptoTools.a
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/SocketAdapter.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/Session.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/TLS.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/IoBuffer.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/util.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/Endpoint.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/Channel.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Network/IOService.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Circuit
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Circuit/BetaCircuit.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Circuit/Gate.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Circuit/BetaLibrary.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/PRNG.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/Blake2.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/RandomOracle.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/Commit.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/sse
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/sse/blake2b-load-sse2.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/sse/blake2-impl.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/sse/blake2b-round.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/sse/blake2.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/sse/blake2b-load-sse41.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/sse/blake2-config.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/c
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/c/blake2-impl.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/blake2/c/blake2.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/Curve.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/Rijndael256.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/AES.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/RCurve.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/SodiumCurve.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Crypto/Hashable.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/gsl
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/CuckooIndex.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/BitIterator.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/block.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/Version.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/BitVector.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/ThreadBarrier.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/MatrixView.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/TestCollection.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/Defines.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/Finally.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/Log.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/CLP.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/Timer.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/Matrix.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir/Network
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir/Circuit
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir/Crypto
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir/Crypto/blake2
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir/Crypto/blake2/sse
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir/Crypto/blake2/c
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/CMakeFiles/cryptoTools.dir/Common
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//cryptoTools/Common/config.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/gls-lite.hpp
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/gsl_assert
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/gsl_byte
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/multi_span
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/GSL.natvis
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/gsl_algorithm
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/gsl_util
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/span
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/gsl
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/cryptoTools/gsl/string_span
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/Misc_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/SimpleCuckoo.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/Cuckoo_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/Ecc_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/BtChannel_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/WolfSSL_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/AES_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/block_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/Circuit_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/UnitTests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/Common.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/Rijndael256_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//tests_cryptoTools/REcc_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/cryptoTools/cryptoToolsTargets.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/cryptoTools/cryptoToolsTargets-release.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/libOTe/libOTeConfig.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/libOTe/libOTeConfigVersion.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/libOTe/libOTeDepHelper.cmake
+-- Installing: /home/gaojc/Desktop/MP-SPDZ/local/lib/liblibOTe.a
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/liblibOTe_Tests.a
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/libKyberOT.a
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/libSimplestOT.a
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Popf
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Popf/FeistelRistPopf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Popf/FeistelMulPopf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Popf/EKEPopf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Popf/MRPopf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Popf/FeistelPopf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Popf/FeistelMulRistPopf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/bitpolymul.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/GenericLinearCode.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/RepetitionCode.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LinearCode.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LDPC
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LDPC/LdpcEncoder.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LDPC/LdpcImpulseDist.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LDPC/LdpcSampler.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LDPC/Util.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LDPC/Mtx.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/LDPC/LdpcDecoder.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/DefaultCurve.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/SilentPprf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/bch511.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Chunker.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Tools/Tools.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/version.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/NcoOtExt.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/SoftSpokenOT
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/SoftSpokenOT/NOneMalicious.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/SoftSpokenOT/NOneSemiHonest.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Oos
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Oos/OosNcoOtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Oos/OosDefines.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Oos/OosNcoOtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Kkrt
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Kkrt/KkrtDefines.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Kkrt/KkrtNcoOtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/Kkrt/KkrtNcoOtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/RR17
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/RR17/Rr17NcoOtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseOne/RR17/Rr17NcoOtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseK
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseK/AknOtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/NChooseK/AknOtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/DPF
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/DPF/BgicksPprf.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/OTExtInterface.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SilentOtExtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/KosDotExtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SoftSpokenOT
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SoftSpokenOT/DotMalicious.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SoftSpokenOT/DotSemiHonest.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SoftSpokenOT/TwoOneMalicious.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SoftSpokenOT/TwoOneSemiHonest.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SoftSpokenOT/DotMaliciousLeaky.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/IknpOtExtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/KosDotExtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/KosOtExtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/KosOtExtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/TcoOtDefines.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/SilentOtExtSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/TwoChooseOne/IknpOtExtReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base/MasnyRindal.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base/McRosRoy.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base/McRosRoyTwist.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base/MasnyRindalKyber.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base/naor-pinkas.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base/BaseOT.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Base/SimplestOT.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/NoisyVoleReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/SoftSpokenOT
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/SoftSpokenOT/SubspaceVole.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/SoftSpokenOT/SmallFieldVole.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/SoftSpokenOT/SubspaceVoleMaliciousLeaky.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/NoisyVoleSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/SilentVoleReceiver.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe/Vole/SilentVoleSender.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/Tools
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/Tools/LDPC
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/NChooseOne
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/NChooseOne/Oos
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/NChooseOne/Kkrt
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/NChooseOne/RR17
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/NChooseK
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/TwoChooseOne
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/TwoChooseOne/SoftSpokenOT
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/Base
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/Vole
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/CMakeFiles/libOTe.dir/Vole/SoftSpokenOT
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include//libOTe/config.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/bitpolymul_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/SilentOT_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/testData
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/testData/code640_BCH511.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/testData/code256_BCH511.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/testData/code384_BCH511.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/testData/code128_BCH511.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/testData/code1280_BCH511.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/AknOt_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/OT_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/NcoOT_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/UnitTests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/Vole_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/Common.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/BaseOT_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/BgciksOT_Tests.h
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/include/libOTe_Tests/cmakeTests
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/libOTe/libOTeTargets.cmake
+-- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/libOTe/libOTeTargets-release.cmake
+clang++ -o OT/OTExtensionWithMatrix.o OT/OTExtensionWithMatrix.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+3 warnings generated.
+In file included from MyShuffle/test_shuffle.cpp:1:
+In file included from MyShuffle/test_shuffle.h:1:
+In file included from MyShuffle/Chase_shuffle.h:6:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/test_shuffle.cpp:1:
+In file included from MyShuffle/test_shuffle.h:1:
+In file included from MyShuffle/Chase_shuffle.h:6:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/unit_test.cpp:1:
+In file included from MyShuffle/unit_test.h:3:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/unit_test.cpp:1:
+In file included from MyShuffle/unit_test.h:3:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0m[1mMyShuffle/test_shuffle.cpp:143:33: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int'
+      [-Wsign-compare][0m
+            for (size_t i(0); i != sz; ++i) {
+[0;1;32m                              ~ ^  ~~
+[0m[1mMyShuffle/test_shuffle.cpp:144:37: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int'
+      [-Wsign-compare][0m
+                for (size_t j(0); j != veclen; ++j) {
+[0;1;32m                                  ~ ^  ~~~~~~
+[0m[1mMyShuffle/test_shuffle.cpp:228:33: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int'
+      [-Wsign-compare][0m
+            for (size_t i(0); i != sz; ++i) {
+[0;1;32m                              ~ ^  ~~
+[0m[1mMyShuffle/test_shuffle.cpp:265:1: [0m[0;1;35mwarning: [0m[1mcontrol reaches end of non-void function [-Wreturn-type][0m
+}
+[0;1;32m^
+[0mIn file included from MyShuffle/my_shuffle.cpp:1:
+In file included from MyShuffle/my_shuffle.h:8:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/my_shuffle.cpp:1:
+In file included from MyShuffle/my_shuffle.h:8:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/Chase_shuffle.cpp:1:
+In file included from MyShuffle/Chase_shuffle.h:6:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/Chase_shuffle.cpp:1:
+In file included from MyShuffle/Chase_shuffle.h:6:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/Song_shuffle.cpp:1:
+In file included from MyShuffle/Song_shuffle.h:25:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/mpc_gadget.cpp:1:
+In file included from MyShuffle/mpc_gadget.h:5:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/Song_shuffle.cpp:1:
+In file included from MyShuffle/Song_shuffle.h:25:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/mpc_gadget.cpp:1:
+In file included from MyShuffle/mpc_gadget.h:5:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/my_benchmark.cpp:1:
+In file included from MyShuffle/my_benchmark.h:5:
+In file included from MyShuffle/mpc_gadget.h:5:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1mMyShuffle/my_shuffle.cpp:24:41: [0m[0;1;35mwarning: [0m[1munused parameter 'com' [-Wunused-parameter][0m
+    void book_shuffle_session(mpc_comm &com, shuffle_session *session)
+[0;1;32m                                        ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1mMyShuffle/my_shuffle.cpp:35:43: [0m[0;1;35mwarning: [0m[1munused parameter 'com' [-Wunused-parameter][0m
+    void malloc_random_resource(mpc_comm& com) {
+[0;1;32m                                          ^
+[0mIn file included from MyShuffle/my_benchmark.cpp:1:
+In file included from MyShuffle/my_benchmark.h:5:
+In file included from MyShuffle/mpc_gadget.h:5:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/mpc_communicator.cpp:1:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/mpc_communicator.cpp:1:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0m[1mMyShuffle/Song_shuffle.cpp:76:21: [0m[0;1;35mwarning: [0m[1munused variable 'touched' [-Wunused-variable][0m
+                        for (const auto& touched : task) {
+[0;1;32m                                         ^
+[0m[1mMyShuffle/Song_shuffle.cpp:73:8: [0m[0;1;35mwarning: [0m[1munused variable 'next' [-Wunused-variable][0m
+                        int next(0);
+[0;1;32m                            ^
+[0m[1mMyShuffle/Song_shuffle.cpp:58:37: [0m[0;1;35mwarning: [0m[1munused variable 'veclen' [-Wunused-variable][0m
+            logsz = session->logsz, veclen = session->veclen, batch = session->batch;
+[0;1;32m                                    ^
+[0m[1mMyShuffle/Song_shuffle.cpp:89:20: [0m[0;1;35mwarning: [0m[1munused variable 'veclen' [-Wunused-variable][0m
+            size_t veclen = session->veclen;
+[0;1;32m                   ^
+[0m[1mMyShuffle/Song_shuffle.cpp:139:13: [0m[0;1;35mwarning: [0m[1munused variable 'me' [-Wunused-variable][0m
+        int me = com.get_my_number(), n = com.get_n_party();
+[0;1;32m            ^
+[0m[1mMyShuffle/my_benchmark.cpp:231:20: [0m[0;1;35mwarning: [0m[1munused variable 'best_off_time' [-Wunused-variable][0m
+            double best_off_time(1e9);
+[0;1;32m                   ^
+[0m[1mMyShuffle/my_benchmark.cpp:291:20: [0m[0;1;35mwarning: [0m[1munused variable 'best_off_time' [-Wunused-variable][0m
+            double best_off_time(1e9);
+[0;1;32m                   ^
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:13:
+[1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h:70:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng,
+[0;1;32m                  ^
+[0m[1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h:71:22: [0m[0;1;35mwarning: [0m[1munused parameter 'chl' [-Wunused-parameter][0m
+            Channel& chl) override {setBaseOts(baseRecvOts, choices);}
+[0;1;32m                     ^
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:14:
+[1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h:53:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng,
+[0;1;32m                  ^
+[0m[1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h:54:22: [0m[0;1;35mwarning: [0m[1munused parameter 'chl' [-Wunused-parameter][0m
+            Channel& chl)override {
+[0;1;32m                     ^
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:15:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:18:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0m[1mMyShuffle/mpc_communicator.cpp:13:13: [0m[0;1;35mwarning: [0m[1mfield 'alpha' will be initialized after field 'random_resource' [-Wreorder][0m
+            alpha(),
+[0;1;32m            ^
+[0m[1mMyShuffle/mpc_communicator.cpp:147:24: [0m[0;1;35mwarning: [0m[1munused variable 'v' [-Wunused-variable][0m
+            for (auto& v : val) input->add_other(party);
+[0;1;32m                       ^
+[0m[1mMyShuffle/mpc_communicator.cpp:413:14: [0m[0;1;35mwarning: [0m[1munused variable 'needExpand' [-Wunused-variable][0m
+        bool needExpand(false);
+[0;1;32m             ^
+[0m[1mMyShuffle/my_shuffle_main.cpp:49:9: [0m[0;1;35mwarning: [0m[1munused variable 'protocol' [-Wunused-variable][0m
+    int protocol;
+[0;1;32m        ^
+[0mclang++ -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -shared -o libSPDZ.so Processor/ThreadQueue.o Processor/Program.o Processor/RingOptions.o Processor/FloatInput.o Processor/ThreadQueues.o Processor/PrepBase.o Processor/Instruction.o Processor/OnlineOptions.o Processor/ProcessorBase.o Processor/ExternalClients.o Processor/HonestMajorityMachine.o Processor/DataPositions.o Processor/FixInput.o Processor/BaseMachine.o Math/Zp_Data.o Math/gf2nlong.o Math/square128.o Math/Setup.o Math/gfpvar.o Math/Bit.o Math/ValueInterface.o Math/bigint.o Math/Square.o Math/gf2n.o Tools/Exceptions.o Tools/aes.o Tools/benchmarking.o Tools/ExecutionStats.o Tools/OfflineMachineBase.o Tools/Waksman.o Tools/DiskVector.o Tools/Subroutines.o Tools/TimerWithComm.o Tools/random.o Tools/aes-ni.o Tools/FlexBuffer.o Tools/names.o Tools/Commit.o Tools/octetStream.o Tools/NetworkOptions.o Tools/Coordinator.o Tools/time-func.o Tools/Lock.o Tools/NamedStats.o Tools/BitVector.o Tools/Signal.o Tools/mkpath.o Tools/Hash.o Tools/Buffer.o Networking/sockets.o Networking/Server.o Networking/CryptoPlayer.o Networking/Player.o Networking/ServerSocket.o Networking/Receiver.o Networking/Sender.o GC/square64.o GC/Instruction.o -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
+3 warnings generated.
+3 warnings generated.
+5 warnings generated.
+7 warnings generated.
+3 warnings generated.
+5 warnings generated.
+clang++ -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -shared -o libFHE.so FHEOffline/Producer.o FHEOffline/Verifier.o FHEOffline/FHE-Subroutines.o FHEOffline/Sacrificing.o FHEOffline/SimpleDistDecrypt.o FHEOffline/EncCommit.o FHEOffline/SimpleEncCommit.o FHEOffline/DataSetup.o FHEOffline/Proof.o FHEOffline/Multiplier.o FHEOffline/Reshare.o FHEOffline/PairwiseSetup.o FHEOffline/TemiSetup.o FHEOffline/DistDecrypt.o FHEOffline/DistKeyGen.o FHEOffline/Prover.o FHEOffline/CutAndChooseMachine.o FHEOffline/SimpleGenerator.o FHEOffline/PairwiseGenerator.o FHEOffline/SimpleMachine.o FHEOffline/PairwiseMachine.o FHE/NTL-Subs.o FHE/Plaintext.o FHE/Ciphertext.o FHE/NoiseBounds.o FHE/QGroup.o FHE/Ring_Element.o FHE/Diagonalizer.o FHE/Ring.o FHE/Matrix.o FHE/FFT.o FHE/Random_Coins.o FHE/Rq_Element.o FHE/DiscreteGauss.o FHE/P2Data.o FHE/FHE_Keys.o FHE/Subroutines.o FHE/FFT_Data.o FHE/FHE_Params.o Protocols/CowGearOptions.o libSPDZ.so -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
+8 warnings generated.
+6 warnings generated.
+8 warnings generated.
+clang++ -o my_shuffle_main.x -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC MyShuffle/my_shuffle_main.o libSPDZ.so MyShuffle/double_length_prg.o MyShuffle/Song_shuffle.o MyShuffle/mpc_gadget.o MyShuffle/block_wrapper.o MyShuffle/math_gadget.o MyShuffle/my_benchmark.o MyShuffle/my_shuffle.o MyShuffle/test_shuffle.o MyShuffle/permutation.o MyShuffle/Benes_network.o MyShuffle/Chase_shuffle.o MyShuffle/my_ote.o MyShuffle/mpc_communicator.o MyShuffle/unit_test.o MyShuffle/OPV.o OT/OTTripleSetup.o OT/MascotParams.o OT/BitDiagonal.o OT/OTExtensionWithMatrix.o OT/OTExtension.o OT/BaseOT.o deps/SimplestOT_C/ref10/libSimplestOT.a deps/SimpleOT/libsimpleot.a local/lib/liblibOTe.a local/lib/libcryptoTools.a libFHE.so -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
+python my_benchmark.py
+Testing my_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 14 of [6, 8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 8 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 10 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 12 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 14 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 8 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 10 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 12 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 14 of [8, 10, 12, 14]
+Already tested. Skip.
+Testing my_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+  0%|                                                                                                               | 0/4 [00:00<?, ?it/s]

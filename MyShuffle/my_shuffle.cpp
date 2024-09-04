@@ -3,8 +3,8 @@
 namespace gjcShuffle {
     std::map<shuffle_info, std::vector<order_info>> booked_shuffle;
 
-    shuffle_info::shuffle_info(int _ogsz, int _veclen)
-        : logsz(_ogsz), veclen(_veclen)
+    shuffle_info::shuffle_info(int _logsz, size_t _veclen)
+        : logsz(_logsz), veclen(_veclen)
     {
         ;
     }
@@ -37,16 +37,18 @@ namespace gjcShuffle {
         for (auto &info : booked_shuffle) {
             for (auto &order : info.second) {
                 shuffle_session &session = *order.session;
+                size_t num = size_t(1) << session.logsz;
+                size_t len = session.veclen;
                 shuffle_cor &cor = session.cor;
                 for (int party(0); party != session.n_party; ++party) {
-                    cor.r[party].resize(1 << session.logsz, session.veclen);
-                    cor.beta_r[party].resize(1 << session.logsz, session.veclen);
-                    cor.rp[party].resize(1 << session.logsz, session.veclen);
-                    cor.permuted_r[party].resize(1 << session.logsz, session.veclen);
-                    cor.permuted_beta_r[party].resize(1 << session.logsz, session.veclen);
-                    cor.permuted_rp[party].resize(1 << session.logsz, session.veclen);
-                    cor.z[0].resize(1 << session.logsz, session.veclen);
-                    cor.z[1].resize(1 << session.logsz, session.veclen);
+                    cor.r[party].resize(num, len);
+                    cor.beta_r[party].resize(num, len);
+                    cor.rp[party].resize(num, len);
+                    cor.permuted_r[party].resize(num, len);
+                    cor.permuted_beta_r[party].resize(num, len);
+                    cor.permuted_rp[party].resize(num, len);
+                    cor.z[0].resize(num, len);
+                    cor.z[1].resize(num, len);
                 }
             }
         }
@@ -105,9 +107,10 @@ namespace gjcShuffle {
             for (auto& order : info.second) {
                 shuffle_session &session = *order.session;
                 shuffle_cor &cor = session.cor;
-                vectors<ShareType> r_betar_rp(1 << session.logsz, session.veclen * 3);
+                static vectors<ShareType> r_betar_rp;
+                r_betar_rp.resize(1 << session.logsz, session.veclen * 3);
                 for (int party(0); party != session.n_party; ++party) {
-                    for (int i(0); i != (1 << session.logsz); ++i) {
+                    for (size_t i(0); i != (1 << session.logsz); ++i) {
                         for (size_t j(0); j != 3 * session.veclen; j += 3) {
                             r_betar_rp[i][j] = cor.r[party][i][j / 3];
                             r_betar_rp[i][j + 1] = cor.beta_r[party][i][j / 3];
@@ -115,7 +118,7 @@ namespace gjcShuffle {
                         }
                     }
                     session.permute_sessions[party].perform(com, r_betar_rp);
-                    for (int i(0); i != 1 << session.logsz; ++i) {
+                    for (size_t i(0); i != 1 << session.logsz; ++i) {
                         for (size_t j(0); j != 3 * session.veclen; j += 3) {
                             cor.permuted_r[party][i][j / 3] = r_betar_rp[i][j];
                             cor.permuted_beta_r[party][i][j / 3] = r_betar_rp[i][j + 1];
@@ -128,23 +131,15 @@ namespace gjcShuffle {
     }
 
     void compute_z(mpc_comm& com) {
-        for (auto& info : booked_shuffle) {
-            for (auto& order : info.second) {
-                shuffle_session &session = *order.session;
-                shuffle_cor &cor = session.cor;
-                for (int party(1); party != session.n_party; ++party) {
-                    com.prepare_more_private_output_lazy(party, (1 << session.logsz) * session.veclen * 2);
-                }
-            }
-        }
         com.private_output_init();
         for (auto& info : booked_shuffle) {
             for (auto& order : info.second) {
                 shuffle_session &session = *order.session;
                 shuffle_cor &cor = session.cor;
                 for (int party(1); party != session.n_party; ++party) {
-                    vectors<ShareType> z(1 << session.logsz, session.veclen * 2);
-                    for (int i(0); i != 1 << session.logsz; ++i) {
+                    static vectors<ShareType> z;
+                    z.resize(1 << session.logsz, session.veclen * 2);
+                    for (size_t i(0); i != 1 << session.logsz; ++i) {
                         for (size_t j(0); j != session.veclen; ++j) {
                             z[i][j] = cor.permuted_r[party - 1][i][j] - cor.r[party][i][j];
                             z[i][j + session.veclen] = cor.permuted_beta_r[party - 1][i][j]
@@ -169,7 +164,7 @@ namespace gjcShuffle {
                     if (com.get_my_number() == party) {
                         cor.z[0].resize(1 << session.logsz, session.veclen);
                         cor.z[1].resize(1 << session.logsz, session.veclen);
-                        for (int i(0); i != 1 << session.logsz; ++i) {
+                        for (size_t i(0); i != 1 << session.logsz; ++i) {
                             for (size_t j(0); j != session.veclen; ++j) {
                                 cor.z[0][i][j] = buff[i][j];
                                 cor.z[1][i][j] = buff[i][j + session.veclen];
@@ -209,7 +204,9 @@ namespace gjcShuffle {
 
     void process_all_orders(mpc_comm &com)
     {
+        int n_party = com.get_n_party();
         // Book all permute sessions and count the total number of secret random values.
+        size_t require_mul = 0;
         for (auto &info : booked_shuffle) {
             for (auto &order : info.second) {
                 if (order.session->destroyed) {
@@ -219,18 +216,41 @@ namespace gjcShuffle {
                 for (int i = 0; i < order.session->n_party; ++i) {
                     song2023::book_permute_session(com, &order.session->permute_sessions[i]);
                 }
+                size_t n = (1 << order.session->logsz) * order.session->veclen;
                 // Prepare <beta> and <r_i>, <r^'_i>
-                com.prepare_more_random_lazy(2 * (1 << order.session->logsz) * order.session->veclen + 1);
+                com.prepare_more_random_lazy(2 * n_party * n + 1);
+                // Prepare multiplication of <r_i> and <real data> and randomness of verification
+                com.prepare_more_mul_lazy(n_party * n);
+                require_mul += n;
+                // Prepare private output of <z_i> (offline) and <masked real data> (online)
+                for (int party(0); party != n_party; ++party) {
+                    com.prepare_more_private_output_lazy(party, 2 * n);
+                }
             }
         }
+
+        com.prepare_more_random_now();
+        // std::cout << "Random resource prepared." << std::endl;
+        com.prepare_more_mul_now();
+        // std::cout << "Mul resource prepared." << std::endl;
+        com.prepare_more_private_output_now();
+        // std::cout << "Private resource prepared." << std::endl;
+
         malloc_random_resource(com);
-        fill_in_random_resource(com);
-        compute_beta_r(com);
+        fill_in_random_resource(com); // 2 * n * n_party randoms.
+        compute_beta_r(com); // n * n_party mults.
+
+        // std::cout << "Beta r computed." << std::endl;
+
         compute_permuted_random_resource(com);
-        compute_z(com);
+        compute_z(com); // 2 * n private output PER party.
+
+        // std::cout << "z computed." << std::endl;
+
         set_init_flag();
         clear_unused();
         booked_shuffle.clear();
+        com.prepare_more_mul_now(require_mul);
     }
 
     void verify(mpc_comm &com, ClearType a, ClearType b, ShareType beta, ShareType r)
@@ -267,7 +287,7 @@ namespace gjcShuffle {
         }
         ClearType res;
         com.output_immediately(val - sum_r, res);
-        //com.output_check();
+        com.output_check();
         if (res.is_zero() == false) {
             std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
             throw std::runtime_error("verify : Verification failed.");
@@ -297,9 +317,10 @@ namespace gjcShuffle {
         }
         size_t num = 1 << logsz, len = veclen;
         vectors<ShareType> beta_val(num, len);
+
         com.mul_init();
         for (auto& v : val) {
-            com.mul_append(v, cor.beta);
+            com.mul_append(v, cor.beta); // n mults.
         }
         com.mul_exchange();
         com.mul_consume(beta_val);
@@ -307,9 +328,8 @@ namespace gjcShuffle {
         shared_z00 = val - cor.r[0];
         shared_z01 = beta_val - cor.beta_r[0] - cor.rp[0];
         vectors<ClearType> z00(num, len), z01(num, len), z(num * 2, len);
-        com.prepare_more_private_output_lazy(0, z00.size() + z01.size());
         com.private_output_init();
-        com.private_output_append(0, shared_z00);
+        com.private_output_append(0, shared_z00); // 2 * n private output for 0-th party.
         com.private_output_append(0, shared_z01);
         com.private_output_exchange();
         com.private_output_consume(0, z00);
@@ -347,10 +367,12 @@ namespace gjcShuffle {
         z = vectors<ClearType>::cat(z00, z01);
         com.broadcast(com.get_n_party() - 1, z);
         z.split(num, z00, z01);
+
         vectors<ShareType> shared_y(num, len);
+        auto mac_key = ShareType::get_mac_key();
         for (size_t i(0); i != num; ++i) {
             for (size_t j(0); j != len; ++j) {
-                shared_y[i][j] = ShareType::constant(z00[i][j], me, ShareType::get_mac_key());
+                shared_y[i][j] = ShareType::constant(z00[i][j], me, mac_key);
             }
         }
         shared_y += cor.permuted_r[com.get_n_party() - 1];

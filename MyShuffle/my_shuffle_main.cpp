@@ -27,62 +27,92 @@
 
 #include "local/include/cryptoTools/Network/IOService.h"
 
-void run(char** argv, int prime_length);
+
+void run_benchmark(int argc, char **argv);
+
+void python_interface(int argc, char **argv);
 
 int main(int argc, char** argv)
 {
-    // need player number and number of players
-    if (argc < 3)
-    {
-        cerr << "Usage: " << argv[0]
-                << " <my number: 0/1/...> <total number of players> [protocol [threshold]]"
-                << endl;
-        exit(1);
-    }
-
-    string protocol = "MASCOT";
-    if (argc > 3)
-        protocol = argv[3];
-
-    if (protocol == "MASCOT")
-        run(argv, prime_length);
-    else
-    {
-        cerr << "Unknown protocol: " << protocol << endl;
-        exit(1);
-    }
-    std::cout << "Main Exit." << std::endl;
+    //run_benchmark(argc, argv);
+    python_interface(argc, argv);
     return 0;
 }
 
-void run(char** argv, int prime_length)
-{
+
+void run_benchmark(int argc, char **argv) {
+    if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " <me> <n_party>" << std::endl;
+        return;
+    }
     // set up networking on localhost
+    int protocol;
     int me = atoi(argv[1]);
     int n = atoi(argv[2]);
+
     gjcShuffle::mpc_comm com(n, me);
 
 
-    // set of protocols (input, multiplication, output)
+    // set of protocols
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
     
-    com.init(&set.input, &set.protocol, &set.output);
-    std::cout << "Player " << me << " of " << n << " started." << std::endl;
+    com.init(&set.preprocessing, &set.input, &set.protocol, &set.output);
     
-    CryptoPlayer& P = com.get_P();
-    auto& input = set.input;
-    auto& protocol = set.protocol;
-    auto& output = set.output;
-
     benchmark_my_shuffle(com);
     benchmark_Song_shuffle(com);
+    int dum = 0;
+    com.unchecked_broadcast(0, dum); // sync
+    throw;
+}
 
-    // // set up the protocol
-    // clock_t t = clock();
-    // test_Song_shuffle(com);
-    // std::cout << "Song_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
-    // std::cout << com.count_total_comm() << " bytes sent." << std::endl;
-    // t = clock();
-    // test_my_shuffle(com);
-    // std::cout << "my_shuffle done in: " << (double)(clock() - t) / CLOCKS_PER_SEC << "s" << std::endl;
+
+
+void python_interface(int argc, char **argv) {
+    if (argc != 9) {
+        std::cerr << "argc = " << argc << ", expect 9." << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <protocol> <me> <n_party> <logsz> <veclen> <logbatch> <port base> <repeat>" << std::endl;
+        std::cerr << "\tprotocol: my_shuffle, Song_shuffle" << std::endl;
+        return;
+    }
+    // set up networking on localhost
+    int protocol;
+    if (strcmp(argv[1], "my_shuffle") == 0) {
+        protocol = 0;
+    } else if (strcmp(argv[1], "Song_shuffle") == 0) {
+        protocol = 1;
+    } else {
+        std::cerr << "Unknown protocol: " << argv[1] << std::endl;
+        return;
+    }
+    int me = atoi(argv[2]);
+    int n = atoi(argv[3]);
+    int logsz = atoi(argv[4]);
+    int veclen = atoi(argv[5]);
+    int logbatch = atoi(argv[6]);
+    int port_base = atoi(argv[7]);
+    int rep = atoi(argv[8]);
+
+    gjcShuffle::mpc_comm com(n, me, port_base);
+
+
+    // set of protocols
+    ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
+    
+    com.init(&set.preprocessing, &set.input, &set.protocol, &set.output);
+    
+
+    size_t off_comm, on_comm;
+    double off_time, on_time;
+    if (protocol == 0) {
+        execute_my_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time);
+    } else {
+        execute_Song_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time);
+    }
+    std::cout << off_comm / rep << " " << off_time / rep << " " << on_comm / rep << " " << on_time / rep << std::endl;
+    throw;
+    /*
+     Force exit.
+     I do not know why normal exit costs very very long time (to clean up / deconstruction?).
+     To save test time, I force exit here. Nevertheless, the time record in execute_xxx_shuffle is accurate.
+    */
 }

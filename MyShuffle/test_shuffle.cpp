@@ -218,7 +218,8 @@ bool test_my_shuffle(gjcShuffle::mpc_comm &com)
         }
         process_all_orders(com);
         for (int rank(0); rank != num_test; ++rank) {
-            int logsz = all_logsz[rank], veclen = all_veclen[rank];
+            int logsz = all_logsz[rank];
+            size_t veclen = all_veclen[rank];
             int sz = 1 << logsz;
             permutation perm = all_perm[rank][me];
             vectors<ShareType> val(sz, veclen);

@@ -70,20 +70,23 @@ namespace song2023 {
 		std::vector<int> map(sz), inv_map(sz);
 		for (size_t bat(0); bat != sub_route.size(); ++bat) {
 			const auto& task = all_tasks[bat];
-			int next(0), batch_sz(task[0].size());
+			int next(0);
+            size_t batch_sz(task[0].size());
 			int log_batch_sz = math_gadget::log2(batch_sz);
 			for (const auto& touched : task) {
                 count_permute_task[log_batch_sz] = count_permute_task[log_batch_sz] + 1;
 			}
 		}
         booked_sessions.push_back(session);
+        com.prepare_more_random_lazy((1 << session->logsz) * session->veclen + 1);
     }
 
     void decompose_permute_sessions(mpc_comm &com)
     {
         for (auto session : booked_sessions) {
             int me = com.get_my_number(), permuter = session->permuter,
-                logsz = session->logsz, veclen = session->veclen, batch = session->batch;
+                logsz = session->logsz, batch = session->batch;
+            size_t veclen = session->veclen;
             int sz = 1 << logsz;
             std::vector<int> dest(sz);
             if (me == permuter) {
@@ -149,21 +152,21 @@ namespace song2023 {
         return permute_sessions[who].get_perm();
     }
 
-    permute_pair pair_from_opvm(int veclen, const vectors<block_wrapper> &opvm, const permutation &perm, bool oblivious)
+    permute_pair pair_from_opvm(size_t veclen, const vectors<block_wrapper> &opvm, const permutation &perm, bool oblivious)
     {
-        int sz = opvm.num;
+        size_t sz = opvm.num;
         permute_pair pair; // a is the sum along column, b is the negative sum along row.
         if (oblivious) {
             permutation inv = perm.inverse();
             pair.perm = perm;
             pair.delta.resize(sz, veclen);
-            for (int i(0); i != sz; ++i) {
-                for (int j(0); j != sz; ++j) {
+            for (size_t i(0); i != sz; ++i) {
+                for (size_t j(0); j != sz; ++j) {
                     if (perm[i] == j) continue;
                     if (veclen > 1) { // Extend seed to veclen.
                         vectors<ClearType> val(1, veclen);
                         arbitrary_prg(opvm[i][j], val);
-                        for (int k(0); k != veclen; ++k) {
+                        for (size_t k(0); k != veclen; ++k) {
                             pair.delta[i][k] -= val.at(k);
                             pair.delta[inv[j]][k] += val.at(k);
                         }
@@ -174,12 +177,12 @@ namespace song2023 {
             pair.perm = permutation(sz);
             pair.a.resize(sz, veclen);
             pair.b.resize(sz, veclen);
-            for (int i(0); i != sz; ++i) {
-                for (int j(0); j != sz; ++j) {
+            for (size_t i(0); i != sz; ++i) {
+                for (size_t j(0); j != sz; ++j) {
                     if (veclen > 1) { // Extend seed to veclen.
                         vectors<ClearType> val(1, veclen);
                         arbitrary_prg(opvm[i][j], val);
-                        for (int k(0); k != veclen; ++k) {
+                        for (size_t k(0); k != veclen; ++k) {
                             pair.a[j][k] += val.at(k);
                             pair.b[i][k] -= val.at(k);
                         }
@@ -225,7 +228,7 @@ namespace song2023 {
         // Each order will produce a permute_pair as output.
         int me = com.get_my_number();
         int permuter = info.permuter, logsz = info.logsz;
-        int sz = 1 << logsz;
+        size_t sz = size_t(1) << logsz;
 
         osuCrypto::BitVector choose;
         std::vector<block_wrapper> msg0, msg1, hash_val, col_sum;
@@ -238,22 +241,22 @@ namespace song2023 {
                 throw std::runtime_error("process_orders : size mismatch.");
             }
             vectors<block_wrapper> opvm(sz, sz);
-            for (int i(0); i != sz; ++i) {
+            for (size_t i(0); i != sz; ++i) {
                 if (me == permuter) {
                     // Permuter acts as OPV receiver
                     receiver_append_OPV(choose, hash_val, logsz, order.perm[i]);
                 } else {
                     sender_append_OPV(msg0, msg1, hash_val, logsz, opvs);
-                    for (int j(0); j != sz; ++j) opvm[i][j] = opvs.back()[j];
+                    for (size_t j(0); j != sz; ++j) opvm[i][j] = opvs.back()[j];
                 }
             }
             if (me == sender) {
                 append_left_right_opvm(opvm, left_opvms, right_opvms);
                 // Sender computes the sum of each column.
                 const vectors<block_wrapper>& left_opvm = left_opvms.back();
-                for (int j(0); j != sz; ++j) { // j : row-th number
+                for (size_t j(0); j != sz; ++j) { // j : row-th number
                     block_wrapper sum = {};
-                    for (int i(0); i != sz; ++i) {
+                    for (size_t i(0); i != sz; ++i) {
                         sum = sum + left_opvm[i][j];
                     }
                     col_sum.push_back(sum);
@@ -286,11 +289,11 @@ namespace song2023 {
             vectors<block_wrapper> left_opvm(sz, sz), right_opvm(sz, sz);
             if (me == permuter) {
                 // Permuter reconstruct OPVM
-                for (int i(0); i != sz; ++i) {
+                for (size_t i(0); i != sz; ++i) {
                     opv_2n opv;
                     opv = opv_2n(logsz, order.perm[i], next_opv_msg, next_hash_msg);
 
-                    for (int j(0); j != sz; ++j) {
+                    for (size_t j(0); j != sz; ++j) {
 #ifdef DEBUG
                         if (order.perm[i] == j && opv[j].is_nonzero()) {
                             std::cerr << "process_orders : unexpected non-zero block at oblivious position." << std::endl;
@@ -307,7 +310,7 @@ namespace song2023 {
                     }
                 }
                 // Recover the entire left_opvm.
-                for (int i(0); i != sz; ++i) {
+                for (size_t i(0); i != sz; ++i) {
                     left_opvm[i][order.perm[i]] = next_col_sum[order.perm[i]];
                 }
                 put_opvm_into_hash(left_hash, left_opvm);
@@ -349,6 +352,7 @@ namespace song2023 {
                 }
             }
         }
+        com.prepare_more_random_now();
         decompose_permute_sessions(com);
         int me = com.get_my_number(), n = com.get_n_party();
         for (auto keyval : booked_permute) {
@@ -404,6 +408,7 @@ namespace song2023 {
                 session.session->initialized = true;
             }
         }
+
         booked_permute.clear();
         count_permute_task.clear();
     }
@@ -439,10 +444,12 @@ namespace song2023 {
 		} else {
 			for (size_t i(0); i != sz; ++i) dest[i] = i;
 		}
+
 		const auto& all_tasks = BenesNetwork::task_decompose(logsz, batch);
 		auto route = BenesNetwork::route(logsz, dest);
 		auto sub_route = BenesNetwork::decompose(route, batch);
 		BenesNetwork::desttask_to_permtask(sz, sub_route);
+
 		std::vector<int> map(sz), inv_map(sz);
 
         // permute_pair * next_pair[MAX_BATCH_SIZE];
@@ -535,6 +542,7 @@ namespace song2023 {
             val = result;
         }
         destroy();
+
         com.output_check();
     }
     
@@ -584,17 +592,17 @@ namespace song2023 {
 
     void permute_pair::expand(size_t veclen, bool oblivious)
     {
-        int sz = opvm.num;
+        size_t sz = opvm.num;
         if (oblivious) {
             permutation inv = perm.inverse();
             delta.resize(sz, veclen);
-            for (int i(0); i != sz; ++i) {
-                for (int j(0); j != sz; ++j) {
+            for (size_t i(0); i != sz; ++i) {
+                for (size_t j(0); j != sz; ++j) {
                     if (perm[i] == j) continue;
                     if (veclen > 1) { // Extend seed to veclen.
                         vectors<ClearType> val(1, veclen);
                         arbitrary_prg(opvm[i][j], val);
-                        for (int k(0); k != veclen; ++k) {
+                        for (size_t k(0); k != veclen; ++k) {
                             delta[i][k] -= val.at(k);
                             delta[inv[j]][k] += val.at(k);
                         }
@@ -605,12 +613,12 @@ namespace song2023 {
             perm = permutation(sz); // default initialization.
             a.resize(sz, veclen);
             b.resize(sz, veclen);
-            for (int i(0); i != sz; ++i) {
-                for (int j(0); j != sz; ++j) {
+            for (size_t i(0); i != sz; ++i) {
+                for (size_t j(0); j != sz; ++j) {
                     if (veclen > 1) { // Extend seed to veclen.
                         vectors<ClearType> val(1, veclen);
                         arbitrary_prg(opvm[i][j], val);
-                        for (int k(0); k != veclen; ++k) {
+                        for (size_t k(0); k != veclen; ++k) {
                             a[j][k] += val.at(k);
                             b[i][k] -= val.at(k);
                         }

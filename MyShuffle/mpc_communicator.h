@@ -30,8 +30,12 @@
 #include "my_ote.h"
 
 namespace gjcShuffle {
+    static const int default_port_base(9999);
+    class shuffle_session;
     class mpc_comm {
     protected:
+        friend class shuffle_session;
+
         int n_party, my_number;
         std::vector<osuCrypto::Session> sessions;
 
@@ -41,7 +45,7 @@ namespace gjcShuffle {
         CryptoPlayer P;
         ProtocolSetup<ShareType> setup;
 
-
+        MascotFieldPrep<ShareType> *prep;
         Input<ShareType> *input;
         SPDZ<ShareType> *protocol;
         MAC_Check_<ShareType> *output;
@@ -53,10 +57,13 @@ namespace gjcShuffle {
         std::deque<ClearType> clear_mask;
         std::deque<ShareType> random_resource;
 
-        size_t expand_random_size;
+        size_t expand_random_size, expand_triple_size;
+        size_t accumulate_triple_size = 0;
         std::vector<size_t> cnt_private_output;
         
         std::vector<osuCrypto::Channel *> otSendChannel, otRecvChannel;
+
+        bool online_phase = false;
 
         // void base_ot_send(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
         void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
@@ -65,9 +72,11 @@ namespace gjcShuffle {
         void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
     public:
         ShareType alpha;
-        mpc_comm(int n_party, int my_number);
+        mpc_comm(int n_party, int my_number, int port_base = default_port_base);
         
-        void init(Input<ShareType> *input, SPDZ<ShareType> *protocol, MAC_Check_<ShareType> *output);
+        void init(MascotFieldPrep<ShareType> *prep, Input<ShareType> *input, SPDZ<ShareType> *protocol, MAC_Check_<ShareType> *output);
+
+        void stop();
 
         CryptoPlayer& get_P();
         ProtocolSetup<ShareType>& get_setup();
@@ -92,6 +101,10 @@ namespace gjcShuffle {
         void input_consume(int party, ShareType& val);
         void input_consume(int party, vectors<ShareType>& val);
         ShareType input_consume(int party);
+        
+        void prepare_more_mul(size_t num); // Prepare more triples.
+        void prepare_more_mul_lazy(size_t num);
+        void prepare_more_mul_now(size_t num = 0);
 
         void mul_init();
         void mul_append(const ShareType& v1, const ShareType& v2);
@@ -138,8 +151,9 @@ namespace gjcShuffle {
         void recv(int party, T& val);
         template <typename T>
         void unchecked_broadcast(int party, T& val);
+        void unchecked_broadcast(int party, octet *val, size_t len);
         template <typename T>
-        void unchecked_broadcast(int party, vectors<T>& val);
+        void unchecked_broadcast(int party, vectors<T> &val);
         template <typename T>
         void broadcast(int party, T& val);
         template <typename T>
@@ -193,6 +207,9 @@ namespace gjcShuffle {
         size_t count_total_comm() const;
         void reset_total_comm();
 
+        void set_online();
+        void set_offline();
+
         ~mpc_comm();
     };
 
@@ -237,6 +254,7 @@ namespace gjcShuffle {
         P.unchecked_broadcast(buff);
         buff[party].get(val);
     }
+
 
     template<typename T>
     inline void mpc_comm::unchecked_broadcast(int party, vectors<T> & val)

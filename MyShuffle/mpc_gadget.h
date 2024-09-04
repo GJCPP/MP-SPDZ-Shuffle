@@ -36,6 +36,18 @@ namespace gjcShuffle
         }
     }
 
+    template <typename T>
+    T insecure_sum(mpc_comm& com, const T& val) {
+        std::vector<T> vals(com.get_n_party());
+        vals[com.get_my_number()] = val;
+        T ret = {};
+        for (int i(0); i != com.get_n_party(); ++i) {
+            com.unchecked_broadcast(i, reinterpret_cast<octet *>(&vals[i]), sizeof(vals[i]));
+            ret += vals[i];
+        }
+        return ret;
+    }
+
 
     void insecure_share(mpc_comm& com, int owner, vectors<block_wrapper>& val);
     void insecure_share(mpc_comm& com, int owner, vectors<ClearType>& val);

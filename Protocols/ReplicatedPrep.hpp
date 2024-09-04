@@ -1401,6 +1401,7 @@ void BufferPrep<T>::buffer_extra(Dtype type, int n_items)
     case DATA_BIT:
         buffer_bits();
         break;
+        
     default:
         throw not_implemented();
     }

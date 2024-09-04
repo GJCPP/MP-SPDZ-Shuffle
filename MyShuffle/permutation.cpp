@@ -3,13 +3,13 @@
 permutation::permutation(size_t _n) 
     : n(_n), perm(_n)
 {
-    for (int i(0); i != n; ++i) perm[i] = i;
+    for (size_t i(0); i != n; ++i) perm[i] = i;
 }
 
 permutation::permutation(size_t _n, bool random)
     : n(_n), perm(_n)
 {
-    for (int i(0); i != n; ++i) perm[i] = i;
+    for (size_t i(0); i != n; ++i) perm[i] = i;
     if (random) {
         std::shuffle(perm.begin(), perm.end(), std::mt19937(std::random_device()()));
     }
@@ -18,7 +18,7 @@ permutation::permutation(size_t _n, bool random)
 bool permutation::operator==(const permutation &beta) const
 {
     if (n != beta.n) return false;
-    for (int i(0); i != n; ++i) {
+    for (size_t i(0); i != n; ++i) {
         if (perm[i] != beta.perm[i]) return false;
     }
     return true;
@@ -57,7 +57,7 @@ permutation permutation::operator*(const permutation& beta) const {
         std::cerr << "Class permutation operator* : inconsistent size, " << n << "/" << beta.n << std::endl;
         throw std::runtime_error("Class permutation operator* : Inconsistent size.");
     }
-    for (int i(0); i != n; ++i) {
+    for (size_t i(0); i != n; ++i) {
         ret[i] = perm[beta[i]];
     }
     return ret;
@@ -65,7 +65,7 @@ permutation permutation::operator*(const permutation& beta) const {
 
 permutation permutation::inverse() const {
     permutation ret(n);
-    for (int i(0); i != n; ++i) {
+    for (size_t i(0); i != n; ++i) {
         ret[perm[i]] = i;
     }
     return ret;

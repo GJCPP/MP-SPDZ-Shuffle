@@ -29,7 +29,7 @@ public:
             throw std::runtime_error("permutation::perform: size mismatch.");
         }
         std::vector<T> tmp(vec.size());
-        for (int i(0); i != n; ++i) {
+        for (size_t i(0); i != n; ++i) {
             tmp[i] = vec[perm[i]];
         }
         vec = tmp;
