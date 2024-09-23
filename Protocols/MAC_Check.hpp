@@ -156,7 +156,6 @@ void MAC_Check_<U>::Check(const Player& P)
   auto& popen_cnt = this->popen_cnt;
   assert(int(macs.size()) <= popen_cnt);
   assert(this->coordinator);
-
   if (popen_cnt < 10)
     {
       // no random combination with few values
@@ -216,8 +215,9 @@ void MAC_Check_<U>::Check(const Player& P)
       typename U::mac_type t;
       for (int i=0; i<P.num_players(); i++)
         { t += tau[i]; }
-      if (t != 0)
+      if (t != 0) {
         throw mac_fail();
+      }
     }
 
   vals.erase(vals.begin(), vals.begin() + popen_cnt);

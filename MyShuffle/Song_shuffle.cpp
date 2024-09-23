@@ -1,4 +1,5 @@
 #include "Song_shuffle.h"
+#include "my_timer.h"
 
 namespace song2023 {
     using namespace gjcShuffle;
@@ -425,6 +426,7 @@ namespace song2023 {
 
     void permute_session::perform(mpc_comm &com, vectors<ClearType> &val)
     {
+        double send_time = 0, recv_time = 0;
         if (!initialized) {
             std::cerr << FAIL_INFO << "Not initialized. Please call function process_all_orders." << std::endl;
             throw std::runtime_error("permute_session::perform : Not initialized.");
@@ -438,36 +440,39 @@ namespace song2023 {
             throw std::runtime_error("permute_session::perform : size mismatch.");
         }
 #endif
-        std::vector<int> dest(sz);
+        static std::vector<int> dest; dest.resize(sz);
 		if (me == permuter) {
 			for (size_t i(0); i != sz; ++i) dest[perm[i]] = i;
 		} else {
 			for (size_t i(0); i != sz; ++i) dest[i] = i;
 		}
-
 		const auto& all_tasks = BenesNetwork::task_decompose(logsz, batch);
 		auto route = BenesNetwork::route(logsz, dest);
 		auto sub_route = BenesNetwork::decompose(route, batch);
 		BenesNetwork::desttask_to_permtask(sz, sub_route);
 
-		std::vector<int> map(sz), inv_map(sz);
-
+		static std::vector<int> map, inv_map;
+        map.resize(sz); inv_map.resize(sz);
         // permute_pair * next_pair[MAX_BATCH_SIZE];
         // for (int bat(0); bat != MAX_BATCH_SIZE; ++bat) {
         //     if (me == permuter) next_pair[i] = &pairs[bat][0][0];
         //     else next_pair[i] = &pairs[me][i][i];
         // }
-        vectors<ClearType> result(val.num, val.len);
+        static vectors<ClearType> result; result.resize(val.num, val.len);
         for (size_t i(0); i != val.num; ++i) {
             for (size_t j(0); j != val.len; ++j) {
                 result[i][j] = val[perm[i]][j];
             }
         }
+
+        double tot_send_time = 0;
+        double A_time=0, B_time = 0, C_time = 0, D_time = 0, E_time = 0;
         for (int sender(0); sender != n; ++sender) {
             if (sender == permuter) continue;
             if (me != permuter && me != sender) continue;
-            std::vector<permute_pair>::iterator next_pair[MAX_BATCH_SIZE];
+            static std::vector<permute_pair>::iterator next_pair[MAX_BATCH_SIZE];
             vectors<ClearType> dum_val(val.num, val.len); // Permuter only permutes dummy values.
+
             if (me == permuter) {
                 for (int i(0); i != MAX_BATCH_SIZE; ++i) {
                     next_pair[i] = pairs[sender][i].begin();
@@ -477,23 +482,29 @@ namespace song2023 {
                     next_pair[i] = pairs[permuter][i].begin();
                 }
             }
-            for (size_t bat(0); bat != sub_route.size(); ++bat) {
+            size_t sub_route_size = sub_route.size();
+            for (size_t bat(0); bat != sub_route_size; ++bat) {
                 const auto& task = all_tasks[bat];
                 int next(0), batch_sz(task[0].size());
                 int log_batch_sz = math_gadget::log2(batch_sz);
                 for (const auto& touched : task) {
                     next = 0;
+
                     for (int v : touched) { // touched is the component specified by (depth, rank of task)
                         inv_map[next] = v; // map the position back.
                         map[v] = next++;
                     }
-                    vectors<ClearType> local_val(batch_sz, veclen), recv_val(batch_sz, veclen), temp_val(batch_sz, veclen);
+
+                    static vectors<ClearType> local_val, recv_val, temp_val;
+                    local_val.resize(batch_sz, veclen); recv_val.resize(batch_sz, veclen); temp_val.resize(batch_sz, veclen);
+
                     for (int v : touched) {
                         for (size_t j(0); j != veclen; ++j) {
                             if (me == permuter) local_val[map[v]][j] = dum_val[v][j];
                             else local_val[map[v]][j] = val[v][j];
                         }
                     }
+
                     int rep = bucket_size[log_batch_sz];
                     if (me == permuter) { // Receiver of OT
                         for (int cnt(0); cnt != rep; ++cnt) {
@@ -503,7 +514,10 @@ namespace song2023 {
                                 throw std::runtime_error("permute_session::perform : unexpected end of permute_pair.");
                             }
                             const permutation& small_perm = next_pair[log_batch_sz]->perm;
+
                             com.recv(sender, recv_val);
+
+
                             for (int i(0); i != batch_sz; ++i) {
                                 for (size_t j(0); j != veclen; ++j) {
                                     temp_val[i][j] = recv_val[small_perm[i]][j] +
@@ -511,6 +525,7 @@ namespace song2023 {
                                                     next_pair[log_batch_sz]->delta[i][j];
                                 }
                             }
+
                             local_val = temp_val;
                             ++next_pair[log_batch_sz];
                         }
@@ -521,12 +536,16 @@ namespace song2023 {
                                 std::cerr << "permute_session::perform : unexpected end of permute_pair." << std::endl;
                                 throw std::runtime_error("permute_session::perform : unexpected end of permute_pair.");
                             }
-                            vectors<ClearType> sum = next_pair[log_batch_sz]->a + local_val;
+                            static vectors<ClearType> sum;
+                            sum = next_pair[log_batch_sz]->a + local_val;
+                            
                             com.send(permuter, sum);
+
                             local_val = next_pair[log_batch_sz]->b;
                             ++next_pair[log_batch_sz];
                         }
                     }
+
                     for (int v : touched) {
                         for (size_t j(0); j != veclen; ++j) {
                             if (me == permuter) dum_val[v][j] = local_val[map[v]][j];
@@ -542,7 +561,6 @@ namespace song2023 {
             val = result;
         }
         destroy();
-
         com.output_check();
     }
     

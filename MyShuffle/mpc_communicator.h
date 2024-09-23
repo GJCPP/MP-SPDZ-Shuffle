@@ -56,9 +56,9 @@ namespace gjcShuffle {
         std::vector<std::deque<ShareType>> shared_mask; // for private output.
         std::deque<ClearType> clear_mask;
         std::deque<ShareType> random_resource;
+        std::deque<std::array<ShareType, 3>> triple_resource;
 
         size_t expand_random_size, expand_triple_size;
-        size_t accumulate_triple_size = 0;
         std::vector<size_t> cnt_private_output;
         
         std::vector<osuCrypto::Channel *> otSendChannel, otRecvChannel;
@@ -151,7 +151,7 @@ namespace gjcShuffle {
         void recv(int party, T& val);
         template <typename T>
         void unchecked_broadcast(int party, T& val);
-        void unchecked_broadcast(int party, octet *val, size_t len);
+        //void unchecked_broadcast(int party, octet *val, size_t len);
         template <typename T>
         void unchecked_broadcast(int party, vectors<T> &val);
         template <typename T>
@@ -175,6 +175,9 @@ namespace gjcShuffle {
 
         void send(int recver, const void *data, size_t size);
         void recv(int sender, void *data, size_t size);
+
+        void send(int party, octetStream &os);
+        void recv(int party, octetStream &os);
 
         void send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
         void recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
@@ -276,6 +279,16 @@ namespace gjcShuffle {
         int tmp = val;
         unchecked_broadcast(party, tmp);
         val = tmp;
+    }
+
+    template <>
+    inline void mpc_comm::unchecked_broadcast(int party, octetStream &val)
+    {
+        std::vector<octetStream> buff(n_party);
+        if (party == my_number) buff[party] = val;
+        // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+        P.unchecked_broadcast(buff);
+        val = buff[party];
     }
 
 

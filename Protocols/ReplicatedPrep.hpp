@@ -1386,14 +1386,20 @@ T BufferPrep<T>::get_random()
 }
 
 template<class T>
-void BufferPrep<T>::buffer_extra(Dtype type, int n_items)
+void BufferPrep<T>::buffer_extra(Dtype type, int n_items, std::deque<std::array<T, 3>> *store)
 {
     BufferScope scope(*this, n_items);
-
     switch (type)
     {
     case DATA_TRIPLE:
         buffer_triples();
+        if (store) {
+            for (int i = 0; i < n_items; i++)
+            {
+                store->push_back(triples.back());
+                //triples.pop_back();
+            }
+        }
         break;
     case DATA_SQUARE:
         buffer_squares();

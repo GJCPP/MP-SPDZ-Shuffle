@@ -140,7 +140,7 @@ public:
     SubProcessor<T>* get_proc() { return proc; }
     void set_proc(SubProcessor<T>* proc) { this->proc = proc; }
 
-    void buffer_extra(Dtype type, int n_items);
+    void buffer_extra(Dtype type, int n_items, std::deque<std::array<T, 3>> *store = nullptr);
 };
 
 /**

@@ -251,6 +251,8 @@ namespace gjcShuffle {
         clear_unused();
         booked_shuffle.clear();
         com.prepare_more_mul_now(require_mul);
+        
+        com.output_check();
     }
 
     void verify(mpc_comm &com, ClearType a, ClearType b, ShareType beta, ShareType r)

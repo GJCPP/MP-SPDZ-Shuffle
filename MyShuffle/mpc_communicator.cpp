@@ -12,6 +12,7 @@ namespace gjcShuffle {
             shared_mask(n_party),
             alpha(),
             random_resource(),
+            triple_resource(),
             expand_random_size(0),
             expand_triple_size(0),
             cnt_private_output(n_party),
@@ -170,11 +171,12 @@ namespace gjcShuffle {
 
     void mpc_comm::prepare_more_mul(size_t num)
     {
+        if (num == 0) return;
         if (my_number == 0 && online_phase) {
             std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << num << std::endl;
         }
-        prep->buffer_extra(DATA_TRIPLE, num);
-        accumulate_triple_size += num;
+        prep->buffer_extra(DATA_TRIPLE, num, &triple_resource);
+        //prep->buffer_extra(DATA_TRIPLE, num);
     }
 
     void mpc_comm::prepare_more_mul_lazy(size_t num)
@@ -206,45 +208,48 @@ namespace gjcShuffle {
 
     void mpc_comm::mul_consume(ShareType &val)
     {
-       val = protocol->finalize_mul();
+        val = protocol->finalize_mul();
     }
      
     void mpc_comm::mul_consume(vectors<ShareType>& val)
     {
-        for (auto& v : val) v = protocol->finalize_mul();
+        for (auto& v : val) {
+            v = protocol->finalize_mul();
+        }
     }
 
     ShareType mpc_comm::mul_consume()
     {
-        return protocol->finalize_mul();
+        auto ret = protocol->finalize_mul();
+        return ret;
     }
 
     void mpc_comm::mul_append(const vectors<ShareType> &v1, const vectors<ShareType> &v2)
     {
-        if (accumulate_triple_size < v1.size()) {
+        if (triple_resource.size() < v1.size()) {
             if (my_number == 0) {
                 std::cerr << "Warning: " << __FUNCTION__ << " is called with insufficient triples, size = " << v1.size() << std::endl;
             }
             prepare_more_mul_now(v1.size());
-        } else {
-            accumulate_triple_size -= v1.size();
         }
         for (size_t i(0); i != v1.size(); ++i) {
-            protocol->prepare_mul(v1.at(i), v2.at(i));
+            protocol->prepare_mul(v1.at(i), v2.at(i), triple_resource.front());
+            triple_resource.pop_front();
+            // protocol->prepare_mul(v1.at(i), v2.at(i));
         }
     }
 
     void mpc_comm::mul_append(const ShareType &v1, const ShareType &v2)
     {
-        if (accumulate_triple_size < 1) {
+        if (triple_resource.size() < 1) {
             if (my_number == 0) {
                 std::cerr << "Warning: " << __FUNCTION__ << " is called with insufficient triples, size = " << 1 << std::endl;
             }
             prepare_more_mul_now(1);
-        } else {
-            --accumulate_triple_size;
         }
-        protocol->prepare_mul(v1, v2);
+        protocol->prepare_mul(v1, v2, triple_resource.front());
+        triple_resource.pop_front();
+        // protocol->prepare_mul(v1, v2);
     }
 
     void mpc_comm::output_immediately(const ShareType& val, ClearType& res)
@@ -353,6 +358,7 @@ namespace gjcShuffle {
 
     void mpc_comm::prepare_output_mask(size_t expand)
     {
+        if (expand == 0) return;
         if (my_number == 0 && online_phase) {
             std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << expand << std::endl;
         }
@@ -462,6 +468,16 @@ namespace gjcShuffle {
         octetStream o;
         P.receive_player(sender, o);
         o.consume(reinterpret_cast<octet *>(data), size);
+    }
+
+    void mpc_comm::send(int party, octetStream &os)
+    {
+        P.send_to(party, os);
+    }
+
+    void mpc_comm::recv(int party, octetStream &os)
+    {
+        P.receive_player(party, os);
     }
 
     void mpc_comm::send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> sendKey,
@@ -678,7 +694,7 @@ namespace gjcShuffle {
         for (int i(0); i != n_party; ++i) {
             sum += all_s[i];
         }
-        if (std::accumulate(all_s.begin(), all_s.end(), ClearType(0)).is_zero() == false) {
+        if (sum.is_zero() == false) {
             std::cerr << "mpc_comm::mac_check : MAC check failed." << std::endl;
             throw std::runtime_error("mpc_comm::mac_check : MAC check failed.");
         }
@@ -712,14 +728,14 @@ namespace gjcShuffle {
         online_phase = false;
     }
 
-    void mpc_comm::unchecked_broadcast(int party, octet* val, size_t len)
-    {
-        std::vector<octetStream> buff(n_party);
-        if (party == my_number) buff[party].store_bytes(val, len);
-        // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
-        P.unchecked_broadcast(buff);
-        buff[party].get_bytes(val, len);
-    }
+    // void mpc_comm::unchecked_broadcast(int party, octet* val, size_t len)
+    // {
+    //     std::vector<octetStream> buff(n_party);
+    //     if (party == my_number) buff[party].store_bytes(val, len);
+    //     // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+    //     P.unchecked_broadcast(buff);
+    //     buff[party].get_bytes(val, len);
+    // }
 
     mpc_comm::~mpc_comm()
     {

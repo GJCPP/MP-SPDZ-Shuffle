@@ -1,4 +1,1243 @@
-[01;32mgaojc@test-PowerEdge-R940xa[00m:[01;34m~/Desktop/MP-SPDZ[00m$ make benchmark.[K -j
+^Cmake: *** Deleting file 'benchmark'
+[]
+list index out of range
+Error. Restarting.
+^CTraceback (most recent call last):
+  File "my_benchmark.py", line 187, in <module>
+    time.sleep(5) # Wait for port release
+KeyboardInterrupt
+Makefile:395: recipe for target 'benchmark' failed
+make: *** [benchmark] Interrupt
+
+[01;32mgaojc@test-PowerEdge-R940xa[00m:[01;34m~/Desktop/MP-SPDZ[00m$ make benchmark -jpython ./my_benchmark.py 
+['off_comm', ' 1991696', ' 7401680', ' 30263248', ' -1']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Warning: prepare_more_random_now is called in online phase, size = 0
+184413264 64.3888 14026016 8.65639
+terminate called without an active exception
+184413264 64.3888 14026016 8.65639
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['184413264', '64.3888', '14026016', '8.65639']
+Testing logbatch = 5
+Warning: prepare_more_random_now is called in online phase, size = 0
+162104504 71.2695 11535648 7.18386
+terminate called without an active exception
+162104504 71.2695 11535648 7.18386
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['162104504', '71.2695', '11535648', '7.18386']
+Testing logbatch = 6
+Warning: prepare_more_random_now is called in online phase, size = 0
+135961680 102.26 7734560 6.74283
+terminate called without an active exception
+135961680 102.26 7734560 6.74283
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['135961680', '102.26', '7734560', '6.74283']
+Testing logbatch = 7
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 4517960', ' 21229960', ' 121642040', ' -1']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+Warning: prepare_more_random_now is called in online phase, size = 0
+493046600 282.458 35068160 38.6644
+493046600 282.458 35068160 38.6644
+terminate called without an active exception
+terminate called without an active exception
+493046600 282.458 35068160 38.6644
+493046600 282.458 35068160 38.6644
+493046600 282.458 35068160 38.6644
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['493046600', '282.458', '35068160', '38.6644']
+Testing logbatch = 5
+Warning: prepare_more_random_now is called in online phase, size = 0
+433004620 309.362 28514560 30.7731
+433004620 309.362 28514560 30.7731
+433004620 309.362 28514560 30.7731
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+433004620 309.362 28514560 30.7731
+terminate called without an active exception
+433004620 309.362 28514560 30.7731
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['433004620', '309.362', '28514560', '30.7731']
+Testing logbatch = 6
+Time out
+Testing logbatch = 7
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 6490688', ' 33967936', ' 143247680', ' -1']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Warning: prepare_more_random_now is called in online phase, size = 0
+865717568 663.504 56114048 76.8446
+865717568 663.504 56114048 76.8446
+865717568 663.504 56114048 76.8446
+865717568 663.504 56114048 76.8446
+865717568 663.504 56114048 76.8446
+terminate called without an active exception
+terminate called without an active exception
+865717568 663.504 56114048 76.8446
+terminate called without an active exception
+865717568 663.504 56114048 76.8446
+terminate called without an active exception
+terminate called without an active exception
+865717568 663.504 56114048 76.8446
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['865717568', '663.504', '56114048', '76.8446']
+Testing logbatch = 5
+Warning: prepare_more_random_now is called in online phase, size = 0
+762818272 722.159 45104000 64.128
+762818272 722.159 45104000 64.128
+terminate called without an active exception
+762818272 722.159 45104000 64.128
+terminate called without an active exception
+762818272 722.159 45104000 64.128
+762818272 722.159 45104000 64.128
+762818272 722.159 45104000 64.128
+762818272 722.159 45104000 64.128
+terminate called without an active exception
+762818272 722.159 45104000 64.128
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['762818272', '722.159', '45104000', '64.128']
+Testing logbatch = 6
+Time out
+Testing logbatch = 7
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 8924696', ' 44944504', ' 215950680', ' 1260824488']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 11358704', ' 57202096', ' 319683952', ' 1679431600']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 1976176', ' 7401680', ' 30263248', ' -1']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Warning: prepare_more_random_now is called in online phase, size = 0
+184413264 63.3136 14026016 9.11604
+terminate called without an active exception
+184413264 63.3136 14026016 9.11604
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['184413264', '63.3136', '14026016', '9.11604']
+Testing logbatch = 5
+Warning: prepare_more_random_now is called in online phase, size = 0
+162104504 71.4181 11535648 7.48679
+162104504 71.4181 11535648 7.48679
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['162104504', '71.4181', '11535648', '7.48679']
+Testing logbatch = 6
+Warning: prepare_more_random_now is called in online phase, size = 0
+135961680 102.778 7734560 6.67326
+terminate called without an active exception
+135961680 102.778 7734560 6.67326
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['135961680', '102.778', '7734560', '6.67326']
+Testing logbatch = 7
+Warning: prepare_more_random_now is called in online phase, size = 0
+147958968 130.387 9831712 11.0911
+147958968 130.387 9831712 11.0911
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['147958968', '130.387', '9831712', '11.0911']
+Testing logbatch = 8
+Warning: prepare_more_random_now is called in online phase, size = 0
+126231736 170.891 6423840 7.90775
+126231736 170.891 6423840 7.90775
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['126231736', '170.891', '6423840', '7.90775']
+Testing logbatch = 9
+Warning: prepare_more_random_now is called in online phase, size = 0
+136453560 315.454 6685984 14.5443
+terminate called without an active exception
+136453560 315.454 6685984 14.5443
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['136453560', '315.454', '6685984', '14.5443']
+Testing logbatch = 10
+Warning: prepare_more_random_now is called in online phase, size = 0
+176114360 764.832 9176352 30.4047
+terminate called without an active exception
+terminate called without an active exception
+176114360 764.832 9176352 30.4047
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['176114360', '764.832', '9176352', '30.4047']
+['off_comm', ' 4556040', ' 19627980', ' 79394680', ' -1']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Warning: prepare_more_random_now is called in online phase, size = 0
+493046600 281.779 35068160 36.3867
+493046600 281.779 35068160 36.3867
+terminate called without an active exception
+terminate called without an active exception
+493046600 281.779 35068160 36.3867
+493046600 281.779 35068160 36.3867
+493046600 281.779 35068160 36.3867
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['493046600', '281.779', '35068160', '36.3867']
+Testing logbatch = 5
+Warning: prepare_more_random_now is called in online phase, size = 0
+433004620 306.952 28514560 28.4425
+433004620 306.952 28514560 28.4425
+terminate called without an active exception
+terminate called without an active exception
+433004620 306.952 28514560 28.4425
+433004620 306.952 28514560 28.4425
+433004620 306.952 28514560 28.4425
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['433004620', '306.952', '28514560', '28.4425']
+Testing logbatch = 6
+Warning: prepare_more_random_now is called in online phase, size = 0
+355198280 401.462 18356480 25.3187
+355198280 401.462 18356480 25.3187
+355198280 401.462 18356480 25.3187
+terminate called without an active exception
+355198280 401.462 18356480 25.3187
+355198280 401.462 18356480 25.3187
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['355198280', '401.462', '18356480', '25.3187']
+Testing logbatch = 7
+Warning: prepare_more_random_now is called in online phase, size = 0
+389456460 516.42 23927040 46.8662
+389456460 516.42 23927040 46.8662
+terminate called without an active exception
+389456460 516.42 23927040 46.8662
+terminate called without an active exception
+389456460 516.42 23927040 46.8662
+389456460 516.42 23927040 46.8662
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['389456460', '516.42', '23927040', '46.8662']
+Testing logbatch = 8
+Warning: prepare_more_random_now is called in online phase, size = 0
+321374540 693.345 14752000 28.5615
+terminate called without an active exception
+321374540 693.345 14752000 28.5615
+321374540 693.345 14752000 28.5615
+terminate called without an active exception
+321374540 693.345 14752000 28.5615
+321374540 693.345 14752000 28.5615
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['321374540', '693.345', '14752000', '28.5615']
+Testing logbatch = 9
+Warning: prepare_more_random_now is called in online phase, size = 0
+345619020 1161.39 15407360 56.1879
+345619020 1161.39 15407360 56.1879
+terminate called without an active exception
+345619020 1161.39 15407360 56.1879
+terminate called without an active exception
+345619020 1161.39 15407360 56.1879
+terminate called without an active exception
+345619020 1161.39 15407360 56.1879
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['345619020', '1161.39', '15407360', '56.1879']
+Testing logbatch = 10
+Warning: prepare_more_random_now is called in online phase, size = 0
+432648940 2823.53 21305600 123.91
+432648940 2823.53 21305600 123.91
+432648940 2823.53 21305600 123.91
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+432648940 2823.53 21305600 123.91
+terminate called without an active exception
+432648940 2823.53 21305600 123.91
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['432648940', '2823.53', '21305600', '123.91']
+['off_comm', ' 5945344', ' 26654528', ' 124543296', ' -1']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Warning: prepare_more_random_now is called in online phase, size = 0
+865717568 664.537 56114048 76.724
+terminate called without an active exception
+865717568 664.537 56114048 76.724
+865717568 664.537 56114048 76.724
+terminate called without an active exception
+865717568 664.537 56114048 76.724
+865717568 664.537 56114048 76.724
+865717568 664.537 56114048 76.724
+865717568 664.537 56114048 76.724
+terminate called without an active exception
+terminate called without an active exception
+865717568 664.537 56114048 76.724
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['865717568', '664.537', '56114048', '76.724']
+Testing logbatch = 5
+Warning: prepare_more_random_now is called in online phase, size = 0
+762818272 729.064 45104000 62.0051
+762818272 729.064 45104000 62.0051
+762818272 729.064 45104000 62.0051
+terminate called without an active exception
+762818272 729.064 45104000 62.0051
+terminate called without an active exception
+terminate called without an active exception
+762818272 729.064 45104000 62.0051
+762818272 729.064 45104000 62.0051
+762818272 729.064 45104000 62.0051
+terminate called without an active exception
+762818272 729.064 45104000 62.0051
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['762818272', '729.064', '45104000', '62.0051']
+Testing logbatch = 6
+Warning: prepare_more_random_now is called in online phase, size = 0
+terminate called without an active exception
+629415232 936.384 28326784 47.8243
+629415232 936.384 28326784 47.8243
+629415232 936.384 28326784 47.8243
+629415232 936.384 28326784 47.8243
+terminate called without an active exception
+629415232 936.384 28326784 47.8243
+terminate called without an active exception
+terminate called without an active exception
+629415232 936.384 28326784 47.8243
+629415232 936.384 28326784 47.8243
+terminate called without an active exception
+terminate called without an active exception
+629415232 936.384 28326784 47.8243
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['629415232', '936.384', '28326784', '47.8243']
+Testing logbatch = 7
+Warning: prepare_more_random_now is called in online phase, size = 0
+684228320 1217.38 37239680 93.1923
+684228320 1217.38 37239680 93.1923
+684228320 1217.38 37239680 93.1923
+684228320 1217.38 37239680 93.1923
+684228320 1217.38 37239680 93.1923
+terminate called without an active exception
+684228320 1217.38 37239680 93.1923
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+684228320 1217.38 37239680 93.1923
+terminate called without an active exception
+terminate called without an active exception
+684228320 1217.38 37239680 93.1923
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['684228320', '1217.38', '37239680', '93.1923']
+Testing logbatch = 8
+Warning: prepare_more_random_now is called in online phase, size = 0
+554322656 1591.56 21511040 51.1386
+terminate called without an active exception
+554322656 1591.56 21511040 51.1386
+554322656 1591.56 21511040 51.1386
+terminate called without an active exception
+554322656 1591.56 21511040 51.1386
+terminate called without an active exception
+554322656 1591.56 21511040 51.1386
+554322656 1591.56 21511040 51.1386
+554322656 1591.56 21511040 51.1386
+554322656 1591.56 21511040 51.1386
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['554322656', '1591.56', '21511040', '51.1386']
+Testing logbatch = 9
+Warning: prepare_more_random_now is called in online phase, size = 0
+580006624 2529.25 22035328 92.7537
+terminate called without an active exception
+580006624 2529.25 22035328 92.7537
+580006624 2529.25 22035328 92.7537
+terminate called without an active exception
+580006624 2529.25 22035328 92.7537
+580006624 2529.25 22035328 92.7537
+580006624 2529.25 22035328 92.7537
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+580006624 2529.25 22035328 92.7537
+terminate called without an active exception
+terminate called without an active exception
+580006624 2529.25 22035328 92.7537
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['580006624', '2529.25', '22035328', '92.7537']
+Testing logbatch = 10
+Warning: prepare_more_random_now is called in online phase, size = 0
+718748128 5919.18 31996800 203.559
+terminate called without an active exception
+718748128 5919.18 31996800 203.559
+718748128 5919.18 31996800 203.559
+terminate called without an active exception
+718748128 5919.18 31996800 203.559
+718748128 5919.18 31996800 203.559
+terminate called without an active exception
+terminate called without an active exception
+718748128 5919.18 31996800 203.559
+terminate called without an active exception
+terminate called without an active exception
+718748128 5919.18 31996800 203.559
+terminate called without an active exception
+terminate called without an active exception
+718748128 5919.18 31996800 203.559
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['718748128', '5919.18', '31996800', '203.559']
+['off_comm', ' 8174848', ' 40972404', ' 206469208', ' -1']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Warning: prepare_more_random_now is called in online phase, size = 0
+1260824488 1319.93 77163680 137.041
+1260824488 1319.93 77163680 137.041
+terminate called without an active exception
+terminate called without an active exception
+1260824488 1319.93 77163680 137.041
+1260824488 1319.93 77163680 137.041
+1260824488 1319.93 77163680 137.041
+1260824488 1319.93 77163680 137.041
+1260824488 1319.93 77163680 137.041
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+1260824488 1319.93 77163680 137.041
+terminate called without an active exception
+1260824488 1319.93 77163680 137.041
+1260824488 1319.93 77163680 137.041
+1260824488 1319.93 77163680 137.041
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['1260824488', '1319.93', '77163680', '137.041']
+Testing logbatch = 5
+Warning: prepare_more_random_now is called in online phase, size = 0
+1119337956 1426.12 62024864 108.345
+1119337956 1426.12 62024864 108.345
+1119337956 1426.12 62024864 108.345
+1119337956 1426.12 62024864 108.345
+terminate called without an active exception
+1119337956 1426.12 62024864 108.345
+terminate called without an active exception
+terminate called without an active exception
+1119337956 1426.12 62024864 108.345
+1119337956 1426.12 62024864 108.345
+1119337956 1426.12 62024864 108.345
+terminate called without an active exception
+terminate called without an active exception
+1119337956 1426.12 62024864 108.345
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+1119337956 1426.12 62024864 108.345
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+1119337956 1426.12 62024864 108.345
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['1119337956', '1426.12', '62024864', '108.345']
+Testing logbatch = 6
+Warning: prepare_more_random_now is called in online phase, size = 0
+899126184 1710.24 36793504 72.6381
+899126184 1710.24 36793504 72.6381
+899126184 1710.24 36793504 72.6381
+899126184 1710.24 36793504 72.6381
+terminate called without an active exception
+899126184 1710.24 36793504 72.6381
+899126184 1710.24 36793504 72.6381
+terminate called without an active exception
+terminate called without an active exception
+899126184 1710.24 36793504 72.6381
+899126184 1710.24 36793504 72.6381
+899126184 1710.24 36793504 72.6381
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+899126184 1710.24 36793504 72.6381
+terminate called without an active exception
+terminate called without an active exception
+899126184 1710.24 36793504 72.6381
+terminate called without an active exception
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['899126184', '1710.24', '36793504', '72.6381']
+Testing logbatch = 7
+Warning: prepare_more_random_now is called in online phase, size = 0
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+1011276772 2313.86 51211424 158.181
+1011276772 2313.86 51211424 158.181
+1011276772 2313.86 51211424 158.181
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+terminate called without an active exception
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+terminate called without an active exception
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+1011276772 2313.86 51211424 158.181
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['1011276772', '2313.86', '51211424', '158.181']
+Testing logbatch = 8
+Warning: prepare_more_random_now is called in online phase, size = 0
+terminate called without an active exception
+832656484 2920.44 29584544 79.4441
+832656484 2920.44 29584544 79.4441
+832656484 2920.44 29584544 79.4441
+832656484 2920.44 29584544 79.4441
+832656484 2920.44 29584544 79.4441
+terminate called without an active exception
+832656484 2920.44 29584544 79.4441
+terminate called without an active exception
+832656484 2920.44 29584544 79.4441
+terminate called without an active exception
+832656484 2920.44 29584544 79.4441
+terminate called without an active exception
+832656484 2920.44 29584544 79.4441
+832656484 2920.44 29584544 79.4441
+832656484 2920.44 29584544 79.4441
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['832656484', '2920.44', '29584544', '79.4441']
+Testing logbatch = 9
+Warning: prepare_more_random_now is called in online phase, size = 0
+867971940 4628.22 30305440 136.266
+867971940 4628.22 30305440 136.266
+terminate called without an active exception
+terminate called without an active exception
+867971940 4628.22 30305440 136.266
+867971940 4628.22 30305440 136.266
+867971940 4628.22 30305440 136.266
+terminate called without an active exception
+867971940 4628.22 30305440 136.266
+867971940 4628.22 30305440 136.266
+867971940 4628.22 30305440 136.266
+terminate called without an active exception
+terminate called without an active exception
+867971940 4628.22 30305440 136.266
+terminate called without an active exception
+867971940 4628.22 30305440 136.266
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+867971940 4628.22 30305440 136.266
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['867971940', '4628.22', '30305440', '136.266']
+Testing logbatch = 10
+Warning: prepare_more_random_now is called in online phase, size = 0
+1058741508 10821.3 44002464 319.088
+1058741508 10821.3 44002464 319.088
+terminate called without an active exception
+terminate called without an active exception
+1058741508 10821.3 44002464 319.088
+1058741508 10821.3 44002464 319.088
+1058741508 10821.3 44002464 319.088
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+1058741508 10821.3 44002464 319.088
+terminate called without an active exception
+1058741508 10821.3 44002464 319.088
+terminate called without an active exception
+1058741508 10821.3 44002464 319.088
+1058741508 10821.3 44002464 319.088
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+1058741508 10821.3 44002464 319.088
+terminate called without an active exception
+1058741508 10821.3 44002464 319.088
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['1058741508', '10821.3', '44002464', '319.088']
+['off_comm', ' 10404352', ' 46645424', ' 307616624', ' 1278869424']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4646748', ' 19482140', ' 83362244', ' -1']
+Testing my_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+412699769 110.498 262488 0.627412
+terminate called without an active exception
+412699769 110.498 262488 0.627412
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['412699769', '110.498', '262488', '0.627412']
+Testing logbatch = 5
+382919905 120.765 262488 0.626095
+terminate called without an active exception
+382919905 120.765 262488 0.626095
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['382919905', '120.765', '262488', '0.626095']
+Testing logbatch = 6
+345373817 157.982 262488 0.626654
+345373817 157.982 262488 0.626654
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['345373817', '157.982', '262488', '0.626654']
+Testing logbatch = 7
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 15059430', ' 79702390', ' 319011550', ' -1']
+Testing my_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+1460015543 487.988 329240 1.28964
+1460015543 487.988 329240 1.28964
+1460015543 487.988 329240 1.28964
+terminate called without an active exception
+1460015543 487.988 329240 1.28964
+1460015543 487.988 329240 1.28964
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['1460015543', '487.988', '329240', '1.28964']
+Testing logbatch = 5
+^C^C[]
+list index out of range
+Error. Restarting.
+^CTraceback (most recent call last):
+  File "./my_benchmark.py", line 187, in <module>
+    time.sleep(5) # Wait for port release
+KeyboardInterrupt
+
+[01;32mgaojc@test-PowerEdge-R940xa[00m:[01;34m~/Desktop/MP-SPDZ[00m$ python ./my_benchmark.py 
+['off_comm', ' 1991696', ' 7401680', ' 30263248', ' 184413264']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4517960', ' 21229960', ' 121642040', ' 493046600']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 6490688', ' 33967936', ' 143247680', ' 865717568']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 8924696', ' 44944504', ' 215950680', ' 1260824488']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 11358704', ' 57202096', ' 319683952', ' 1679431600']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 1976176', ' 7401680', ' 30263248', ' 135961680']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4556040', ' 19627980', ' 79394680', ' 355198280']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 5945344', ' 26654528', ' 124543296', ' 629415232']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 8174848', ' 40972404', ' 206469208', ' 899126184']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 10404352', ' 46645424', ' 307616624', ' 1278869424']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4646748', ' 19482140', ' 83362244', ' -1']
+Testing my_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+412699769 110.654 262488 0.628589
+412699769 110.654 262488 0.628589
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['412699769', '110.654', '262488', '0.628589']
+Testing logbatch = 5
+^C[]
+list index out of range
+Error. Restarting.
+^CTraceback (most recent call last):
+  File "./my_benchmark.py", line 187, in <module>
+    time.sleep(5) # Wait for port release
+KeyboardInterrupt
+
+[01;32mgaojc@test-PowerEdge-R940xa[00m:[01;34m~/Desktop/MP-SPDZ[00m$ maek[K[Kke benchmark -j
 clang++ -o MyShuffle/my_shuffle_main.o MyShuffle/my_shuffle_main.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o Processor/ThreadQueue.o Processor/ThreadQueue.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o Processor/Program.o Processor/Program.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
@@ -61,6 +1300,7 @@ clang++ -o GC/Instruction.o GC/Instruction.cpp -I./local/include -march=native  
 clang++ -o MyShuffle/double_length_prg.o MyShuffle/double_length_prg.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o MyShuffle/Song_shuffle.o MyShuffle/Song_shuffle.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o MyShuffle/mpc_gadget.o MyShuffle/mpc_gadget.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+clang++ -o MyShuffle/my_timer.o MyShuffle/my_timer.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o MyShuffle/block_wrapper.o MyShuffle/block_wrapper.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o MyShuffle/math_gadget.o MyShuffle/math_gadget.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o MyShuffle/my_benchmark.o MyShuffle/my_benchmark.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
@@ -78,7 +1318,7 @@ clang++ -o OT/MascotParams.o OT/MascotParams.cpp -I./local/include -march=native
 clang++ -o OT/BitDiagonal.o OT/BitDiagonal.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 make maybe-boost; \
 cd deps/libOTe; \
-PATH="/home/gaojc/Desktop/MP-SPDZ/local/bin:/home/gaojc/.vscode-server/cli/servers/Stable-fee1edb8d6d72a0ddff41e5f71a671c23ed924b9/server/bin/remote-cli:/home/gaojc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/gaojc/.dotnet/tools" python3 build.py --install=/home/gaojc/Desktop/MP-SPDZ/local -- -DBUILD_SHARED_LIBS=0 -DENABLE_SOFTSPOKEN_OT=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_AVX=ON -DENABLE_SSE=ON && \
+PATH="/home/gaojc/Desktop/MP-SPDZ/local/bin:/home/gaojc/.vscode-server/cli/servers/Stable-38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40/server/bin/remote-cli:/home/gaojc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/gaojc/.dotnet/tools" python3 build.py --install=/home/gaojc/Desktop/MP-SPDZ/local -- -DBUILD_SHARED_LIBS=0 -DENABLE_SOFTSPOKEN_OT=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_AVX=ON -DENABLE_SSE=ON && \
 touch ../../local/lib/liblibOTe.a
 clang++ -o OT/OTExtension.o OT/OTExtension.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o OT/BaseOT.o OT/BaseOT.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
@@ -105,6 +1345,7 @@ clang++ -o FHEOffline/SimpleMachine.o FHEOffline/SimpleMachine.cpp -I./local/inc
 clang++ -o FHEOffline/PairwiseMachine.o FHEOffline/PairwiseMachine.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/NTL-Subs.o FHE/NTL-Subs.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/Plaintext.o FHE/Plaintext.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
+make[1]: Entering directory '/home/gaojc/Desktop/MP-SPDZ'
 clang++ -o FHE/Ciphertext.o FHE/Ciphertext.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/NoiseBounds.o FHE/NoiseBounds.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/QGroup.o FHE/QGroup.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
@@ -117,14 +1358,13 @@ clang++ -o FHE/Random_Coins.o FHE/Random_Coins.cpp -I./local/include -march=nati
 clang++ -o FHE/Rq_Element.o FHE/Rq_Element.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/DiscreteGauss.o FHE/DiscreteGauss.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/P2Data.o FHE/P2Data.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
-make[1]: Entering directory '/home/gaojc/Desktop/MP-SPDZ'
 clang++ -o FHE/FHE_Keys.o FHE/FHE_Keys.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/Subroutines.o FHE/Subroutines.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/FFT_Data.o FHE/FFT_Data.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o FHE/FHE_Params.o FHE/FHE_Params.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 clang++ -o Protocols/CowGearOptions.o Protocols/CowGearOptions.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
 cd `mktemp -d`; \
-PATH="/home/gaojc/Desktop/MP-SPDZ/local/bin:/home/gaojc/.vscode-server/cli/servers/Stable-fee1edb8d6d72a0ddff41e5f71a671c23ed924b9/server/bin/remote-cli:/home/gaojc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/gaojc/.dotnet/tools" cmake /home/gaojc/Desktop/MP-SPDZ/deps/libOTe || \
+PATH="/home/gaojc/Desktop/MP-SPDZ/local/bin:/home/gaojc/.vscode-server/cli/servers/Stable-38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40/server/bin/remote-cli:/home/gaojc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/gaojc/.dotnet/tools" cmake /home/gaojc/Desktop/MP-SPDZ/deps/libOTe || \
 { cd -; make boost; }
 -- The C compiler identification is GNU 13.1.0
 -- The CXX compiler identification is Clang 6.0.0
@@ -206,9 +1446,9 @@ PATH="/home/gaojc/Desktop/MP-SPDZ/local/bin:/home/gaojc/.vscode-server/cli/serve
 
 -- The ASM compiler identification is GNU
 -- Found assembler: /usr/bin/cc
--- Configuring done (4.4s)
+-- Configuring done (4.0s)
 -- Generating done (0.1s)
--- Build files have been written to: /tmp/tmp.dK7aQKF7Kd
+-- Build files have been written to: /tmp/tmp.1VI1y9I3kz
 make[1]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ'
 
 
@@ -284,7 +1524,7 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 -- Option: ENABLE_SILENT_VOLE    = TRUE
 
 
--- Configuring done (0.2s)
+-- Configuring done (0.1s)
 -- Generating done (0.2s)
 -- Build files have been written to: /home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux
 make[1]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
@@ -307,21 +1547,8 @@ make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/li
 [ 71%] Built target frontend_cryptoTools
 make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
 [ 93%] Built target libOTe
-In file included from MyShuffle/my_ote.cpp:1:
-In file included from MyShuffle/my_ote.h:10:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mmake[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/my_ote.cpp:1:
-In file included from MyShuffle/my_ote.h:11:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0mmake[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
+make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
 [ 98%] Built target libOTe_Tests
 make[3]: Entering directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
 make[3]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/linux'
@@ -550,8 +1777,126 @@ make[1]: Leaving directory '/home/gaojc/Desktop/MP-SPDZ/deps/libOTe/out/build/li
 -- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/libOTe/libOTeTargets.cmake
 -- Up-to-date: /home/gaojc/Desktop/MP-SPDZ/local/lib/cmake/libOTe/libOTeTargets-release.cmake
 clang++ -o OT/OTExtensionWithMatrix.o OT/OTExtensionWithMatrix.cpp -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -MMD -MP -c
-3 warnings generated.
-In file included from MyShuffle/test_shuffle.cpp:1:
+In file included from MyShuffle/my_ote.cpp:1:
+In file included from MyShuffle/my_ote.h:10:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/my_ote.cpp:1:
+In file included from MyShuffle/my_ote.h:11:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/my_shuffle.cpp:1:
+In file included from MyShuffle/my_shuffle.h:8:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/my_shuffle.cpp:1:
+In file included from MyShuffle/my_shuffle.h:8:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/Song_shuffle.cpp:1:
+In file included from MyShuffle/Song_shuffle.h:25:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/Song_shuffle.cpp:1:
+In file included from MyShuffle/Song_shuffle.h:25:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0m[1mMyShuffle/my_shuffle.cpp:24:41: [0m[0;1;35mwarning: [0m[1munused parameter 'com' [-Wunused-parameter][0m
+    void book_shuffle_session(mpc_comm &com, shuffle_session *session)
+[0;1;32m                                        ^
+[0m[1mMyShuffle/my_shuffle.cpp:35:43: [0m[0;1;35mwarning: [0m[1munused parameter 'com' [-Wunused-parameter][0m
+    void malloc_random_resource(mpc_comm& com) {
+[0;1;32m                                          ^
+[0mIn file included from MyShuffle/mpc_gadget.cpp:1:
+In file included from MyShuffle/mpc_gadget.h:5:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/mpc_gadget.cpp:1:
+In file included from MyShuffle/mpc_gadget.h:5:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0m3 warnings generated.
+[1mMyShuffle/Song_shuffle.cpp:77:21: [0m[0;1;35mwarning: [0m[1munused variable 'touched' [-Wunused-variable][0m
+                        for (const auto& touched : task) {
+[0;1;32m                                         ^
+[0m[1mMyShuffle/Song_shuffle.cpp:74:8: [0m[0;1;35mwarning: [0m[1munused variable 'next' [-Wunused-variable][0m
+                        int next(0);
+[0;1;32m                            ^
+[0m[1mMyShuffle/Song_shuffle.cpp:59:37: [0m[0;1;35mwarning: [0m[1munused variable 'veclen' [-Wunused-variable][0m
+            logsz = session->logsz, veclen = session->veclen, batch = session->batch;
+[0;1;32m                                    ^
+[0m[1mMyShuffle/Song_shuffle.cpp:90:20: [0m[0;1;35mwarning: [0m[1munused variable 'veclen' [-Wunused-variable][0m
+            size_t veclen = session->veclen;
+[0;1;32m                   ^
+[0m[1mMyShuffle/Song_shuffle.cpp:140:13: [0m[0;1;35mwarning: [0m[1munused variable 'me' [-Wunused-variable][0m
+        int me = com.get_my_number(), n = com.get_n_party();
+[0;1;32m            ^
+[0m[1mMyShuffle/Song_shuffle.cpp:469:62: [0m[0;1;35mwarning: [0m[1munused variable 'E_time' [-Wunused-variable][0m
+        double A_time=0, B_time = 0, C_time = 0, D_time = 0, E_time = 0;
+[0;1;32m                                                             ^
+[0m[1mMyShuffle/Song_shuffle.cpp:468:16: [0m[0;1;35mwarning: [0m[1munused variable 'tot_send_time' [-Wunused-variable][0m
+        double tot_send_time = 0;
+[0;1;32m               ^
+[0m[1mMyShuffle/Song_shuffle.cpp:469:16: [0m[0;1;35mwarning: [0m[1munused variable 'A_time' [-Wunused-variable][0m
+        double A_time=0, B_time = 0, C_time = 0, D_time = 0, E_time = 0;
+[0;1;32m               ^
+[0m[1mMyShuffle/Song_shuffle.cpp:469:50: [0m[0;1;35mwarning: [0m[1munused variable 'D_time' [-Wunused-variable][0m
+        double A_time=0, B_time = 0, C_time = 0, D_time = 0, E_time = 0;
+[0;1;32m                                                 ^
+[0m[1mMyShuffle/Song_shuffle.cpp:429:31: [0m[0;1;35mwarning: [0m[1munused variable 'recv_time' [-Wunused-variable][0m
+        double send_time = 0, recv_time = 0;
+[0;1;32m                              ^
+[0m[1mMyShuffle/Song_shuffle.cpp:469:26: [0m[0;1;35mwarning: [0m[1munused variable 'B_time' [-Wunused-variable][0m
+        double A_time=0, B_time = 0, C_time = 0, D_time = 0, E_time = 0;
+[0;1;32m                         ^
+[0m[1mMyShuffle/Song_shuffle.cpp:429:16: [0m[0;1;35mwarning: [0m[1munused variable 'send_time' [-Wunused-variable][0m
+        double send_time = 0, recv_time = 0;
+[0;1;32m               ^
+[0m[1mMyShuffle/Song_shuffle.cpp:469:38: [0m[0;1;35mwarning: [0m[1munused variable 'C_time' [-Wunused-variable][0m
+        double A_time=0, B_time = 0, C_time = 0, D_time = 0, E_time = 0;
+[0;1;32m                                     ^
+[0mIn file included from MyShuffle/unit_test.cpp:1:
+In file included from MyShuffle/unit_test.h:3:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/unit_test.cpp:1:
+In file included from MyShuffle/unit_test.h:3:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/test_shuffle.cpp:1:
 In file included from MyShuffle/test_shuffle.h:1:
 In file included from MyShuffle/Chase_shuffle.h:6:
 In file included from MyShuffle/mpc_communicator.h:19:
@@ -568,230 +1913,448 @@ In file included from MyShuffle/mpc_communicator.h:23:
 [1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
             PRNG& prng, Channel& chl) override
 [0;1;32m                  ^
-[0mIn file included from MyShuffle/unit_test.cpp:1:
-In file included from MyShuffle/unit_test.h:3:
-In file included from MyShuffle/mpc_communicator.h:19:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/unit_test.cpp:1:
-In file included from MyShuffle/unit_test.h:3:
-In file included from MyShuffle/mpc_communicator.h:23:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0m[1mMyShuffle/test_shuffle.cpp:143:33: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int'
-      [-Wsign-compare][0m
-            for (size_t i(0); i != sz; ++i) {
-[0;1;32m                              ~ ^  ~~
-[0m[1mMyShuffle/test_shuffle.cpp:144:37: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int'
-      [-Wsign-compare][0m
-                for (size_t j(0); j != veclen; ++j) {
-[0;1;32m                                  ~ ^  ~~~~~~
-[0m[1mMyShuffle/test_shuffle.cpp:228:33: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int'
-      [-Wsign-compare][0m
-            for (size_t i(0); i != sz; ++i) {
-[0;1;32m                              ~ ^  ~~
-[0m[1mMyShuffle/test_shuffle.cpp:265:1: [0m[0;1;35mwarning: [0m[1mcontrol reaches end of non-void function [-Wreturn-type][0m
-}
-[0;1;32m^
-[0mIn file included from MyShuffle/my_shuffle.cpp:1:
-In file included from MyShuffle/my_shuffle.h:8:
-In file included from MyShuffle/mpc_communicator.h:19:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/my_shuffle.cpp:1:
-In file included from MyShuffle/my_shuffle.h:8:
-In file included from MyShuffle/mpc_communicator.h:23:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0mIn file included from MyShuffle/Chase_shuffle.cpp:1:
-In file included from MyShuffle/Chase_shuffle.h:6:
-In file included from MyShuffle/mpc_communicator.h:19:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/Chase_shuffle.cpp:1:
-In file included from MyShuffle/Chase_shuffle.h:6:
-In file included from MyShuffle/mpc_communicator.h:23:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0mIn file included from MyShuffle/Song_shuffle.cpp:1:
-In file included from MyShuffle/Song_shuffle.h:25:
-In file included from MyShuffle/mpc_communicator.h:19:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/mpc_gadget.cpp:1:
-In file included from MyShuffle/mpc_gadget.h:5:
-In file included from MyShuffle/mpc_communicator.h:19:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/Song_shuffle.cpp:1:
-In file included from MyShuffle/Song_shuffle.h:25:
-In file included from MyShuffle/mpc_communicator.h:23:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/mpc_gadget.cpp:1:
-In file included from MyShuffle/mpc_gadget.h:5:
-In file included from MyShuffle/mpc_communicator.h:23:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0mIn file included from MyShuffle/my_benchmark.cpp:1:
-In file included from MyShuffle/my_benchmark.h:5:
-In file included from MyShuffle/mpc_gadget.h:5:
-In file included from MyShuffle/mpc_communicator.h:19:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0m[1mMyShuffle/my_shuffle.cpp:24:41: [0m[0;1;35mwarning: [0m[1munused parameter 'com' [-Wunused-parameter][0m
-    void book_shuffle_session(mpc_comm &com, shuffle_session *session)
-[0;1;32m                                        ^
-[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0m[1mMyShuffle/my_shuffle.cpp:35:43: [0m[0;1;35mwarning: [0m[1munused parameter 'com' [-Wunused-parameter][0m
-    void malloc_random_resource(mpc_comm& com) {
-[0;1;32m                                          ^
-[0mIn file included from MyShuffle/my_benchmark.cpp:1:
-In file included from MyShuffle/my_benchmark.h:5:
-In file included from MyShuffle/mpc_gadget.h:5:
-In file included from MyShuffle/mpc_communicator.h:23:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0mIn file included from MyShuffle/mpc_communicator.cpp:1:
-In file included from MyShuffle/mpc_communicator.h:19:
-[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
-            u64 numThreads)
-[0;1;32m                ^
-[0mIn file included from MyShuffle/mpc_communicator.cpp:1:
-In file included from MyShuffle/mpc_communicator.h:23:
-[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
-            PRNG& prng, Channel& chl) override
-[0;1;32m                  ^
-[0m[1mMyShuffle/Song_shuffle.cpp:76:21: [0m[0;1;35mwarning: [0m[1munused variable 'touched' [-Wunused-variable][0m
-                        for (const auto& touched : task) {
-[0;1;32m                                         ^
-[0m[1mMyShuffle/Song_shuffle.cpp:73:8: [0m[0;1;35mwarning: [0m[1munused variable 'next' [-Wunused-variable][0m
-                        int next(0);
-[0;1;32m                            ^
-[0m[1mMyShuffle/Song_shuffle.cpp:58:37: [0m[0;1;35mwarning: [0m[1munused variable 'veclen' [-Wunused-variable][0m
-            logsz = session->logsz, veclen = session->veclen, batch = session->batch;
-[0;1;32m                                    ^
-[0m[1mMyShuffle/Song_shuffle.cpp:89:20: [0m[0;1;35mwarning: [0m[1munused variable 'veclen' [-Wunused-variable][0m
-            size_t veclen = session->veclen;
-[0;1;32m                   ^
-[0m[1mMyShuffle/Song_shuffle.cpp:139:13: [0m[0;1;35mwarning: [0m[1munused variable 'me' [-Wunused-variable][0m
-        int me = com.get_my_number(), n = com.get_n_party();
-[0;1;32m            ^
-[0m[1mMyShuffle/my_benchmark.cpp:231:20: [0m[0;1;35mwarning: [0m[1munused variable 'best_off_time' [-Wunused-variable][0m
-            double best_off_time(1e9);
-[0;1;32m                   ^
-[0m[1mMyShuffle/my_benchmark.cpp:291:20: [0m[0;1;35mwarning: [0m[1munused variable 'best_off_time' [-Wunused-variable][0m
-            double best_off_time(1e9);
-[0;1;32m                   ^
-[0mIn file included from MyShuffle/my_shuffle_main.cpp:13:
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:15:
 [1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h:70:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
             PRNG& prng,
 [0;1;32m                  ^
 [0m[1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h:71:22: [0m[0;1;35mwarning: [0m[1munused parameter 'chl' [-Wunused-parameter][0m
             Channel& chl) override {setBaseOts(baseRecvOts, choices);}
 [0;1;32m                     ^
-[0mIn file included from MyShuffle/my_shuffle_main.cpp:14:
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:16:
 [1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h:53:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
             PRNG& prng,
 [0;1;32m                  ^
 [0m[1m./deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h:54:22: [0m[0;1;35mwarning: [0m[1munused parameter 'chl' [-Wunused-parameter][0m
             Channel& chl)override {
 [0;1;32m                     ^
-[0mIn file included from MyShuffle/my_shuffle_main.cpp:15:
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:17:
 [1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
             u64 numThreads)
 [0;1;32m                ^
 [0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
             u64 numThreads)
 [0;1;32m                ^
-[0mIn file included from MyShuffle/my_shuffle_main.cpp:18:
+[0mIn file included from MyShuffle/my_benchmark.cpp:1:
+In file included from MyShuffle/my_benchmark.h:5:
+In file included from MyShuffle/mpc_gadget.h:5:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/my_benchmark.cpp:1:
+In file included from MyShuffle/my_benchmark.h:5:
+In file included from MyShuffle/mpc_gadget.h:5:
 In file included from MyShuffle/mpc_communicator.h:23:
 [1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
             PRNG& prng, Channel& chl) override
 [0;1;32m                  ^
+[0mIn file included from MyShuffle/my_shuffle_main.cpp:20:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/mpc_communicator.cpp:1:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/Chase_shuffle.cpp:1:
+In file included from MyShuffle/Chase_shuffle.h:6:
+In file included from MyShuffle/mpc_communicator.h:19:
+[1m./deps/libOTe/libOTe/Base/SimplestOT.h:86:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0m[1m./deps/libOTe/libOTe/Base/SimplestOT.h:95:17: [0m[0;1;35mwarning: [0m[1munused parameter 'numThreads' [-Wunused-parameter][0m
+            u64 numThreads)
+[0;1;32m                ^
+[0mIn file included from MyShuffle/Chase_shuffle.cpp:1:
+In file included from MyShuffle/Chase_shuffle.h:6:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0mIn file included from MyShuffle/mpc_communicator.cpp:1:
+In file included from MyShuffle/mpc_communicator.h:23:
+[1m./deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h:74:19: [0m[0;1;35mwarning: [0m[1munused parameter 'prng' [-Wunused-parameter][0m
+            PRNG& prng, Channel& chl) override
+[0;1;32m                  ^
+[0m[1mMyShuffle/test_shuffle.cpp:143:33: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int' [-Wsign-compare][0m
+            for (size_t i(0); i != sz; ++i) {
+[0;1;32m                              ~ ^  ~~
+[0m[1mMyShuffle/test_shuffle.cpp:144:37: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int' [-Wsign-compare][0m
+                for (size_t j(0); j != veclen; ++j) {
+[0;1;32m                                  ~ ^  ~~~~~~
+[0m[1mMyShuffle/test_shuffle.cpp:228:33: [0m[0;1;35mwarning: [0m[1mcomparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int' [-Wsign-compare][0m
+            for (size_t i(0); i != sz; ++i) {
+[0;1;32m                              ~ ^  ~~
+[0m[1mMyShuffle/test_shuffle.cpp:265:1: [0m[0;1;35mwarning: [0m[1mcontrol reaches end of non-void function [-Wreturn-type][0m
+}
+[0;1;32m^
+[0m[1mMyShuffle/my_benchmark.cpp:241:20: [0m[0;1;35mwarning: [0m[1munused variable 'best_off_time' [-Wunused-variable][0m
+            double best_off_time(1e9);
+[0;1;32m                   ^
+[0m[1mMyShuffle/my_benchmark.cpp:301:20: [0m[0;1;35mwarning: [0m[1munused variable 'best_off_time' [-Wunused-variable][0m
+            double best_off_time(1e9);
+[0;1;32m                   ^
+[0m[1mMyShuffle/my_shuffle_main.cpp:52:9: [0m[0;1;35mwarning: [0m[1munused variable 'protocol' [-Wunused-variable][0m
+    int protocol;
+[0;1;32m        ^
 [0m[1mMyShuffle/mpc_communicator.cpp:13:13: [0m[0;1;35mwarning: [0m[1mfield 'alpha' will be initialized after field 'random_resource' [-Wreorder][0m
             alpha(),
 [0;1;32m            ^
-[0m[1mMyShuffle/mpc_communicator.cpp:147:24: [0m[0;1;35mwarning: [0m[1munused variable 'v' [-Wunused-variable][0m
+[0m[1mMyShuffle/mpc_communicator.cpp:148:24: [0m[0;1;35mwarning: [0m[1munused variable 'v' [-Wunused-variable][0m
             for (auto& v : val) input->add_other(party);
 [0;1;32m                       ^
-[0m[1mMyShuffle/mpc_communicator.cpp:413:14: [0m[0;1;35mwarning: [0m[1munused variable 'needExpand' [-Wunused-variable][0m
+[0m[1mMyShuffle/mpc_communicator.cpp:419:14: [0m[0;1;35mwarning: [0m[1munused variable 'needExpand' [-Wunused-variable][0m
         bool needExpand(false);
 [0;1;32m             ^
-[0m[1mMyShuffle/my_shuffle_main.cpp:49:9: [0m[0;1;35mwarning: [0m[1munused variable 'protocol' [-Wunused-variable][0m
-    int protocol;
-[0;1;32m        ^
-[0mclang++ -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -shared -o libSPDZ.so Processor/ThreadQueue.o Processor/Program.o Processor/RingOptions.o Processor/FloatInput.o Processor/ThreadQueues.o Processor/PrepBase.o Processor/Instruction.o Processor/OnlineOptions.o Processor/ProcessorBase.o Processor/ExternalClients.o Processor/HonestMajorityMachine.o Processor/DataPositions.o Processor/FixInput.o Processor/BaseMachine.o Math/Zp_Data.o Math/gf2nlong.o Math/square128.o Math/Setup.o Math/gfpvar.o Math/Bit.o Math/ValueInterface.o Math/bigint.o Math/Square.o Math/gf2n.o Tools/Exceptions.o Tools/aes.o Tools/benchmarking.o Tools/ExecutionStats.o Tools/OfflineMachineBase.o Tools/Waksman.o Tools/DiskVector.o Tools/Subroutines.o Tools/TimerWithComm.o Tools/random.o Tools/aes-ni.o Tools/FlexBuffer.o Tools/names.o Tools/Commit.o Tools/octetStream.o Tools/NetworkOptions.o Tools/Coordinator.o Tools/time-func.o Tools/Lock.o Tools/NamedStats.o Tools/BitVector.o Tools/Signal.o Tools/mkpath.o Tools/Hash.o Tools/Buffer.o Networking/sockets.o Networking/Server.o Networking/CryptoPlayer.o Networking/Player.o Networking/ServerSocket.o Networking/Receiver.o Networking/Sender.o GC/square64.o GC/Instruction.o -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
-3 warnings generated.
-3 warnings generated.
+[0m3 warnings generated.
 5 warnings generated.
+clang++ -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -shared -o libSPDZ.so Processor/ThreadQueue.o Processor/Program.o Processor/RingOptions.o Processor/FloatInput.o Processor/ThreadQueues.o Processor/PrepBase.o Processor/Instruction.o Processor/OnlineOptions.o Processor/ProcessorBase.o Processor/ExternalClients.o Processor/HonestMajorityMachine.o Processor/DataPositions.o Processor/FixInput.o Processor/BaseMachine.o Math/Zp_Data.o Math/gf2nlong.o Math/square128.o Math/Setup.o Math/gfpvar.o Math/Bit.o Math/ValueInterface.o Math/bigint.o Math/Square.o Math/gf2n.o Tools/Exceptions.o Tools/aes.o Tools/benchmarking.o Tools/ExecutionStats.o Tools/OfflineMachineBase.o Tools/Waksman.o Tools/DiskVector.o Tools/Subroutines.o Tools/TimerWithComm.o Tools/random.o Tools/aes-ni.o Tools/FlexBuffer.o Tools/names.o Tools/Commit.o Tools/octetStream.o Tools/NetworkOptions.o Tools/Coordinator.o Tools/time-func.o Tools/Lock.o Tools/NamedStats.o Tools/BitVector.o Tools/Signal.o Tools/mkpath.o Tools/Hash.o Tools/Buffer.o Networking/sockets.o Networking/Server.o Networking/CryptoPlayer.o Networking/Player.o Networking/ServerSocket.o Networking/Receiver.o Networking/Sender.o GC/square64.o GC/Instruction.o -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
+3 warnings generated.
+3 warnings generated.
 7 warnings generated.
-3 warnings generated.
+16 warnings generated.
 5 warnings generated.
+6 warnings generated.
 clang++ -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC -shared -o libFHE.so FHEOffline/Producer.o FHEOffline/Verifier.o FHEOffline/FHE-Subroutines.o FHEOffline/Sacrificing.o FHEOffline/SimpleDistDecrypt.o FHEOffline/EncCommit.o FHEOffline/SimpleEncCommit.o FHEOffline/DataSetup.o FHEOffline/Proof.o FHEOffline/Multiplier.o FHEOffline/Reshare.o FHEOffline/PairwiseSetup.o FHEOffline/TemiSetup.o FHEOffline/DistDecrypt.o FHEOffline/DistKeyGen.o FHEOffline/Prover.o FHEOffline/CutAndChooseMachine.o FHEOffline/SimpleGenerator.o FHEOffline/PairwiseGenerator.o FHEOffline/SimpleMachine.o FHEOffline/PairwiseMachine.o FHE/NTL-Subs.o FHE/Plaintext.o FHE/Ciphertext.o FHE/NoiseBounds.o FHE/QGroup.o FHE/Ring_Element.o FHE/Diagonalizer.o FHE/Ring.o FHE/Matrix.o FHE/FFT.o FHE/Random_Coins.o FHE/Rq_Element.o FHE/DiscreteGauss.o FHE/P2Data.o FHE/FHE_Keys.o FHE/Subroutines.o FHE/FFT_Data.o FHE/FHE_Params.o Protocols/CowGearOptions.o libSPDZ.so -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
 8 warnings generated.
-6 warnings generated.
-8 warnings generated.
-clang++ -o my_shuffle_main.x -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC MyShuffle/my_shuffle_main.o libSPDZ.so MyShuffle/double_length_prg.o MyShuffle/Song_shuffle.o MyShuffle/mpc_gadget.o MyShuffle/block_wrapper.o MyShuffle/math_gadget.o MyShuffle/my_benchmark.o MyShuffle/my_shuffle.o MyShuffle/test_shuffle.o MyShuffle/permutation.o MyShuffle/Benes_network.o MyShuffle/Chase_shuffle.o MyShuffle/my_ote.o MyShuffle/mpc_communicator.o MyShuffle/unit_test.o MyShuffle/OPV.o OT/OTTripleSetup.o OT/MascotParams.o OT/BitDiagonal.o OT/OTExtensionWithMatrix.o OT/OTExtension.o OT/BaseOT.o deps/SimplestOT_C/ref10/libSimplestOT.a deps/SimpleOT/libsimpleot.a local/lib/liblibOTe.a local/lib/libcryptoTools.a libFHE.so -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
+clang++ -o my_shuffle_main.x -I./local/include -march=native  -g -Wextra -Wall -O3 -I. -I./deps -pthread    -DUSE_GF2N_LONG '-DPREP_DIR="Player-Data/"' '-DSSL_DIR="Player-Data/"'   -std=c++17 -fPIC MyShuffle/my_shuffle_main.o libSPDZ.so MyShuffle/double_length_prg.o MyShuffle/Song_shuffle.o MyShuffle/mpc_gadget.o MyShuffle/my_timer.o MyShuffle/block_wrapper.o MyShuffle/math_gadget.o MyShuffle/my_benchmark.o MyShuffle/my_shuffle.o MyShuffle/test_shuffle.o MyShuffle/permutation.o MyShuffle/Benes_network.o MyShuffle/Chase_shuffle.o MyShuffle/my_ote.o MyShuffle/mpc_communicator.o MyShuffle/unit_test.o MyShuffle/OPV.o OT/OTTripleSetup.o OT/MascotParams.o OT/BitDiagonal.o OT/OTExtensionWithMatrix.o OT/OTExtension.o OT/BaseOT.o deps/SimplestOT_C/ref10/libSimplestOT.a deps/SimpleOT/libsimpleot.a local/lib/liblibOTe.a local/lib/libcryptoTools.a libFHE.so -lgmpxx -lgmp -lsodium   -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ/local/lib -L/home/gaojc/Desktop/MP-SPDZ/local/lib -lboost_system -lssl -lcrypto -lboost_filesystem -lboost_iostreams -lrt -Wl,-rpath -Wl,/home/gaojc/Desktop/MP-SPDZ
 python my_benchmark.py
-Testing my_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12, 14]
+['off_comm', ' 1991696', ' 7401680', ' 30263248', ' 184413264']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12, 14]
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12, 14]
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12, 14]
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 3 parties and logsz = 14 of [6, 8, 10, 12, 14]
+['off_comm', ' 4517960', ' 21229960', ' 121642040', ' 493046600']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 6 parties and logsz = 8 of [8, 10, 12, 14]
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 6 parties and logsz = 10 of [8, 10, 12, 14]
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 6 parties and logsz = 12 of [8, 10, 12, 14]
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 6 parties and logsz = 14 of [8, 10, 12, 14]
+['off_comm', ' 6490688', ' 33967936', ' 143247680', ' 865717568']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 9 parties and logsz = 8 of [8, 10, 12, 14]
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 9 parties and logsz = 10 of [8, 10, 12, 14]
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 9 parties and logsz = 12 of [8, 10, 12, 14]
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 9 parties and logsz = 14 of [8, 10, 12, 14]
+['off_comm', ' 8924696', ' 44944504', ' 215950680', ' 1260824488']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
 Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 11358704', ' 57202096', ' 319683952', ' 1679431600']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 1976176', ' 7401680', ' 30263248', ' 135961680']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4556040', ' 19627980', ' 79394680', ' 355198280']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 5945344', ' 26654528', ' 124543296', ' 629415232']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 8174848', ' 40972404', ' 206469208', ' 899126184']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 10404352', ' 46645424', ' 307616624', ' 1278869424']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4646748', ' 19482140', ' 83362244', ' -1']
+Testing my_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+412306377 103.284 262488 0.625179
+412306377 103.284 262488 0.625179
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['412306377', '103.284', '262488', '0.625179']
+Testing logbatch = 5
+382526513 111.87 262488 0.625105
+382526513 111.87 262488 0.625105
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['382526513', '111.87', '262488', '0.625105']
+Testing logbatch = 6
+344980425 147.995 262488 0.623147
+344980425 147.995 262488 0.623147
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['344980425', '147.995', '262488', '0.623147']
+Testing logbatch = 7
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 15059430', ' 79702390', ' 319011550', ' -1']
+Testing my_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+1294686356 444.912 329240 1.27504
+terminate called without an active exception
+1294686356 444.912 329240 1.27504
+1294686356 444.912 329240 1.27504
+1294686356 444.912 329240 1.27504
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+1294686356 444.912 329240 1.27504
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['1294686356', '444.912', '329240', '1.27504']
+Testing logbatch = 5
+1214983576 474.918 329240 1.27595
+1214983576 474.918 329240 1.27595
+terminate called without an active exception
+1214983576 474.918 329240 1.27595
+terminate called without an active exception
+1214983576 474.918 329240 1.27595
+1214983576 474.918 329240 1.27595
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['1214983576', '474.918', '329240', '1.27595']
+Testing logbatch = 6
+Time out
+Testing logbatch = 7
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 29603184', ' 153089584', ' 661794064', ' -1']
+Testing my_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+2327568769 1085.27 353098 1.94239
+2327568769 1085.27 353098 1.94239
+terminate called without an active exception
+2327568769 1085.27 353098 1.94239
+terminate called without an active exception
+2327568769 1085.27 353098 1.94239
+terminate called without an active exception
+terminate called without an active exception
+2327568769 1085.27 353098 1.94239
+2327568769 1085.27 353098 1.94239
+2327568769 1085.27 353098 1.94239
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+2327568769 1085.27 353098 1.94239
+terminate called without an active exception
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['2327568769', '1085.27', '353098', '1.94239']
+Testing logbatch = 5
+Time out
+Testing logbatch = 6
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 7
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 46849447', ' 266054763', ' 1129608047', ' -1']
 Testing my_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
 Already tested. Skip.
 Testing my_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
@@ -799,12 +2362,175 @@ Already tested. Skip.
 Testing my_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
 Already tested. Skip.
 Testing my_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+3552642903 1987.83 366828 3.41045
+terminate called without an active exception
+3552642903 1987.83 366828 3.41045
+3552642903 1987.83 366828 3.41045
+3552642903 1987.83 366828 3.41045
+3552642903 1987.83 366828 3.41045
+3552642903 1987.83 366828 3.41045
+terminate called without an active exception
+3552642903 1987.83 366828 3.41045
+3552642903 1987.83 366828 3.41045
+3552642903 1987.83 366828 3.41045
+terminate called without an active exception
+terminate called without an active exception
+3552642903 1987.83 366828 3.41045
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+3552642903 1987.83 366828 3.41045
+terminate called without an active exception
+terminate called without an active exception
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['3552642903', '1987.83', '366828', '3.41045']
+Testing logbatch = 5
+Time out
+Testing logbatch = 6
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 7
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+py[01;32mgaojc@test-PowerEdge-R940xa[00m:[01;34m~/Desktop/MP-SPDZ[00m$ python ./my_benchmark.py 
+['off_comm', ' 1991696', ' 7401680', ' 30263248', ' 184413264']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
 Already tested. Skip.
-Testing my_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
-  0%|                                                                                                               | 0/4 [00:00<?, ?it/s]
+['off_comm', ' 4517960', ' 21229960', ' 121642040', ' 493046600']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 6490688', ' 33967936', ' 143247680', ' 865717568']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 8924696', ' 44944504', ' 215950680', ' 1260824488']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 11358704', ' 57202096', ' 319683952', ' 1679431600']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 1976176', ' 7401680', ' 30263248', ' 135961680']
+Testing Song_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4556040', ' 19627980', ' 79394680', ' 355198280']
+Testing Song_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 5945344', ' 26654528', ' 124543296', ' 629415232']
+Testing Song_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 8174848', ' 40972404', ' 206469208', ' 899126184']
+Testing Song_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 10404352', ' 46645424', ' 307616624'

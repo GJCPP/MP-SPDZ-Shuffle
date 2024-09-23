@@ -36,13 +36,19 @@ namespace gjcShuffle
         }
     }
 
+    /*
+    * Works for statically allocated type.
+    */
     template <typename T>
-    T insecure_sum(mpc_comm& com, const T& val) {
+    T insecure_static_sum(mpc_comm& com, const T& val) {
         std::vector<T> vals(com.get_n_party());
         vals[com.get_my_number()] = val;
         T ret = {};
         for (int i(0); i != com.get_n_party(); ++i) {
-            com.unchecked_broadcast(i, reinterpret_cast<octet *>(&vals[i]), sizeof(vals[i]));
+            octetStream os;
+            os.serialize(val);
+            com.unchecked_broadcast(i, os);
+            os.unserialize(vals[i]);
             ret += vals[i];
         }
         return ret;

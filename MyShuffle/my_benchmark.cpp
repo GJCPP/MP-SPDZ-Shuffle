@@ -1,4 +1,6 @@
 #include "my_benchmark.h"
+#include "my_timer.h"
+
 
 all_record::all_record(std::string _filename)
     : filename(_filename)
@@ -118,7 +120,9 @@ void execute_Song_shuffle(gjcShuffle::mpc_comm &com,
 
     // Offline Phase
     com.set_offline();
-    off_time = clock();
+
+    gjcShuffle::timer off_time_timer, on_time_timer;
+    off_time_timer.tick();
     for (int rank(0); rank != rep; ++rank) {
         plans.push_back(song2023::book_shuffle_session<ShareType>(com, 
                         logsz, veclen, logbatch, permutation(1 << logsz, true)));
@@ -126,20 +130,23 @@ void execute_Song_shuffle(gjcShuffle::mpc_comm &com,
     song2023::process_all_orders(com);
 
     // Record
-    off_time = (clock() - off_time) / CLOCKS_PER_SEC;
+    off_time_timer.tock();
+    off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
     off_time += comm_time(off_comm);
     com.reset_total_comm();
-
+    
+    com.output_check();
     // Online Phase
     com.set_online();
-    on_time = clock();
+    on_time_timer.tick();
     for (auto plan : plans) {
         plan->perform(com, val);
     }
 
     // Record
-    on_time = (clock() - on_time) / CLOCKS_PER_SEC;
+    on_time_timer.tock();
+    on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
     on_time += comm_time(on_comm);
     com.reset_total_comm();
@@ -149,10 +156,10 @@ void execute_Song_shuffle(gjcShuffle::mpc_comm &com,
     }
 
     // Average
-    off_comm = gjcShuffle::insecure_sum(com, off_comm) / com.get_n_party();
-    off_time = gjcShuffle::insecure_sum(com, off_time) / com.get_n_party();
-    on_comm = gjcShuffle::insecure_sum(com, on_comm) / com.get_n_party();
-    on_time = gjcShuffle::insecure_sum(com, on_time) / com.get_n_party();
+    off_comm = gjcShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_time = gjcShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
+    on_comm = gjcShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_time = gjcShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
 void execute_my_shuffle(gjcShuffle::mpc_comm &com,
@@ -171,7 +178,8 @@ void execute_my_shuffle(gjcShuffle::mpc_comm &com,
 
     // Offline Phase
     com.set_offline();
-    off_time = clock();
+    gjcShuffle::timer off_time_timer, on_time_timer;
+    off_time_timer.tick();
     for (int rank(0); rank != rep; ++rank) {
         plans.push_back(gjcShuffle::book_shuffle_session<ShareType>(com, 
                         logsz, veclen, logbatch, permutation(1 << logsz, true)));
@@ -179,7 +187,8 @@ void execute_my_shuffle(gjcShuffle::mpc_comm &com,
     gjcShuffle::process_all_orders(com);
 
     // Record
-    off_time = (clock() - off_time) / CLOCKS_PER_SEC;
+    off_time_timer.tock();
+    off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
     off_time += comm_time(off_comm);
     com.reset_total_comm();
@@ -188,13 +197,14 @@ void execute_my_shuffle(gjcShuffle::mpc_comm &com,
 
     // Online Phase
     com.set_online();
-    on_time = clock();
+    on_time_timer.tick();
     for (auto plan : plans) {
         plan->perform(com, val);
     }
 
     // Record
-    on_time = (clock() - on_time) / CLOCKS_PER_SEC;
+    on_time_timer.tock();
+    on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
     on_time += comm_time(on_comm);
     com.reset_total_comm();
@@ -204,10 +214,10 @@ void execute_my_shuffle(gjcShuffle::mpc_comm &com,
     }
 
     // Average
-    off_comm = gjcShuffle::insecure_sum(com, off_comm) / com.get_n_party();
-    off_time = gjcShuffle::insecure_sum(com, off_time) / com.get_n_party();
-    on_comm = gjcShuffle::insecure_sum(com, on_comm) / com.get_n_party();
-    on_time = gjcShuffle::insecure_sum(com, on_time) / com.get_n_party();
+    off_comm = gjcShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_time = gjcShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
+    on_comm = gjcShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_time = gjcShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
 void benchmark_Song_shuffle(gjcShuffle::mpc_comm &com)

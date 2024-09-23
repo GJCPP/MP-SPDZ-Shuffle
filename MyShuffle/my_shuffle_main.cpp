@@ -1,5 +1,7 @@
 #define NO_MIXED_CIRCUITS
 
+#include <chrono>
+
 #include "Math/gfp.hpp"
 #include "Machines/SPDZ.hpp"
 #include "Machines/SPDZ2k.hpp"
@@ -24,6 +26,7 @@
 #include "test_shuffle.h"
 #include "unit_test.h"
 #include "my_benchmark.h"
+#include "mpc_gadget.h"
 
 #include "local/include/cryptoTools/Network/IOService.h"
 
@@ -57,14 +60,15 @@ void run_benchmark(int argc, char **argv) {
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
     
     com.init(&set.preprocessing, &set.input, &set.protocol, &set.output);
-    
+
+
+
+
     benchmark_my_shuffle(com);
     benchmark_Song_shuffle(com);
-    int dum = 0;
-    com.unchecked_broadcast(0, dum); // sync
+    
     throw;
 }
-
 
 
 void python_interface(int argc, char **argv) {
@@ -94,12 +98,10 @@ void python_interface(int argc, char **argv) {
 
     gjcShuffle::mpc_comm com(n, me, port_base);
 
-
     // set of protocols
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
     
     com.init(&set.preprocessing, &set.input, &set.protocol, &set.output);
-    
 
     size_t off_comm, on_comm;
     double off_time, on_time;

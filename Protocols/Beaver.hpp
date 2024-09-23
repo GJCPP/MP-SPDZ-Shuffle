@@ -53,6 +53,16 @@ void Beaver<T>::prepare_mul(const T& x, const T& y, int n)
 }
 
 template<class T>
+void Beaver<T>::prepare_mul(const T& x, const T& y, const std::array<T, 3>& triple, int n)
+{
+    (void) n;
+    triples.push_back(triple);
+    shares.push_back(x - triple[0]);
+    shares.push_back(y - triple[1]);
+    lengths.push_back(n);
+}
+
+template<class T>
 void Beaver<T>::exchange()
 {
     assert(shares.size() == 2 * lengths.size());

@@ -46,6 +46,7 @@ public:
 
     void init_mul();
     void prepare_mul(const T& x, const T& y, int n = -1);
+    void prepare_mul(const T& x, const T& y, const std::array<T, 3>& triple, int n = -1);
     void exchange();
     T finalize_mul(int n = -1);
 
