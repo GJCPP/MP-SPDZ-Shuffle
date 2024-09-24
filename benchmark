@@ -2533,4 +2533,254 @@ Testing Song_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
 Already tested. Skip.
 Testing Song_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
 Already tested. Skip.
-['off_comm', ' 10404352', ' 46645424', ' 307616624'
+['off_comm', ' 10404352', ' 46645424', ' 307616624', ' 1278869424']
+Testing Song_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing Song_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 4646748', ' 19482140', ' 83362244', ' 412306377']
+Testing my_shuffle with 3 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 3 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 15059430', ' 79702390', ' 319011550', ' 1294686356']
+Testing my_shuffle with 6 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 6 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 29603184', ' 153089584', ' 661794064', ' 2327568769']
+Testing my_shuffle with 9 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 9 parties and logsz = 12 of [6, 8, 10, 12]
+Already tested. Skip.
+['off_comm', ' 46849447', ' 266054763', ' 1129608047', ' 3552642903']
+Testing my_shuffle with 12 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 12 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 12 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 12 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Alrady tested. Skipped.
+Testing logbatch = 5
+Alrady tested. Skipped.
+Testing logbatch = 6
+Alrady tested. Skipped.
+Testing logbatch = 7
+Alrady tested. Skipped.
+Testing logbatch = 8
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+['off_comm', ' 73442456', ' 427500317', ' 1703557488', ' -1']
+Testing my_shuffle with 15 parties and logsz = 6 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 15 parties and logsz = 8 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 15 parties and logsz = 10 of [6, 8, 10, 12]
+Already tested. Skip.
+Testing my_shuffle with 15 parties and logsz = 12 of [6, 8, 10, 12]
+Testing logbatch = 4
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+4896429094 2875.45 376980 4.32579
+terminate called without an active exception
+4896429094 2875.45 376980 4.32579
+4896429094 2875.45 376980 4.32579
+4896429094 2875.45 376980 4.32579
+4896429094 2875.45 376980 4.32579
+terminate called without an active exception
+terminate called without an active exception
+4896429094 2875.45 376980 4.32579
+4896429094 2875.45 376980 4.32579
+4896429094 2875.45 376980 4.32579
+terminate called without an active exception
+4896429094 2875.45 376980 4.32579
+terminate called without an active exception
+4896429094 2875.45 376980 4.32579
+4896429094 2875.45 376980 4.32579
+4896429094 2875.45 376980 4.32579
+terminate called without an active exception
+terminate called without an active exception
+4896429094 2875.45 376980 4.32579
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+4896429094 2875.45 376980 4.32579
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+terminate called without an active exception
+Aborted
+Aborted
+Aborted
+Aborted
+Aborted
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+Aborted (core dumped)
+['4896429094', '2875.45', '376980', '4.32579']
+Testing logbatch = 5
+Time out
+Testing logbatch = 6
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 7
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 8
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 9
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Testing logbatch = 10
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Time out
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+Terminated
+[01;32mgaojc@test-PowerEdge-R940xa[00m:[01;34m~/Desktop/MP-SPDZ[00m$ 
