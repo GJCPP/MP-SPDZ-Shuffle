@@ -42,6 +42,11 @@ namespace gjcShuffle {
         protocol = _protocol;
         output = _output;
 
+        initialize_alpha();
+    }
+
+    void mpc_comm::initialize_alpha()
+    {
         ClearType alphai = ShareType::get_mac_key();
         input_init();
         input_append_all(alphai);

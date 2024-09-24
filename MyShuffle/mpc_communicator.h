@@ -74,7 +74,8 @@ namespace gjcShuffle {
         ShareType alpha;
         mpc_comm(int n_party, int my_number, int port_base = default_port_base);
         
-        void init(MascotFieldPrep<ShareType> *prep, Input<ShareType> *input, SPDZ<ShareType> *protocol, MAC_Check_<ShareType> *output);
+        void init(MascotFieldPrep<ShareType> *_prep, Input<ShareType> *_input, SPDZ<ShareType> *_protocol, MAC_Check_<ShareType> *_output);
+        void initialize_alpha();
 
         void stop();
 
@@ -102,7 +103,11 @@ namespace gjcShuffle {
         void input_consume(int party, vectors<ShareType>& val);
         ShareType input_consume(int party);
         
-        void prepare_more_mul(size_t num); // Prepare more triples.
+        /**
+         * Prepare more multiplication triples.
+         * @param num Number of triples to prepare.
+         */
+        void prepare_more_mul(size_t num);
         void prepare_more_mul_lazy(size_t num);
         void prepare_more_mul_now(size_t num = 0);
 
@@ -186,11 +191,11 @@ namespace gjcShuffle {
         void ext_ot_send(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1);
         void ext_ot_recv(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg);
 
-        /*
-        *   This function is used to commit a message and open it.
-        *   Each party commits its own content, and after all commitments are received,
-        *       open all messages and check.
-        */
+        /**
+         * This function is used to commit a message and open it.
+         * Each party commits its own content, and after all commitments are received,
+         * open all messages and check.
+         */
         template <typename T>
         void commit_and_open(const T& message, std::vector<T>& open_msg) {
             AllCommitments commitment(P);
