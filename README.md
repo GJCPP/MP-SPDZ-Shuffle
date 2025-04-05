@@ -88,6 +88,8 @@ MPC gadgets:
 
   - `OPV.cpp/h`, `Benes_network.cpp`, `double_length_prg.cpp`, etc. define primitives required by shuffle protocols.
 
+More detailed explanations can be found in corresponding header files
+
 ## Paper and Citation
 
 The project is due to the following paper:
