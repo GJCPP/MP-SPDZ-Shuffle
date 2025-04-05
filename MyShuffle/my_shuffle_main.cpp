@@ -63,7 +63,7 @@ void python_interface(int argc, char **argv) {
     int logbatch = atoi(argv[6]);
     int port_base = atoi(argv[7]);
     int rep = atoi(argv[8]);
-
+    
     myShuffle::mpc_comm com(n, me, port_base);
 
     // set of protocols
@@ -79,4 +79,11 @@ void python_interface(int argc, char **argv) {
         execute_Song_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time);
     }
     std::cout << off_comm / rep << " " << off_time / rep << " " << on_comm / rep << " " << on_time / rep << std::endl;
+    
+    fclose(stderr);
+    throw;
+    /*
+        Unsure why MP-SPDZ takes long time for cleanning-up.
+        Since parameters are recorded, force exit to avoid clean-up / let OS to clean-up.
+    */
 }

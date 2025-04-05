@@ -31,8 +31,6 @@ public:
 };
 
 
-void benchmark_Song_shuffle(myShuffle::mpc_comm& com);
-void benchmark_my_shuffle(myShuffle::mpc_comm& com);
 
 void execute_my_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
@@ -42,4 +40,3 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, double& off_time,
                             size_t& on_comm, double& on_time);
-

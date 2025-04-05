@@ -30,8 +30,21 @@
 #include "my_ote.h"
 
 namespace myShuffle {
+    
     static const int default_port_base(9999);
+    
     class shuffle_session;
+
+    /*
+        mpc_comm serves as communicator for parties.
+        It supports primitives including
+            0. basic send/recv
+            1. sharing a secret
+            2. openning a secret publicly or privately
+            3. generate shared randomneess 
+            3. multiply shared secrets
+            4. two-party OTe
+    */
     class mpc_comm {
     protected:
         friend class shuffle_session;
@@ -65,26 +78,24 @@ namespace myShuffle {
 
         bool online_phase = false;
 
-        // void base_ot_send(int recver, osuCrypto::span<std::array<osuCrypto::block,2 >> send_msg, osuCrypto::Channel channel = {});
+        // Base OT family. Used by OTe.
         void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recv_key, osuCrypto::Channel *channel = nullptr);
         void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
         void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
         void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
     public:
-        ShareType alpha;
         mpc_comm(int n_party, int my_number, int port_base = default_port_base);
         
         void init(MascotFieldPrep<ShareType> *_prep, Input<ShareType> *_input, SPDZ<ShareType> *_protocol, MAC_Check_<ShareType> *_output);
-        void initialize_alpha();
-
-        void stop();
 
         CryptoPlayer& get_P();
         ProtocolSetup<ShareType>& get_setup();
-        int get_port(int party = -1) const;
-        int get_my_number() const;
-        int get_n_party() const;
 
+        int get_port(int party = -1) const; // get the port of party
+        int get_my_number() const; // get the id of this party
+        int get_n_party() const; // get the number of parties
+
+        // Generate random resources (locally).
         void rand_bytes(octet *dest, size_t size);
         void rand_blocks(block_wrapper *dest, size_t num);
         ClearType rand_int();
@@ -92,25 +103,43 @@ namespace myShuffle {
         void rand_int(std::vector<ClearType> &dest);
         void rand_int(vectors<ClearType> &dest);
 
-
+        /*
+            Take inputs from parties.
+            Following an MP-SPDZ manner, a canonical excution should be
+                1. init
+                2. append(who to input, the input value)
+                3. exchange; communication happens at this step
+                4. consume; assign the input (from buffer) to variables
+            Note: you can append arbitrarily before exchange.
+        */
         void input_init();
-        void input_append(int party, const ClearType& val);
-        void input_append_all(const ClearType& val);
-        void input_append(int party, const vectors<ClearType>& val);
-        void input_append_all(const vectors<ClearType>& val);
-        void input_exchange();
-        void input_consume(int party, ShareType& val);
+        void input_append(int party, const ClearType& val); // If me != party, val is not used.
+        void input_append_all(const ClearType& val); // Each party inputs one value
+        void input_append(int party, const vectors<ClearType>& val); // if me != party, val is not used
+        void input_append_all(const vectors<ClearType>& val); // Each party inputs same amount of values
+        void input_exchange(); // Communicate to share values
+        void input_consume(int party, ShareType& val); // Fetch one input for specific party
         void input_consume(int party, vectors<ShareType>& val);
         ShareType input_consume(int party);
         
-        /**
-         * Prepare more multiplication triples.
-         * @param num Number of triples to prepare.
-         */
+        /*
+            Prepare Beaver's triple for multiplications.
+            prepare_more_mul_now should be called at the end of offline phase.
+        */
         void prepare_more_mul(size_t num);
         void prepare_more_mul_lazy(size_t num);
         void prepare_more_mul_now(size_t num = 0);
 
+        /*
+            Compute multiplications.
+            Fetch Beaver's triple from triple_resource. Generate more triples first upon deficiency.
+            Following an MP-SPDZ manner, a canonical execution should be:
+                1. init
+                2. append pairs of shared secret
+                3. exchange, which requires communication
+                4. consume, which fetches the result of multiplication (from buffer)
+            Note: you can append arbitrarily before exchange
+        */
         void mul_init();
         void mul_append(const ShareType& v1, const ShareType& v2);
         void mul_append(const vectors<ShareType>& v1, const vectors<ShareType>& v2);
@@ -119,6 +148,15 @@ namespace myShuffle {
         void mul_consume(vectors<ShareType>& val);
         ShareType mul_consume();
 
+
+        /*
+            Reveal a shared secret publicly.
+            Following an MP-SPDZ manner, a canonical execution should be:
+                1. init
+                2. append
+                3. exchange, which requires communication
+                4. consume, which fetches reconstructed secret (from buffer)
+        */
         void output_immediately(const ShareType& val, ClearType& res);
         void output_immediately(const vectors<ShareType>& val, vectors<ClearType>& res);
         void output_immediately(const std::vector<ShareType>& val, std::vector<ClearType>& res);
@@ -130,15 +168,22 @@ namespace myShuffle {
         void output_consume(ClearType& val);
         void output_consume(vectors<ClearType>& val);
         void output_consume(std::vector<ClearType>& val);
-        void output_check();
         ClearType output_consume();
+        void output_check(); // Checks the integrity of all values opened by far.
 
+        /*
+            Prepare shared randomness used for input.
+        */
         void prepare_more_random_lazy(size_t num);
         void prepare_more_random_now(size_t num = 0);
         ShareType get_random();
 
         void prepare_output_mask(size_t expand);
 
+
+        /*
+            Reveal a shared secret to a specified party. 
+        */
         void prepare_more_private_output_lazy(int party, size_t num);
         void prepare_more_private_output_now(size_t num = 0);
         void private_output_init();
@@ -149,7 +194,9 @@ namespace myShuffle {
         void private_output_consume(int party, vectors<ClearType>& val);
         ClearType private_output_consume(int party);
 
-
+        /*
+            Plaintext send and recv
+        */
         template <typename T>
         void send(int party, T val);
         template <typename T>
@@ -160,7 +207,7 @@ namespace myShuffle {
         template <typename T>
         void unchecked_broadcast(int party, vectors<T> &val);
         template <typename T>
-        void broadcast(int party, T& val);
+        void broadcast(int party, T& val); // Broadcast with consistency check
         template <typename T>
         void broadcast(int party, vectors<T>& val);
 
@@ -184,6 +231,11 @@ namespace myShuffle {
         void send(int party, octetStream &os);
         void recv(int party, octetStream &os);
 
+
+        /*
+            OTe family.
+
+        */
         void send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
         void recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
 
@@ -210,11 +262,22 @@ namespace myShuffle {
             commitment.check(my_number, os);
         }
 
+        /*
+            MAC check for the shuffle protocol by Song et al.
+        */
         void mac_check(const vectors<ShareType>& valMac);
 
+        /*
+            Count the total communication of THIS SINGLE party.
+        */
         size_t count_total_comm() const;
         void reset_total_comm();
 
+        /*
+            Set the phase.
+            In online phase, upon deficiency of random resources, warnings will be generated.
+            There is no other difference for offline/online phases.
+        */
         void set_online();
         void set_offline();
 

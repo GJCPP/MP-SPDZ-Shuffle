@@ -75,5 +75,6 @@ namespace BenesNetwork
 	void dest_to_perm(permutation& perm);
 	void desttask_to_permtask(int sz, std::vector<permutation>& perm);
 
+	// Permutation decomposition by Chase et al.
 	std::vector<permutation> decompose(const Benes_network& bn, int batch);
 }

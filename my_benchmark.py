@@ -20,20 +20,33 @@ def time_limit(seconds):
     finally:
         signal.alarm(0)
 
-def run_command(cmd):
-    os.system(cmd)
+# Run a party
+def run_command(command: str, redir: bool):
+    if redir:
+        with open('stdout', 'w+') as f:
+            subprocess.run(command, shell=True, stdout=f, stderr=subprocess.DEVNULL)
+    else:
+        subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def run_protocol(protocol : str, n_party: int, logsz: int, veclen: int, logbatch: int, port_base: int, rep: int):
-    proc = []
+# Run n_party parties
+def run_protocol(protocol: str, n_party: int, logsz: int, veclen: int, logbatch: int, port_base: int, rep: int):
+    threads = []
     with open('stdout', 'w+') as f:
-        f.write('-1 -1 -1 -1')
-    for party in range(n_party):
-        redir = ' > stdout ' if party == 0 else ''
-        command = "./my_shuffle_main.x " + redir + protocol + ' ' + str(party) + ' ' + str(n_party) + ' ' + str(logsz) + ' ' + str(veclen) + ' ' + str(logbatch) + ' ' + str(port_base) + ' ' + str(rep)
-        proc.append(threading.Thread(target=run_command, args=[command]))
-        proc[-1].start()
-    return proc
+        f.write('-1 -1 -1 -1\n')
 
+    for party in range(n_party):
+        redir = (party == 0)
+        command = f"./my_shuffle_main.x {protocol} {party} {n_party} {logsz} {veclen} {logbatch} {port_base} {rep}"
+        thread = threading.Thread(target=run_command, args=(command, redir))
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
+
+    return threads
+
+# Spare the output of protocol into (offline comm, off time, on comm, on time)
 def sparse_output(proc: list):
     with open('stdout', 'r') as f:
         line = f.readline().split()
@@ -78,6 +91,7 @@ def save_result(filename : str,
         f.write("\n")
         f.write("current, " + str(cur_logsz) + ", " + str(cur_logbatch) + ", " + str(cur_off_comm) + ", " + str(cur_off_time) + ", " + str(cur_on_comm) + ", " + str(cur_on_time) + ", \n")
 
+# Load existing result
 def load_result(filename : str):
     global all_logsz
     res_off_comm = [-1 for i in all_logsz]
@@ -98,20 +112,20 @@ def load_result(filename : str):
                 saved_all_logsz = [int(i) for i in line.strip(',\n ').split(',')[1:]]
                 all_logsz = saved_all_logsz
             line = line.strip(',\n ').split(',')
-            if ind == 1:
+            if ind == 1: # Offline comm
                 print(line)
                 res_off_comm = [int(i) for i in line[1:]]
                 while len(res_off_comm) < len(all_logsz):
                     res_off_comm.append(-1)
-            elif ind == 2:
+            elif ind == 2: # Offline time
                 res_off_time = [float(i) for i in line[1:]]
                 while len(res_off_time) < len(all_logsz):
                     res_off_time.append(-1)
-            elif ind == 3:
+            elif ind == 3: # Online comm
                 res_on_comm = [int(i) for i in line[1:]]
                 while len(res_on_comm) < len(all_logsz):
                     res_on_comm.append(-1)
-            elif ind == 4:
+            elif ind == 4: # Online time
                 res_on_time = [float(i) for i in line[1:]]
                 while len(res_on_time) < len(all_logsz):
                     res_on_time.append(-1)
@@ -129,9 +143,9 @@ def get_filename(protocol : str, target: str, n_party: int):
 
 
 all_n_party = [i for i in range(3, 18, 3)]
-all_logsz = [i for i in range(6, 20, 2)]# [i for i in range(6, 14, 2)]
+all_logsz = [i for i in range(6, 14, 2)]
 __all_logbatch = [i for i in range(4, 11, 1)]
-all_targets = ['total_time', 'on_time'] # ['on_time', 'total_time' ]
+all_targets = ['total_time', 'on_time']
 max_time = 9999999
 all_protocol = ['Song_shuffle', 'my_shuffle']
 port_base = 10000
@@ -151,16 +165,20 @@ for protocol in all_protocol:
             res_off_comm, res_off_time, res_on_comm, res_on_time, cur_logsz, cur_logbatch, cur_off_comm, cur_off_time, cur_on_comm, cur_on_time = load_result(get_filename(protocol, target, n_party))
             for ind, logsz in enumerate(all_logsz):
                 print('Testing ' + protocol + ' with ' + str(n_party) + ' parties and logsz = ' + str(logsz) + ' of ' + str(all_logsz))
+
+
                 if res_off_comm[ind] != -1 and (logsz < cur_logsz or cur_logsz == -1):
                     print('Already tested. Skip.')
                     continue
+
+                # Initial record
                 all_time_out  = True
                 best_off_comm = 10000000000000 if cur_logbatch == -1 else cur_off_comm
                 best_off_time = 1e9 if cur_logbatch == -1 else cur_off_time
                 best_on_comm  = 10000000000000 if cur_logbatch == -1 else cur_on_comm
                 best_on_time  = 1e9 if cur_logbatch == -1 else cur_on_time
                 best_total_time = 1e9 if cur_logbatch == -1 else cur_on_time + cur_off_time
-                wait_time = 1000000000 if target == 'on_time' else int(best_total_time + 60)
+                wait_time = max_time if target == 'on_time' else int(best_total_time + 60)
                 all_logbatch = __all_logbatch
 
                 
@@ -176,15 +194,19 @@ for protocol in all_protocol:
                         continue
                     else:
                         cur_logbatch = -1
+
                     off_time, off_comm = 0.0, 0
                     on_time, on_comm = 0.0, 0
                     continue_test = True
                     time_out = False
                     proc = []
                     elapse = max_time
+
                     while continue_test:
                         continue_test = False
                         time.sleep(5) # Wait for port release
+                        
+                        # Run the protocol
                         try:
                             current_time = time.time()
                             with time_limit(wait_time):
@@ -194,6 +216,8 @@ for protocol in all_protocol:
                             elapse = time.time() - current_time
                         except TimeoutException as e:
                             time_out = True
+
+                        # Handle output
                         try:
                             if time_out:
                                 print("Time out")
@@ -225,6 +249,7 @@ for protocol in all_protocol:
                             print(e)
                             print("Error. Restarting.")
                             os.system("pkill my_shuffle_main")
-                            continue_test = True
+                            continue_test = True # Recover from exception
+
                 save_result(get_filename(protocol, target, n_party), res_off_comm, res_off_time, res_on_comm, res_on_time)
 

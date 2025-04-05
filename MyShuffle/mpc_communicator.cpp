@@ -10,7 +10,6 @@ namespace myShuffle {
             osuPrg(osuCrypto::sysRandomSeed()),
             prg(),
             shared_mask(n_party),
-            alpha(),
             random_resource(),
             triple_resource(),
             expand_random_size(0),
@@ -42,23 +41,6 @@ namespace myShuffle {
         protocol = _protocol;
         output = _output;
 
-        initialize_alpha();
-    }
-
-    void mpc_comm::initialize_alpha()
-    {
-        ClearType alphai = ShareType::get_mac_key();
-        input_init();
-        input_append_all(alphai);
-        input_exchange();
-        for (int i(0); i != n_party; ++i) {
-            alpha += input_consume(i);
-        }
-    }
-
-    void mpc_comm::stop()
-    {
-        protocol->stop_exchange();
     }
 
     CryptoPlayer &mpc_comm::get_P()

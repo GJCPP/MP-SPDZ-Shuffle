@@ -6,7 +6,9 @@ This is an implementation of secure multi-party shuffle protocol based on [MP-SP
 
 Please read [the instruction of MP-SPDZ](https://github.com/data61/MP-SPDZ) for setting up the MP-SPDZ part of the project.
 
-Use `make example` to run a 3-party example, which translates to
+Note that in MP-SPDZ, you should run `Scripts/setup-ssl.sh <nparties>` once for setting up communication channel before executing an n-party protocols.
+
+In directory `MP-SPDZ-Shuffle`, use `make example` to run a 3-party example, which translates to
 
 
 ```
@@ -49,11 +51,11 @@ See also `MyShuffle/my_shuffle_main.cpp`.
 
 $n$ is the number of parties, $m$ the number of items (to be shuffled), $B$ a parameter related to security parameter.
 
-In context, [2] is built upon [1] and [3] is instantiated by [2]. Note that [3] can also be implemented with other secret sharing scheme (e.g. Shamir SS) and other basic permutation protocol. In this project, [3] is instantiated by MP-SPDZ and [2].
+In context, [2] can be seen as an enhancement to [1], and [3] is instantiated by [2]. Note that [3] can also be implemented with other secret sharing scheme (e.g. Shamir SS) and other basic permutation protocol. In this project, [3] is instantiated by SPDZ and [2].
 
 Protocol [1] includes an additional parameter $k$ ("logbatch" in code) for balancing communication and computation, which is inherited by [2] and [3]. Increasing $k$ reduces communication and increases computation.
 
-Note that the benchmark script does not include explicit test for [1].
+Note that the benchmark script does not include test for [1].
 
 ## File Structure
 

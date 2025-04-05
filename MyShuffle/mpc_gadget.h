@@ -8,7 +8,7 @@
 namespace myShuffle
 {
     /*
-        Caution: the functions provided in this file are not secure, only for testing purpose.
+        Caution: the functions provided in this file are not secure, only for testing and debugging purpose.
     */
 
     template <typename T>

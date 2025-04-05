@@ -427,19 +427,24 @@ namespace song2023 {
     void permute_session::perform(mpc_comm &com, vectors<ClearType> &val)
     {
         double send_time = 0, recv_time = 0;
-        if (!initialized) {
-            std::cerr << FAIL_INFO << "Not initialized. Please call function process_all_orders." << std::endl;
-            throw std::runtime_error("permute_session::perform : Not initialized.");
-        }
         int n = com.get_n_party(), me = com.get_my_number();
         size_t sz = (1 << logsz);
-#ifdef DEBUG
+
         if (sz != val.num || veclen != val.len) {
             std::cerr << "permute_session::perform : size mismatch, " 
                 << sz << " != " << val.num << " or " << veclen << " != " << val.len << std::endl;
             throw std::runtime_error("permute_session::perform : size mismatch.");
         }
-#endif
+        if (!initialized) {
+            std::cerr << FAIL_INFO << "Not initialized. Please call function process_all_orders." << std::endl;
+            throw std::runtime_error("permute_session::perform : Not initialized.");
+        }
+        if (destroyed) {
+            std::cerr << FAIL_INFO << "permute session destroyed. Do not use one session twice." << std::endl;
+            throw std::runtime_error("permute_session::perform : permute session destroyed.");
+        }
+
+
         static std::vector<int> dest; dest.resize(sz);
 		if (me == permuter) {
 			for (size_t i(0); i != sz; ++i) dest[perm[i]] = i;

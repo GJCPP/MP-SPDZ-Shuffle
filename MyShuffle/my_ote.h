@@ -15,6 +15,9 @@
 #include "vectors.h"
 #include "block_wrapper.h"
 
+/*
+    A wrapper for base OT.
+*/
 namespace my_ote {
     void recv_base_cor_ot(
                 osuCrypto::BitVector choices,

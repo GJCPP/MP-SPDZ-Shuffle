@@ -8,9 +8,43 @@
 #include "mpc_communicator.h"
 #include "Song_shuffle.h"
 
+/*
+    This is the implementation of following paper.
+
+    @misc{cryptoeprint:2025/165,
+        author = {Jiacheng Gao and Yuan Zhang and Sheng Zhong},
+        title = {Shuffle Shamir Secret Shares Uniformly with Linear Online Communication},
+        howpublished = {Cryptology {ePrint} Archive, Paper 2025/165},
+        year = {2025},
+        url = {https://eprint.iacr.org/2025/165}
+    }
+
+    A canonical execution includes
+
+        Offline:
+            1. plan = book_shuffle_session(...)
+                This returns a pointer to necessary (unallocated) resources for performing shuffle
+                The "resource" is random correlation.
+            2. process_all_orders
+                This fuels all resources for booked shuffle session.
+
+        Online:
+            1. plan->perform(...)
+                This consumes the correlation and performs the shuffle.
+                A plan should be used only once.
+
+    Note: in namespace song2023, we also have book_shuffle_session, which differs from myShuffle::book_shuffle_session.
+*/
+
 namespace myShuffle {
-    // Shuffle Correlation
+    
     class shuffle_session;
+
+    /*
+        Shuffle correlation, which is generated in offline.
+        Used to achieve linear online communication.
+        See the paper for detailed explanation of each entry.
+    */
     class shuffle_cor {
         friend shuffle_session;
     protected:
@@ -18,13 +52,21 @@ namespace myShuffle {
     public:
         shuffle_cor() = default;
 
-        permutation perm;
+        permutation perm; // The (secret) permutation chosen by the party.
         ShareType beta; // MAC key
         std::vector<vectors<ShareType>> r, beta_r, rp;
         std::vector<vectors<ShareType>> permuted_r, permuted_beta_r, permuted_rp;
         vectors<ClearType> z[2]; // If the party is not zero party, z is non-empty.
     };
 
+    /*
+        Parameters for the shuffle.
+        Booked shuffle sessions is recorded by
+            std::map<shuffle_info, std::vector<order_info>> booked_shuffle
+
+        Hence, sessions with same shuffle_info will be batched, whose resources
+            will be generated within same OTe session, for saving base OT.
+    */
     class shuffle_info {
     public:
         shuffle_info() = default;
@@ -81,6 +123,7 @@ namespace myShuffle {
             destroyed = false;
             permute_sessions.resize(n_party);
 
+            // initialize null shuffle correlation
             cor.r.resize(n_party);
             cor.beta_r.resize(n_party);
             cor.rp.resize(n_party);
@@ -90,11 +133,12 @@ namespace myShuffle {
             cor.perm = perm;
 
             for (int i = 0; i < n_party; ++i) {
+                // three times veclen: permuting (r, beta r, rp)
                 permute_sessions[i].init<T>(i, logsz, 3 * veclen, batch, cor.perm);
             }
         }
 
-        // Perform the magic of shuffle protocol! (online phase)
+        // Perform shuffle protocol
         void perform(mpc_comm& com, vectors<ShareType>& val);
 
         const permutation& get_perm() const;
@@ -107,6 +151,8 @@ namespace myShuffle {
 
         shuffle_session *session; // which session this order belongs to.
     };
+
+    
     extern std::map<shuffle_info, std::vector<order_info>> booked_shuffle;
 
     // Book resource for a permute session.

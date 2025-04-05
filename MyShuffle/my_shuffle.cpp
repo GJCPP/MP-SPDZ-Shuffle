@@ -303,7 +303,7 @@ namespace myShuffle {
 
     void shuffle_session::destroy()
     {
-        destroyed = true;;
+        destroyed = true;
     }
 
     void shuffle_session::perform(mpc_comm &com, vectors<ShareType> &val)
@@ -316,6 +316,10 @@ namespace myShuffle {
         if (!cor.initialized) {
             std::cerr << FAIL_INFO << "uninitialized shuffle session. Please call process_all_orders first." << std::endl;
             throw std::runtime_error("shuffle_session::perform : uninitialized shuffle session.");
+        }
+        if (destroyed) {
+            std::cerr << FAIL_INFO << "shuffle session destroyed. Do not use one session twice." << std::endl;
+            throw std::runtime_error("shuffle_session::perform : shuffle session destroyed.");
         }
         size_t num = 1 << logsz, len = veclen;
         vectors<ShareType> beta_val(num, len);

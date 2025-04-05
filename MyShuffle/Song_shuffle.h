@@ -1,13 +1,3 @@
-/*
-    This file implements the secure shuffle protocol designed in the paper:
-        @article{song2023secret,
-        title={Secret-Shared Shuffle with Malicious Security},
-        author={Song, Xiangfu and Yin, Dong and Bai, Jianli and Dong, Changyu and Chang, Ee-Chien},
-        journal={Cryptology ePrint Archive},
-        year={2023}
-        }
-*/
-
 #pragma once
 #include <map>
 
@@ -26,6 +16,31 @@
 #include "mpc_gadget.h"
 
 #define MAX_BATCH_SIZE 32
+
+/*
+    This is the implementation of the following paper:
+        @article{song2023secret,
+            title={Secret-Shared Shuffle with Malicious Security},
+            author={Song, Xiangfu and Yin, Dong and Bai, Jianli and Dong, Changyu and Chang, Ee-Chien},
+            journal={Cryptology ePrint Archive},
+            year={2023}
+        }
+
+    
+    A canonical execution includes
+
+        Offline:
+            1. plan = book_shuffle_session(...)
+                This returns a pointer to necessary (unallocated) resources for performing shuffle
+                The "resource" is random correlation.
+            2. process_all_orders
+                This fuels all resources for booked shuffle session.
+
+        Online:
+            1. plan->perform(...)
+                This consumes the correlation and performs the shuffle.
+                A plan should be used only once.
+*/
 
 namespace song2023 {
     using myShuffle::mpc_comm;
@@ -66,7 +81,8 @@ namespace song2023 {
             - The batch size of the permute protocol. (Hence the parties could use Benes network to reconstruct each small permutation.)
             - The permutation itself, known only by the permuter.
             - The permute_pair, n-1 for permuter, 1 for each sender.
-        All parties are involved in the permute protocol, each (except permuter) acts as a sender by turn.
+
+        All parties are involved in the permute protocol, each (except permuter) acts as a sender (in the two-party permutation protocol) in turn.
     */
     class permute_session {
 
@@ -149,6 +165,10 @@ namespace song2023 {
         // Perform the magic of shuffle protocol!
         template <typename T>
         void perform(mpc_comm& com, vectors<T>& val) {
+            if (destroyed) {
+                std::cerr << FAIL_INFO << "shuffle session destroyed. Do not use one session twice." << std::endl;
+                throw std::runtime_error("shuffle_session::perform : shuffle session destroyed.");
+            }
             for (int i = 0; i < n_party; ++i) {
                 permute_sessions[i].perform(com, val);
             }

@@ -13,28 +13,39 @@
 #include "double_length_prg.h"
 
 namespace myShuffle{
-	class oblivious_punctured_vector {
-	public:
-		int pos; // The punctured position.
-		std::vector<prg_seed> data;
-	};
-
 	/*
-	*	the opv of length 2^n
-	*	Caution: this implementation is not secure against active adversaries,
-	*			in the sense that selective faliure attack may be carried out.
-	*	This is fixed in Song::shuffle by cut-and-choose technique.
-	*	C.f. "Secret-Shared Shuffle with Malicious Security", https://eprint.iacr.org/2023/1794
-	*	See also Song_shuffle.h/cpp for the implementation of shuffle using this opv.
+		The opv of length 2^n.
+
+		A canonical usage should be like:
+
+			1. sender_append_OPV/receiver_append_OPV
+				Which translates the target OPV to OT sessions.
+				You can arbitrarily run xxx_append_OPV at this step.
+				
+			2. perform OTe and record the OT messages
+				The OT messages should include PRG seeds and hash_val
+
+			3. opv_2n(...)
+				Sequentially calling opv_2n(...) to reconstruct opvs from OT messages.
+	
+		Caution: this implementation ALONE is not secure against active adversaries,
+				in the sense that selective faliure attack may be carried out.
+		See also Song_shuffle.h/cpp for the usage of this opv.
+	
 	*/
 	class opv_2n {
 	public:
 		opv_2n() = default;
+		
 		/*
-		* Reconstruct all entries of opv from OT messages.
+			Reconstruct all entries of opv from OT messages.
 		*/
 		opv_2n(int n, int pos, const prg_seed ot_msg[], const block_wrapper hash_val[]);
 
+		/*
+			Reconstruct one opv from OT messages.
+			Pointer ot_msg and next_hash_val will be moved to the first unused OT messages.
+		*/
 		opv_2n(int n, int pos, prg_seed*& ot_msg, block_wrapper*& next_hash_val);
 
 		const prg_seed& operator[](size_t pos) const;
@@ -56,9 +67,6 @@ namespace myShuffle{
     /*
      * Sender is the one who knows all entries.
      */
-
-    //template <typename mpc_int>
-	//oblivious_punctured_vector fetch_opv(mpc_comm<mpc_int>& com, int sender, int receiver, int length, int pos);
 }
 
 
