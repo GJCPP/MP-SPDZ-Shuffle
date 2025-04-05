@@ -11,13 +11,14 @@
 /*
     This is the implementation of following paper.
 
-    @misc{cryptoeprint:2025/165,
+    @misc{cryptoeprint:2024/1936,
         author = {Jiacheng Gao and Yuan Zhang and Sheng Zhong},
-        title = {Shuffle Shamir Secret Shares Uniformly with Linear Online Communication},
-        howpublished = {Cryptology {ePrint} Archive, Paper 2025/165},
-        year = {2025},
-        url = {https://eprint.iacr.org/2025/165}
+        title = {Multiparty Shuffle: Linear Online Phase is Almost for Free},
+        howpublished = {Cryptology {ePrint} Archive, Paper 2024/1936},
+        year = {2024},
+        url = {https://eprint.iacr.org/2024/1936}
     }
+
 
     A canonical execution includes
 
