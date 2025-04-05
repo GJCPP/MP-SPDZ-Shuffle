@@ -104,7 +104,7 @@ void load_record(std::string filename, all_record &rec) {
     ifs.close();
 }
 
-void execute_Song_shuffle(gjcShuffle::mpc_comm &com,
+void execute_Song_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, double& off_time,
                             size_t& on_comm, double& on_time)
@@ -121,7 +121,7 @@ void execute_Song_shuffle(gjcShuffle::mpc_comm &com,
     // Offline Phase
     com.set_offline();
 
-    gjcShuffle::timer off_time_timer, on_time_timer;
+    myShuffle::timer off_time_timer, on_time_timer;
     off_time_timer.tick();
     for (int rank(0); rank != rep; ++rank) {
         plans.push_back(song2023::book_shuffle_session<ShareType>(com, 
@@ -156,35 +156,35 @@ void execute_Song_shuffle(gjcShuffle::mpc_comm &com,
     }
 
     // Average
-    off_comm = gjcShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
-    off_time = gjcShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
-    on_comm = gjcShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
-    on_time = gjcShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
+    off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
+    on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
-void execute_my_shuffle(gjcShuffle::mpc_comm &com,
+void execute_my_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, double& off_time,
                             size_t& on_comm, double& on_time)
 {
-    using namespace gjcShuffle;
+    using namespace myShuffle;
     static vectors<ShareType> val; val.resize(1 << logsz, veclen);
     size_t val_sz= val.size();
     for (size_t k(0); k != val_sz; ++k) {
         val.at(k) = ShareType::constant(k, com.get_my_number(), ShareType::get_mac_key());
     }
     com.reset_total_comm();
-    static std::vector<gjcShuffle::shuffle_session *> plans; plans.clear();
+    static std::vector<myShuffle::shuffle_session *> plans; plans.clear();
 
     // Offline Phase
     com.set_offline();
-    gjcShuffle::timer off_time_timer, on_time_timer;
+    myShuffle::timer off_time_timer, on_time_timer;
     off_time_timer.tick();
     for (int rank(0); rank != rep; ++rank) {
-        plans.push_back(gjcShuffle::book_shuffle_session<ShareType>(com, 
+        plans.push_back(myShuffle::book_shuffle_session<ShareType>(com, 
                         logsz, veclen, logbatch, permutation(1 << logsz, true)));
     }
-    gjcShuffle::process_all_orders(com);
+    myShuffle::process_all_orders(com);
 
     // Record
     off_time_timer.tock();
@@ -214,13 +214,13 @@ void execute_my_shuffle(gjcShuffle::mpc_comm &com,
     }
 
     // Average
-    off_comm = gjcShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
-    off_time = gjcShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
-    on_comm = gjcShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
-    on_time = gjcShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
+    off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
+    on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
-void benchmark_Song_shuffle(gjcShuffle::mpc_comm &com)
+void benchmark_Song_shuffle(myShuffle::mpc_comm &com)
 {
     using namespace song2023;
     std::vector<std::string> all_target = {"on_time", "total_time"};
@@ -280,9 +280,9 @@ void benchmark_Song_shuffle(gjcShuffle::mpc_comm &com)
     if (com.get_my_number() == 0) std::cout << "Done." << std::endl;
 }
 
-void benchmark_my_shuffle(gjcShuffle::mpc_comm &com)
+void benchmark_my_shuffle(myShuffle::mpc_comm &com)
 {
-    using namespace gjcShuffle;
+    using namespace myShuffle;
     std::vector<std::string> all_target = {"total_time"};
     for (auto target : all_target) {
         all_record rec(get_filename("my_shuffle", target, com.get_n_party()));

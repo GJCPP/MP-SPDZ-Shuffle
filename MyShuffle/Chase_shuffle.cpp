@@ -3,7 +3,7 @@
 #include "math_gadget.h"
 
 namespace chase2020 {
-	using namespace gjcShuffle;
+	using namespace myShuffle;
 	shuffle_pair prepare_permute(mpc_comm& com, int sender, int permuter,
 		const std::vector<int>& perm, int sz, int veclen, int batch)
 	{

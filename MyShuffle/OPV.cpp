@@ -1,7 +1,7 @@
 #include "OPV.h"
 
 
-namespace gjcShuffle {
+namespace myShuffle {
 	opv_2n::opv_2n(int n, int _pos, const prg_seed ot_msg[], const block_wrapper hash_val[])
 		: pos(_pos)
 	{

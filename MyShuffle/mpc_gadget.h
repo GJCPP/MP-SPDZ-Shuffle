@@ -5,7 +5,7 @@
 #include "mpc_communicator.h"
 
 
-namespace gjcShuffle
+namespace myShuffle
 {
     /*
         Caution: the functions provided in this file are not secure, only for testing purpose.

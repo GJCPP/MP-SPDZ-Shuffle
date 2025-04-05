@@ -27,9 +27,9 @@ bool check_shuffle(vectors<ClearType>& ori, vectors<ClearType>& vec, bool in_pla
     return true;
 }
 
-bool test_Chase_shuffle(gjcShuffle::mpc_comm &com)
+bool test_Chase_shuffle(myShuffle::mpc_comm &com)
 {
-    using gjcShuffle::mpc_comm;
+    using myShuffle::mpc_comm;
     static std::mt19937 eng;
     using namespace chase2020;
     int num_test(100);
@@ -90,9 +90,9 @@ bool test_Chase_shuffle(gjcShuffle::mpc_comm &com)
     return true;
 }
 
-bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
+bool test_Song_shuffle(myShuffle::mpc_comm &com)
 {
-    using gjcShuffle::mpc_comm;
+    using myShuffle::mpc_comm;
     using namespace song2023;
 
     static std::mt19937 eng;
@@ -175,9 +175,9 @@ bool test_Song_shuffle(gjcShuffle::mpc_comm &com)
     return true;
 }
 
-bool test_my_shuffle(gjcShuffle::mpc_comm &com)
+bool test_my_shuffle(myShuffle::mpc_comm &com)
 {
-    using namespace gjcShuffle;
+    using namespace myShuffle;
 
     static std::mt19937 eng;
     int tot_test(1);

@@ -3,7 +3,7 @@
 #include "mpc_communicator.h"
 #include "OPV.h"
 
-namespace gjcShuffle {
+namespace myShuffle {
     bool test_com(mpc_comm& com);
 
     bool test_broadcast(mpc_comm &com);

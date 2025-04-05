@@ -1,6 +1,5 @@
 #include "my_ote.h"
 
-
 namespace my_ote {
     void recv_base_cor_ot(osuCrypto::BitVector choices,
                         osuCrypto::span<osuCrypto::block> recvKey,

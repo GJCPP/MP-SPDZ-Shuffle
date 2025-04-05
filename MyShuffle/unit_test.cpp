@@ -1,6 +1,6 @@
 #include "unit_test.h"
 
-namespace gjcShuffle {
+namespace myShuffle {
     bool test_com(mpc_comm &com)
     {
         const int n(100);

@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 
-namespace gjcShuffle {
+namespace myShuffle {
     typedef std::chrono::microseconds DT;
     typedef std::chrono::steady_clock ClockT;
     class timer

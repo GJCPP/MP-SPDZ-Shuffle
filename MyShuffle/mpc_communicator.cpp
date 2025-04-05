@@ -1,6 +1,6 @@
 #include "mpc_communicator.h"
 
-namespace gjcShuffle {
+namespace myShuffle {
 
     mpc_comm::mpc_comm(int _n_party, int _my_number, int _port_base)
         : n_party(_n_party), my_number(_my_number), sessions(n_party), ios(),

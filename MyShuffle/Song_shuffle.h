@@ -28,7 +28,7 @@
 #define MAX_BATCH_SIZE 32
 
 namespace song2023 {
-    using gjcShuffle::mpc_comm;
+    using myShuffle::mpc_comm;
 
     #define DEFAULT_BUCKET_SIZE 30
     extern const int bucket_size[7][17];

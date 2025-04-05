@@ -8,7 +8,7 @@
 #include "mpc_communicator.h"
 #include "Song_shuffle.h"
 
-namespace gjcShuffle {
+namespace myShuffle {
     // Shuffle Correlation
     class shuffle_session;
     class shuffle_cor {

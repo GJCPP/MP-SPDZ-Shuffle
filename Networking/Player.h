@@ -28,7 +28,7 @@ using namespace std;
 template<class T> class MultiPlayer;
 class Server;
 class ServerSocket;
-namespace gjcShuffle {
+namespace myShuffle {
   class mpc_comm;
 }
 /**
@@ -36,7 +36,7 @@ namespace gjcShuffle {
  */
 class Names
 {
-  friend class gjcShuffle::mpc_comm;
+  friend class myShuffle::mpc_comm;
   friend class Player;
   friend class PlainPlayer;
   friend class RealTwoPartyPlayer;

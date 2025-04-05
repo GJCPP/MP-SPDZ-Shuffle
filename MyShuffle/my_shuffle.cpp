@@ -1,6 +1,6 @@
 #include "my_shuffle.h"
 
-namespace gjcShuffle {
+namespace myShuffle {
     std::map<shuffle_info, std::vector<order_info>> booked_shuffle;
 
     shuffle_info::shuffle_info(int _logsz, size_t _veclen)

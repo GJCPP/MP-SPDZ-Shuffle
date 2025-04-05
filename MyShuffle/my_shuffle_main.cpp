@@ -30,44 +30,12 @@
 
 #include "local/include/cryptoTools/Network/IOService.h"
 
-
-void run_benchmark(int argc, char **argv);
-
 void python_interface(int argc, char **argv);
 
 int main(int argc, char** argv)
 {
-    //run_benchmark(argc, argv);
     python_interface(argc, argv);
     return 0;
-}
-
-
-void run_benchmark(int argc, char **argv) {
-    if (argc < 3) {
-        std::cerr << "Usage: " << argv[0] << " <me> <n_party>" << std::endl;
-        return;
-    }
-    // set up networking on localhost
-    int protocol;
-    int me = atoi(argv[1]);
-    int n = atoi(argv[2]);
-
-    gjcShuffle::mpc_comm com(n, me);
-
-
-    // set of protocols
-    ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
-    
-    com.init(&set.preprocessing, &set.input, &set.protocol, &set.output);
-
-
-
-
-    benchmark_my_shuffle(com);
-    benchmark_Song_shuffle(com);
-    
-    throw;
 }
 
 
@@ -96,7 +64,7 @@ void python_interface(int argc, char **argv) {
     int port_base = atoi(argv[7]);
     int rep = atoi(argv[8]);
 
-    gjcShuffle::mpc_comm com(n, me, port_base);
+    myShuffle::mpc_comm com(n, me, port_base);
 
     // set of protocols
     ProtocolSet<ShareType> set(com.get_P(), com.get_setup());
@@ -111,10 +79,4 @@ void python_interface(int argc, char **argv) {
         execute_Song_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time);
     }
     std::cout << off_comm / rep << " " << off_time / rep << " " << on_comm / rep << " " << on_time / rep << std::endl;
-    throw;
-    /*
-     Force exit.
-     I do not know why normal exit costs very very long time (to clean up / deconstruction?).
-     To save test time, I force exit here. Nevertheless, the time record in execute_xxx_shuffle is accurate.
-    */
 }

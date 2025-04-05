@@ -12,7 +12,7 @@
 #include "global.h"
 #include "double_length_prg.h"
 
-namespace gjcShuffle{
+namespace myShuffle{
 	class oblivious_punctured_vector {
 	public:
 		int pos; // The punctured position.

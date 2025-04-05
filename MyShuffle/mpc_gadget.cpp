@@ -1,6 +1,6 @@
 #include "mpc_gadget.h"
 
-namespace gjcShuffle {
+namespace myShuffle {
     void insecure_share(mpc_comm &com, int owner, vectors<block_wrapper> &val)
     {
         int me = com.get_my_number(), n = com.get_n_party();

@@ -2,7 +2,7 @@
 #include "my_timer.h"
 
 namespace song2023 {
-    using namespace gjcShuffle;
+    using namespace myShuffle;
     std::map<permute_info, std::vector<order_info>> booked_permute;
     std::map<int, size_t> count_permute_task;
     std::vector<permute_session *> booked_sessions;

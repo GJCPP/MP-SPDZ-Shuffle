@@ -29,7 +29,7 @@
 #include "block_wrapper.h"
 #include "my_ote.h"
 
-namespace gjcShuffle {
+namespace myShuffle {
     static const int default_port_base(9999);
     class shuffle_session;
     class mpc_comm {

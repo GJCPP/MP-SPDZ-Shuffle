@@ -313,7 +313,7 @@ maybe-boost: deps/libOTe/libOTe
 	PATH="$(CURDIR)/local/bin:$(PATH)" cmake $(CURDIR)/deps/libOTe || \
 	{ cd -; make boost; }
 
-OTE_OPTS += -DENABLE_SOFTSPOKEN_OT=ON -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_INSTALL_LIBDIR=lib
+OTE_OPTS += -DENABLE_SOFTSPOKEN_OT=ON -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_ALL_OT=ON
 
 ifeq ($(ARM), 1)
 OTE_OPTS += -DENABLE_AVX=OFF -DENABLE_SSE=OFF
@@ -388,11 +388,11 @@ MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
 %.x: MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)
 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
-run: my_shuffle_main.x
-	for i in 0 1 2; do ./my_shuffle_main.x $$i 3 & true; done
+example: my_shuffle_main.x
+	for i in 0 1 2; do ./my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
 
 benchmark: my_shuffle_main.x
-	python my_benchmark.py
+	python3 my_benchmark.py
 
 kill:
 	pkill my_shuffle_main
