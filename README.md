@@ -90,6 +90,6 @@ MPC gadgets:
 
 More detailed explanations can be found in corresponding header files
 
-## Paper Citation
+## Citation
 
 TODO
