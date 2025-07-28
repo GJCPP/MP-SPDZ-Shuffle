@@ -6,7 +6,7 @@ This is an implementation of secure multi-party shuffle protocol based on [MP-SP
 
 Please read [the instruction of MP-SPDZ](https://github.com/data61/MP-SPDZ) for setting up the MP-SPDZ part of the project.
 
-Note that in MP-SPDZ, you should run `Scripts/setup-ssl.sh <nparties>` once for setting up communication channel before executing an n-party protocols.
+Note that in MP-SPDZ, you need to run `Scripts/setup-ssl.sh <nparties>` for setting up communication channel before executing an n-party protocols.
 
 In directory `MP-SPDZ-Shuffle`, use `make example` to run a 3-party example, which translates to
 
@@ -47,7 +47,7 @@ See also `MyShuffle/my_shuffle_main.cpp`.
 | -------- | -------- | ----- | ------- | ------ | --------- |
 | [1] [Chase et al.](https://link.springer.com/chapter/10.1007/978-3-030-64840-4_12) | Semi-honest | $2$ | $O(m\log m)$ | $O(m)$ | SPDZ |
 | [2] [Song et al.](https://www.ndss-symposium.org/wp-content/uploads/2024-21-paper.pdf) | Malicious | $n$ | $O(Bn^2m\log m)$ | $O(Bn^2m)$ | SPDZ |
-| [3] [Gao et al.](https://eprint.iacr.org/2024/1936) | Malicious | $n$ | $O(Bn^2m\log m)$ | $O(nm)$ | Arbitrary |
+| [3] This paper | Malicious | $n$ | $O(Bn^2m\log m)$ | $O(nm)$ | Arbitrary |
 
 $n$ is the number of parties, $m$ the number of items (to be shuffled), $B$ a parameter related to security parameter.
 
@@ -78,7 +78,7 @@ Shuffle protocols:
 
   - `Song_shuffle.cpp/h` implements the shuffle protocol by [Song et al.](https://www.ndss-symposium.org/wp-content/uploads/2024-21-paper.pdf).
 
-  - `my_shuffle.cpp/h` implements the shuffle protocol by [Gao et al.](https://eprint.iacr.org/2024/1936).
+  - `my_shuffle.cpp/h` implements the shuffle protocol by this paper.
 
 MPC gadgets:
 
@@ -90,18 +90,6 @@ MPC gadgets:
 
 More detailed explanations can be found in corresponding header files
 
-## Paper and Citation
+## Paper Citation
 
-The project is due to the following paper:
-
-```
-@misc{cryptoeprint:2024/1936,
-      author = {Jiacheng Gao and Yuan Zhang and Sheng Zhong},
-      title = {Multiparty Shuffle: Linear Online Phase is Almost for Free},
-      howpublished = {Cryptology {ePrint} Archive, Paper 2024/1936},
-      year = {2024},
-      url = {https://eprint.iacr.org/2024/1936}
-}
-```
-
-
+TODO

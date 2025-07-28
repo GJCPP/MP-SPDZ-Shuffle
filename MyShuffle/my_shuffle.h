@@ -9,16 +9,7 @@
 #include "Song_shuffle.h"
 
 /*
-    This is the implementation of following paper.
-
-    @misc{cryptoeprint:2024/1936,
-        author = {Jiacheng Gao and Yuan Zhang and Sheng Zhong},
-        title = {Multiparty Shuffle: Linear Online Phase is Almost for Free},
-        howpublished = {Cryptology {ePrint} Archive, Paper 2024/1936},
-        year = {2024},
-        url = {https://eprint.iacr.org/2024/1936}
-    }
-
+    This is the implementation of current paper.
 
     A canonical execution includes
 
