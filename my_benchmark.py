@@ -143,9 +143,9 @@ def get_filename(protocol : str, target: str, n_party: int):
 
 
 all_n_party = [i for i in range(3, 18, 3)]
-# all_logsz = [i for i in range(6, 14, 2)]
-all_logsz = [i for i in range(6, 8, 1)]
-print("WARNING: Using reduced logsz for testing.")
+all_logsz = [i for i in range(6, 14, 2)]
+# all_logsz = [i for i in range(6, 8, 1)]
+# print("WARNING: Using reduced logsz for testing.")
 __all_logbatch = [i for i in range(4, 11, 1)]
 all_targets = ['total_time', 'on_time']
 max_time = 9999999
