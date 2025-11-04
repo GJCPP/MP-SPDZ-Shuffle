@@ -143,7 +143,9 @@ def get_filename(protocol : str, target: str, n_party: int):
 
 
 all_n_party = [i for i in range(3, 18, 3)]
-all_logsz = [i for i in range(6, 14, 2)]
+# all_logsz = [i for i in range(6, 14, 2)]
+all_logsz = [i for i in range(6, 8, 1)]
+print("WARNING: Using reduced logsz for testing.")
 __all_logbatch = [i for i in range(4, 11, 1)]
 all_targets = ['total_time', 'on_time']
 max_time = 9999999
@@ -225,7 +227,7 @@ for protocol in all_protocol:
                                 save_result(get_filename(protocol, target, n_party), res_off_comm, res_off_time, res_on_comm, res_on_time, logsz, logbatch, best_off_comm, best_off_time, best_on_comm, best_on_time)
                                 continue
                             all_time_out = False
-
+                            # print(proc)
                             off_comm, off_time, on_comm, on_time = sparse_output(proc)
 
                             if off_comm == -1:

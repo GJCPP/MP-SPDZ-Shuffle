@@ -79,7 +79,7 @@ void python_interface(int argc, char **argv) {
         execute_Song_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time);
     }
     std::cout << off_comm / rep << " " << off_time / rep << " " << on_comm / rep << " " << on_time / rep << std::endl;
-    
+    // std::cerr << off_comm / rep << " " << off_time / rep << " " << on_comm / rep << " " << on_time / rep << std::endl;
     fclose(stderr);
     throw;
     /*

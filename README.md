@@ -15,15 +15,18 @@ In directory `MP-SPDZ-Shuffle`, use `make example` to run a 3-party example, whi
 for i in 0 1 2; do ./my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
 ```
 
-The arguments are explained in the next section.
+The arguments are explained in later section.
+
+## Benchmark
 
 Use `make benchmark` to run a thorough benchmark, which translates to
 
 ```
+Scripts/setup-ssl.sh 20
 python3 my_benchmark.py
 ```
 
-Following the manner of MP-SPDZ, you can also use `make MyShuffle.x` to compile the program.
+Following the convention of MP-SPDZ, you can also use `make MyShuffle.x` to compile the program.
 
 ## Arguments
 
@@ -55,7 +58,7 @@ In context, [2] can be seen as an enhancement to [1], and [3] is instantiated by
 
 Protocol [1] includes an additional parameter $k$ ("logbatch" in code) for balancing communication and computation, which is inherited by [2] and [3]. Increasing $k$ reduces communication and increases computation.
 
-Note that the benchmark script does not include test for [1].
+Note that the benchmark script does not include test for [1], as it's semi-honest and two-party.
 
 ## File Structure
 
@@ -88,7 +91,7 @@ MPC gadgets:
 
   - `OPV.cpp/h`, `Benes_network.cpp`, `double_length_prg.cpp`, etc. define primitives required by shuffle protocols.
 
-More detailed explanations can be found in corresponding header files
+More details can be found in corresponding header files.
 
 ## Citation
 

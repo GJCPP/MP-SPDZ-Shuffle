@@ -392,6 +392,7 @@ example: my_shuffle_main.x
 	for i in 0 1 2; do ./my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
 
 benchmark: my_shuffle_main.x
+	Scripts/setup-ssl.sh 20
 	python3 my_benchmark.py
 
 kill:
