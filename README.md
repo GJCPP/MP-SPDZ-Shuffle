@@ -44,6 +44,12 @@ By default, at the end of the execution, each party outputs its offline communic
 
 See also `MyShuffle/my_shuffle_main.cpp`.
 
+`my_shuffle` defaults to the weak/batched-check ordering: all online openings
+are authenticated together at the end of each shuffle. The strong
+abort-privacy ordering remains available through the C++ API by passing
+`strong_abort_privacy = true`; it authenticates every opening before its value
+affects a later permutation-dependent message.
+
 ## Shuffle Protocols
 
 | Protocol | Security | Party | Offline | Online | Framework |

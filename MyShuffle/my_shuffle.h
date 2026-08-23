@@ -132,7 +132,7 @@ namespace myShuffle {
 
         // Perform shuffle protocol
         void perform(mpc_comm& com, vectors<ShareType>& val,
-                bool strong_abort_privacy = true);
+                bool strong_abort_privacy = false);
 
         const permutation& get_perm() const;
     };
