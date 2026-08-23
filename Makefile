@@ -314,7 +314,15 @@ Programs/Circuits:
 
 deps/libOTe/libOTe:
 	git submodule update --init --recursive deps/libOTe || git clone --recurse-submodules https://github.com/mkskeller/softspoken-implementation deps/libOTe
-boost: deps/libOTe/libOTe
+BOOST_ARCHIVE = deps/libOTe/cryptoTools/thirdparty/boost_1_83_0.tar.bz2
+BOOST_URL = https://archives.boost.io/release/1.83.0/source/boost_1_83_0.tar.bz2
+
+$(BOOST_ARCHIVE): deps/libOTe/libOTe
+	curl -fL --retry 3 --retry-delay 2 -o $@.tmp $(BOOST_URL)
+	tar -tjf $@.tmp > /dev/null
+	mv $@.tmp $@
+
+boost: deps/libOTe/libOTe $(BOOST_ARCHIVE)
 	cd deps/libOTe; \
 	python3 build.py --setup --boost --install=$(CURDIR)/local
 maybe-boost: deps/libOTe/libOTe
@@ -401,7 +409,7 @@ $(BUILD_DIR)/%.x: $(BUILD_DIR)/MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFL
 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 .PHONY: my_shuffle_main.x benchmark benchmark-semi benchmark-mali benchmark-strong
-my_shuffle_main.x:
+my_shuffle_main.x: $(LIBSIMPLEOT) $(STATIC_OTE) local/lib/libcryptoTools.a
 	cmake -S . -B $(BUILD_DIR)
 	cmake --build $(BUILD_DIR) --target my_shuffle_main
 
