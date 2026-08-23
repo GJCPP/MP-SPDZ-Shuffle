@@ -35,7 +35,8 @@ public:
 void execute_my_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, double& off_time,
-                            size_t& on_comm, double& on_time);
+                            size_t& on_comm, double& on_time,
+                            bool strong_abort_privacy = false);
 void execute_Song_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, double& off_time,

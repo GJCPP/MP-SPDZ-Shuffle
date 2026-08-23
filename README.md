@@ -50,6 +50,9 @@ abort-privacy ordering remains available through the C++ API by passing
 `strong_abort_privacy = true`; it authenticates every opening before its value
 affects a later permutation-dependent message.
 
+Use `make benchmark-strong` to benchmark only this strong mode. The target
+selects the dedicated `my_shuffle_strong` protocol entry.
+
 ## Shuffle Protocols
 
 | Protocol | Security | Party | Offline | Online | Framework |

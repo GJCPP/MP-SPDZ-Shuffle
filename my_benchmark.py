@@ -161,7 +161,7 @@ rep = 1
 
 for protocol in all_protocol:
     for target in all_targets:
-        if target == 'on_time' and protocol == 'my_shuffle':
+        if target == 'on_time' and protocol in ('my_shuffle', 'my_shuffle_strong'):
             continue
         for n_party in all_n_party:
             res_off_comm, res_off_time, res_on_comm, res_on_time, cur_logsz, cur_logbatch, cur_off_comm, cur_off_time, cur_on_comm, cur_on_time = load_result(get_filename(protocol, target, n_party))
@@ -254,4 +254,3 @@ for protocol in all_protocol:
                             continue_test = True # Recover from exception
 
                 save_result(get_filename(protocol, target, n_party), res_off_comm, res_off_time, res_on_comm, res_on_time)
-

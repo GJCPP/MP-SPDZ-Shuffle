@@ -395,6 +395,11 @@ benchmark: my_shuffle_main.x
 	Scripts/setup-ssl.sh 20
 	python3 my_benchmark.py
 
+.PHONY: benchmark-strong
+benchmark-strong: my_shuffle_main.x
+	Scripts/setup-ssl.sh 20
+	python3 my_benchmark.py my_shuffle_strong 10000
+
 kill:
 	pkill my_shuffle_main
 

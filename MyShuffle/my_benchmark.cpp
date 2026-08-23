@@ -165,7 +165,8 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
 void execute_my_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, double& off_time,
-                            size_t& on_comm, double& on_time)
+                            size_t& on_comm, double& on_time,
+                            bool strong_abort_privacy)
 {
     using namespace myShuffle;
     static vectors<ShareType> val; val.resize(1 << logsz, veclen);
@@ -199,7 +200,7 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
     com.set_online();
     on_time_timer.tick();
     for (auto plan : plans) {
-        plan->perform(com, val);
+        plan->perform(com, val, strong_abort_privacy);
     }
 
     // Record

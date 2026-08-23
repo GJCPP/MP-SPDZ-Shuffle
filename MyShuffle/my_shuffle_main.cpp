@@ -43,13 +43,15 @@ void python_interface(int argc, char **argv) {
     if (argc != 9) {
         std::cerr << "argc = " << argc << ", expect 9." << std::endl;
         std::cerr << "Usage: " << argv[0] << " <protocol> <me> <n_party> <logsz> <veclen> <logbatch> <port base> <repeat>" << std::endl;
-        std::cerr << "\tprotocol: my_shuffle, Song_shuffle" << std::endl;
+        std::cerr << "\tprotocol: my_shuffle, my_shuffle_strong, Song_shuffle" << std::endl;
         return;
     }
     // set up networking on localhost
     int protocol;
     if (strcmp(argv[1], "my_shuffle") == 0) {
         protocol = 0;
+    } else if (strcmp(argv[1], "my_shuffle_strong") == 0) {
+        protocol = 2;
     } else if (strcmp(argv[1], "Song_shuffle") == 0) {
         protocol = 1;
     } else {
@@ -75,6 +77,8 @@ void python_interface(int argc, char **argv) {
     double off_time, on_time;
     if (protocol == 0) {
         execute_my_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time);
+    } else if (protocol == 2) {
+        execute_my_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time, true);
     } else {
         execute_Song_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_time, on_comm, on_time);
     }
