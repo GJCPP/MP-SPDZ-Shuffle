@@ -267,7 +267,9 @@ namespace myShuffle {
         com.output_check();
     }
 
-    void verify(mpc_comm & com, int who, const vectors<ClearType>& a, const vectors<ClearType>& b, ShareType beta, const vectors<ShareType>& r)
+    bool verify(mpc_comm & com, int who, const vectors<ClearType>& a,
+            const vectors<ClearType>& b, ShareType beta,
+            const vectors<ShareType>& r, bool authenticate_now)
     {
         ClearType c(com.rand_int()), w1(0), w2(0); // Challenge.
         std::vector<ClearType> msg;
@@ -289,11 +291,10 @@ namespace myShuffle {
         }
         ClearType res;
         com.output_immediately(val - sum_r, res);
-        com.output_check();
-        if (res.is_zero() == false) {
-            std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
-            throw std::runtime_error("verify : Verification failed.");
+        if (authenticate_now) {
+            com.output_check();
         }
+        return res.is_zero();
     }
 
     void shuffle_session::set_init_flag()
@@ -306,7 +307,8 @@ namespace myShuffle {
         destroyed = true;
     }
 
-    void shuffle_session::perform(mpc_comm &com, vectors<ShareType> &val)
+    void shuffle_session::perform(mpc_comm &com, vectors<ShareType> &val,
+            bool strong_abort_privacy)
     {
         if (val.num != (1 << logsz) || val.len != veclen) {
             std::cerr << "shuffle_session::perform : Invalid input size," << val
@@ -341,6 +343,28 @@ namespace myShuffle {
         com.private_output_consume(0, z00);
         com.private_output_consume(0, z01);
 
+        // In the strong instantiation, authenticate the private opening before
+        // party 0 can apply its secret permutation to it. The batched-check
+        // instantiation deliberately defers this and all relation-opening MAC
+        // checks until the end, which is faster in high-latency networks but
+        // does not provide abort privacy.
+        if (strong_abort_privacy) {
+            com.output_check();
+        }
+
+        bool verification_failed = false;
+        auto verify_opening = [&](int who, const vectors<ClearType>& a,
+                                  const vectors<ClearType>& b,
+                                  const vectors<ShareType>& r) {
+            bool valid = verify(com, who, a, b, cor.beta, r,
+                    strong_abort_privacy);
+            if (!valid && strong_abort_privacy) {
+                std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
+                throw std::runtime_error("verify : Verification failed.");
+            }
+            verification_failed = verification_failed || !valid;
+        };
+
         int me = com.get_my_number();
         if (me == 0) {
             // perform permute on z00 and z01
@@ -349,15 +373,15 @@ namespace myShuffle {
             z = vectors<ClearType>::cat(z00, z01);
             com.send(1, z);
             for (int who(1); who != com.get_n_party(); ++who) {
-                verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
+                verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
             }
         } else {
             for (int who(1); who != me; ++who) {
-                verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
+                verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
             }
             com.recv(me - 1, z);
             z.split(num, z00, z01);
-            verify(com, me, z00, z01, cor.beta, cor.permuted_rp[me - 1]);
+            verify_opening(me, z00, z01, cor.permuted_rp[me - 1]);
             z00 += cor.z[0];
             z01 += cor.z[1];
             cor.perm.perform(z00);
@@ -367,12 +391,20 @@ namespace myShuffle {
                 com.send(me + 1, z);
             }
             for (int who(me + 1); who != com.get_n_party(); ++who) {
-                verify(com, who, {}, {}, cor.beta, cor.permuted_rp[who - 1]);
+                verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
             }
         }
         z = vectors<ClearType>::cat(z00, z01);
         com.broadcast(com.get_n_party() - 1, z);
         z.split(num, z00, z01);
+
+        if (!strong_abort_privacy) {
+            com.output_check();
+            if (verification_failed) {
+                std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
+                throw std::runtime_error("verify : Verification failed.");
+            }
+        }
 
         vectors<ShareType> shared_y(num, len);
         auto mac_key = ShareType::get_mac_key();

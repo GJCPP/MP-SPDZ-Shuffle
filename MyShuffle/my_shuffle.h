@@ -131,7 +131,8 @@ namespace myShuffle {
         }
 
         // Perform shuffle protocol
-        void perform(mpc_comm& com, vectors<ShareType>& val);
+        void perform(mpc_comm& com, vectors<ShareType>& val,
+                bool strong_abort_privacy = true);
 
         const permutation& get_perm() const;
     };
@@ -167,5 +168,7 @@ namespace myShuffle {
     // Check if beta * a = b + r
     void verify(mpc_comm& com, ClearType a, ClearType b, ShareType beta, ShareType r);
     // Check if beta * a = b + r
-    void verify(mpc_comm & com, int who, const vectors<ClearType>& a, const vectors<ClearType>& b, ShareType beta, const vectors<ShareType>& r);
+    bool verify(mpc_comm & com, int who, const vectors<ClearType>& a,
+            const vectors<ClearType>& b, ShareType beta,
+            const vectors<ShareType>& r, bool authenticate_now = true);
 }
