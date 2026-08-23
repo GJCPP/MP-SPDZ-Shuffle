@@ -384,6 +384,7 @@ MY_OBJ_DIR := MyShuffle
 
 MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
 MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
+BENCHMARK_BASE_DIR ?= benchmark_results_bw80_rtt60
 
 %.x: MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)
 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
@@ -398,7 +399,9 @@ benchmark: my_shuffle_main.x
 .PHONY: benchmark-strong
 benchmark-strong: my_shuffle_main.x
 	Scripts/setup-ssl.sh 20
-	python3 my_benchmark.py my_shuffle_strong 10000
+	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
+	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
+	SHUFFLE_BENCHMARK_BASE_DIR=$(BENCHMARK_BASE_DIR) python3 -u summarize_benchmarks.py strong
 
 kill:
 	pkill my_shuffle_main

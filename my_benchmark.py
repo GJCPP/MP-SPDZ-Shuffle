@@ -7,6 +7,10 @@ import sys
 from contextlib import contextmanager
 import threading
 
+OUTPUT_DIR = os.environ.get("SHUFFLE_BENCHMARK_DIR", ".")
+STDOUT_FILE = os.path.join(OUTPUT_DIR, "stdout")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 class TimeoutException(Exception): pass
 
 @contextmanager
@@ -23,7 +27,7 @@ def time_limit(seconds):
 # Run a party
 def run_command(command: str, redir: bool):
     if redir:
-        with open('stdout', 'w+') as f:
+        with open(STDOUT_FILE, 'w+') as f:
             subprocess.run(command, shell=True, stdout=f, stderr=subprocess.DEVNULL)
     else:
         subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -31,7 +35,7 @@ def run_command(command: str, redir: bool):
 # Run n_party parties
 def run_protocol(protocol: str, n_party: int, logsz: int, veclen: int, logbatch: int, port_base: int, rep: int):
     threads = []
-    with open('stdout', 'w+') as f:
+    with open(STDOUT_FILE, 'w+') as f:
         f.write('-1 -1 -1 -1\n')
 
     for party in range(n_party):
@@ -48,7 +52,7 @@ def run_protocol(protocol: str, n_party: int, logsz: int, veclen: int, logbatch:
 
 # Spare the output of protocol into (offline comm, off time, on comm, on time)
 def sparse_output(proc: list):
-    with open('stdout', 'r') as f:
+    with open(STDOUT_FILE, 'r') as f:
         line = f.readline().split()
         print(line)
         off_comm = int(line[0])
@@ -139,7 +143,14 @@ def load_result(filename : str):
     return res_off_comm, res_off_time, res_on_comm, res_on_time, cur_logsz, cur_logbatch, cur_off_comm, cur_off_time, cur_on_comm, cur_on_time
 
 def get_filename(protocol : str, target: str, n_party: int):
-    return protocol + "_" + target + "_n_" + str(n_party) + ".csv"
+    return os.path.join(OUTPUT_DIR, protocol + "_" + target + "_n_" + str(n_party) + ".csv")
+
+
+def parse_int_list(env_name, default):
+    raw = os.environ.get(env_name)
+    if not raw:
+        return default
+    return [int(item) for item in raw.split(',') if item.strip()]
 
 
 all_n_party = [i for i in range(3, 18, 3)]
@@ -156,6 +167,9 @@ if len(sys.argv) > 1:
     port_base = int(sys.argv[2])
     if len(sys.argv) > 3:
         all_n_party = [int(sys.argv[3])]
+all_n_party = parse_int_list("SHUFFLE_BENCHMARK_PARTIES", all_n_party)
+all_logsz = parse_int_list("SHUFFLE_BENCHMARK_LOGSZ", all_logsz)
+__all_logbatch = parse_int_list("SHUFFLE_BENCHMARK_LOGBATCH", __all_logbatch)
 veclen = 1
 rep = 1
 

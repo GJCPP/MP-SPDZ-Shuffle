@@ -26,7 +26,7 @@ Scripts/setup-ssl.sh 20
 python3 my_benchmark.py
 ```
 
-Following the convention of MP-SPDZ, you can also use `make MyShuffle.x` to compile the program.
+Use `make my_shuffle_main.x` to compile the program.
 
 ## Arguments
 
@@ -50,8 +50,18 @@ abort-privacy ordering remains available through the C++ API by passing
 `strong_abort_privacy = true`; it authenticates every opening before its value
 affects a later permutation-dependent message.
 
-Use `make benchmark-strong` to benchmark only this strong mode. The target
-selects the dedicated `my_shuffle_strong` protocol entry.
+Use `make benchmark-strong` to benchmark only this strong mode with the same
+size and party settings as the malicious suite. It runs:
+
+```
+Scripts/setup-ssl.sh 20
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py strong
+```
+
+The last command reads the two strong result directories and writes
+`benchmark_results_bw80_rtt60/strong_summary.md`.
 
 ## Shuffle Protocols
 
