@@ -8,25 +8,78 @@ Please read [the instruction of MP-SPDZ](https://github.com/data61/MP-SPDZ) for 
 
 Note that in MP-SPDZ, you need to run `Scripts/setup-ssl.sh <nparties>` for setting up communication channel before executing an n-party protocols.
 
+Build the shuffle executable with CMake:
+
+```
+cmake -S . -B build
+cmake --build build --target my_shuffle_main
+```
+
+This writes build artifacts under `build/`, including `build/my_shuffle_main.x`.
+For compatibility, `make my_shuffle_main.x` runs the same CMake build.
+
 In directory `MP-SPDZ-Shuffle`, use `make example` to run a 3-party example, which translates to
 
 
 ```
-for i in 0 1 2; do ./my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
+for i in 0 1 2; do ./build/my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
 ```
 
 The arguments are explained in later section.
 
 ## Benchmark
 
-Use `make benchmark` to run a thorough benchmark, which translates to
+The dedicated benchmark entry points are:
+
+- `make benchmark-semi`
+- `make benchmark-mali`
+- `make benchmark-strong`
+
+Use `make benchmark-semi` to run the semi-honest benchmark suite:
 
 ```
 Scripts/setup-ssl.sh 20
-python3 my_benchmark.py
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/semi_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=14,16,18,20,22 python3 -u my_benchmark.py semi-parties 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/semi_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=16 python3 -u my_benchmark.py semi-parties 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py semi
 ```
 
-Use `make my_shuffle_main.x` to compile the program.
+Use `make benchmark-mali` to run the malicious benchmark suite:
+
+```
+Scripts/setup-ssl.sh 20
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/mali_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py malicious 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/mali_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py malicious 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py mali
+```
+
+Use `make benchmark-strong` to run only the strong abort-privacy variant of
+`my_shuffle`, using the same size and party settings as `benchmark-mali`:
+
+```
+Scripts/setup-ssl.sh 20
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py strong
+```
+
+Use `make benchmark` to run both suites in sequence.
+
+The four benchmark groups are:
+
+- Semi-honest size scale: fixed `n = 2`, `logsz = 14, 16, 18, 20, 22`.
+- Semi-honest party scale: fixed `logsz = 16`, `n = 3, 6, 9, 12, 15`.
+- Malicious size scale: fixed `n = 2`, `logsz = 10, 12, 14, 16, 18`.
+- Malicious party scale: fixed `logsz = 12`, `n = 3, 6, 9, 12, 15`.
+
+The semi-honest and malicious summary tables have three rows per point:
+baseline optimized for total time, baseline optimized for online time, and
+ours. The strong summary has one `my_shuffle_strong` row per point.
+
+Benchmark CSVs, temporary party-0 stdout, and summary tables are written under
+`benchmark_results_bw80_rtt60/` by default.
+
+Use `make my_shuffle_main.x` to build `build/my_shuffle_main.x`.
 
 ## Arguments
 
@@ -35,7 +88,7 @@ The arguments are: \<protocol name\>, \<party id\>, \<num of parties\>, \<log nu
 So the command `make example`, which translates to
 
 ```
-for i in 0 1 2; do ./my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
+for i in 0 1 2; do ./build/my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
 ```
 
 launches a shuffle protocol that repeats once, which shuffles $2^6$ many $1$-sized vectors among $3$ parties.
@@ -50,18 +103,8 @@ abort-privacy ordering remains available through the C++ API by passing
 `strong_abort_privacy = true`; it authenticates every opening before its value
 affects a later permutation-dependent message.
 
-Use `make benchmark-strong` to benchmark only this strong mode with the same
-size and party settings as the malicious suite. It runs:
-
-```
-Scripts/setup-ssl.sh 20
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py strong
-```
-
-The last command reads the two strong result directories and writes
-`benchmark_results_bw80_rtt60/strong_summary.md`.
+Use `make benchmark-strong` to benchmark only this strong mode. The target
+selects the dedicated `my_shuffle_strong` protocol entry.
 
 ## Shuffle Protocols
 
@@ -77,7 +120,10 @@ In context, [2] can be seen as an enhancement to [1], and [3] is instantiated by
 
 Protocol [1] includes an additional parameter $k$ ("logbatch" in code) for balancing communication and computation, which is inherited by [2] and [3]. Increasing $k$ reduces communication and increases computation.
 
-Note that the benchmark script does not include test for [1], as it's semi-honest and two-party.
+The malicious benchmark suite compares [2] and the malicious instantiation
+of [3]. The semi-honest benchmark suites compare [1] and the semi-honest
+instantiation of [3], including an n-party Chase baseline formed by composing
+one Chase permutation session per party.
 
 ## File Structure
 
@@ -101,6 +147,9 @@ Shuffle protocols:
   - `Song_shuffle.cpp/h` implements the shuffle protocol by [Song et al.](https://www.ndss-symposium.org/wp-content/uploads/2024-21-paper.pdf).
 
   - `my_shuffle.cpp/h` implements the shuffle protocol by this paper.
+
+  - `semi_my_shuffle.cpp/h` implements a semi-honest version of `my_shuffle`
+    using `Chase_shuffle` as the permutation primitive.
 
 MPC gadgets:
 
