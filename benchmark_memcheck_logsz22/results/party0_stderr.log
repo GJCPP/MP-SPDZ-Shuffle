@@ -1,0 +1,83 @@
+
+===== Chase_shuffle,total_time,n=2,logsz=22,logbatch=4,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,total_time,n=2,logsz=22,logbatch=5,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== Chase_shuffle,total_time,n=2,logsz=22,logbatch=6,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,total_time,n=2,logsz=22,logbatch=7,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== Chase_shuffle,total_time,n=2,logsz=22,logbatch=8,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,total_time,n=2,logsz=22,logbatch=9,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,total_time,n=2,logsz=22,logbatch=10,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== Chase_shuffle,on_time,n=2,logsz=22,logbatch=4,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,on_time,n=2,logsz=22,logbatch=5,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,on_time,n=2,logsz=22,logbatch=6,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== Chase_shuffle,on_time,n=2,logsz=22,logbatch=7,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,on_time,n=2,logsz=22,logbatch=8,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== Chase_shuffle,on_time,n=2,logsz=22,logbatch=9,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== Chase_shuffle,on_time,n=2,logsz=22,logbatch=10,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== semi_my_shuffle,total_time,n=2,logsz=22,logbatch=4,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== semi_my_shuffle,total_time,n=2,logsz=22,logbatch=5,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== semi_my_shuffle,total_time,n=2,logsz=22,logbatch=6,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== semi_my_shuffle,total_time,n=2,logsz=22,logbatch=7,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== semi_my_shuffle,total_time,n=2,logsz=22,logbatch=8,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+
+===== semi_my_shuffle,total_time,n=2,logsz=22,logbatch=9,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted
+
+===== semi_my_shuffle,total_time,n=2,logsz=22,logbatch=10,attempt=1 =====
+test-PowerEdge-R940xa : set_up_socket:socket : Operation not permittedtest-PowerEdge-R940xa : set_up_socket:socket : Operation not permitted

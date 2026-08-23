@@ -1,0 +1,3 @@
+peak_total_rss_kib=94596936
+peak_total_rss_gib=90.215
+timestamp=1778576925

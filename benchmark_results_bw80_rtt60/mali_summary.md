@@ -1,0 +1,32 @@
+| scale | point | variant | protocol | off_comm | off_round | off_time | on_comm | on_round | on_time |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| size | n=2, logsz=10 | baseline-total | Song_shuffle | 19293571 | 45 | 6.9736 | 1130720 | 154 | 9.5024 |
+| size | n=2, logsz=10 | baseline-online | Song_shuffle | 18921219 | 45 | 10.6246 | 966880 | 134 | 8.1659 |
+| size | n=2, logsz=10 | ours | my_shuffle | 38578969 | 188 | 17.3602 | 49272 | 13 | 0.785632 |
+| size | n=2, logsz=12 | baseline-total | Song_shuffle | 92216243 | 61 | 17.7682 | 6947040 | 228 | 15.8626 |
+| size | n=2, logsz=12 | baseline-online | Song_shuffle | 68107751 | 71 | 59.7214 | 3408096 | 120 | 7.59984 |
+| size | n=2, logsz=12 | ours | my_shuffle | 182972485 | 321 | 42.6111 | 196728 | 13 | 0.790723 |
+| size | n=2, logsz=14 | baseline-total | Song_shuffle | 353522391 | 151 | 82.4007 | 25952480 | 214 | 23.8988 |
+| size | n=2, logsz=14 | baseline-online | Song_shuffle | 263357219 | 141 | 646.412 | 11534560 | 104 | 8.45891 |
+| size | n=2, logsz=14 | ours | my_shuffle | 772746509 | 703 | 143.331 | 786552 | 13 | 0.809955 |
+| size | n=2, logsz=16 | baseline-total | Song_shuffle | 1773522531 | 461 | 303.371 | 135266528 | 274 | 63.9145 |
+| size | n=2, logsz=16 | baseline-online | Song_shuffle | 1072211555 | 461 | 1269.49 | 49283296 | 110 | 11.0201 |
+| size | n=2, logsz=16 | ours | my_shuffle | 2620485705 | 2120 | 603.331 | 3145848 | 13 | 0.929387 |
+| size | n=2, logsz=18 | baseline-total | Song_shuffle | 8476430595 | 1709 | 1465.12 | 666894560 | 334 | 297.897 |
+| size | n=2, logsz=18 | baseline-online | Song_shuffle | 5015310595 | 1709 | 2183.36 | 285212896 | 152 | 32.6899 |
+| size | n=2, logsz=18 | ours | my_shuffle | 11811014777 | 7802 | 2507 | 12583076 | 15 | 1.53 |
+| parties | n=3, logsz=12 | baseline-total | Song_shuffle | 168525518 | 160 | 42.6964 | 11404016 | 291 | 22.9255 |
+| parties | n=3, logsz=12 | baseline-online | Song_shuffle | 132652750 | 160 | 107.196 | 6292208 | 174 | 14.1363 |
+| parties | n=3, logsz=12 | ours | my_shuffle | 418727391 | 547 | 84.0703 | 262488 | 21 | 1.27943 |
+| parties | n=6, logsz=12 | baseline-total | Song_shuffle | 509100815 | 447 | 145.236 | 34738240 | 708 | 72.2465 |
+| parties | n=6, logsz=12 | baseline-online | Song_shuffle | 337428755 | 497 | 410.106 | 14422080 | 336 | 35.623 |
+| parties | n=6, logsz=12 | ours | my_shuffle | 1310740571 | 1671 | 304.49 | 329240 | 43 | 2.6268 |
+| parties | n=9, logsz=12 | baseline-total | Song_shuffle | 891407000 | 980 | 343.397 | 55584832 | 1068 | 133.473 |
+| parties | n=9, logsz=12 | baseline-online | Song_shuffle | 580012088 | 1060 | 912.176 | 20981824 | 474 | 56.2786 |
+| parties | n=9, logsz=12 | ours | my_shuffle | 2353258201 | 3453 | 712.292 | 353098 | 64 | 3.92115 |
+| parties | n=12, logsz=12 | baseline-total | Song_shuffle | 1296151153 | 1584 | 600.151 | 76434160 | 1428 | 218.17 |
+| parties | n=12, logsz=12 | baseline-online | Song_shuffle | 867983149 | 1694 | 1650.01 | 28855024 | 636 | 81.4492 |
+| parties | n=12, logsz=12 | ours | my_shuffle | 3401066588 | 5983 | 1417.03 | 366828 | 85 | 5.19611 |
+| parties | n=15, logsz=12 | baseline-total | Song_shuffle | 1724397514 | 2480 | 897.875 | 92698704 | 1713 | 303.827 |
+| parties | n=15, logsz=12 | baseline-online | Song_shuffle | 1239237538 | 2620 | 2587.38 | 36730960 | 798 | 107.012 |
+| parties | n=15, logsz=12 | ours | my_shuffle | 4400454720 | 8939 | 2442.22 | 376980 | 106 | 6.50688 |

@@ -1,0 +1,7 @@
+['off_comm', ' -1']
+Testing Chase_shuffle with 2 parties and logsz = 22 of [22]
+Testing logbatch = 4
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 5

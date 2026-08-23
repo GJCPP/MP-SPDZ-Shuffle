@@ -1,0 +1,2 @@
+protocol,target,n_party,logsz,logbatch,attempt,status,elapsed_wall_time,off_comm,off_round,off_time,on_comm,on_round,on_time,reason
+Chase_shuffle,total_time,2,22,4,1,error,397.6798541545868,-1,-1,-1,-1,-1,-1,list index out of range

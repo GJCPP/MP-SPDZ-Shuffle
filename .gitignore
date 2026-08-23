@@ -20,6 +20,7 @@ config_mine.py
 *.tmp
 callgrind.out.*
 HOSTS*
+/.codex
 
 # Vim
 .*.swp
@@ -46,6 +47,7 @@ callgrind.out.*
 
 # Compiled source #
 ###################
+/build/
 Programs/Bytecode/*
 Programs/Schedules/*
 Programs/Public-Input/*
@@ -126,3 +128,9 @@ doc/xml
 
 # benchmark file
 *.csv
+!/benchmark_results*/
+!/benchmark_results*/**
+!/benchmark_chunk_check*/
+!/benchmark_chunk_check*/**
+!/benchmark_memcheck*/
+!/benchmark_memcheck*/**

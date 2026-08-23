@@ -1,0 +1,3 @@
+terminate called after throwing an instance of 'boost::wrapexcept<boost::system::system_error>'
+  what():  write_some: Broken pipe [system:32]
+Aborted (core dumped)

@@ -1,0 +1,12 @@
+protocol,target,n_party,logsz,logbatch,attempt,status,elapsed_wall_time,off_comm,off_round,off_time,on_comm,on_round,on_time,reason
+Song_shuffle,total_time,3,6,4,1,error,0.03498268127441406,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,6,5,1,error,0.03316760063171387,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,6,6,1,error,0.03326082229614258,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,6,7,1,error,0.03375720977783203,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,6,8,1,error,0.03391551971435547,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,6,9,1,error,0.034336090087890625,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,6,10,1,error,0.033789873123168945,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,8,4,1,error,0.03303980827331543,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,8,5,1,error,0.032827138900756836,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,8,6,1,error,0.034047842025756836,-1,-1,-1,-1,-1,-1,list index out of range
+Song_shuffle,total_time,3,8,7,1,error,0.03427553176879883,-1,-1,-1,-1,-1,-1,list index out of range

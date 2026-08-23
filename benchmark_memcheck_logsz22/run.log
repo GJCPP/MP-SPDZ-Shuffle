@@ -1,0 +1,90 @@
+['off_comm', ' -1']
+Testing Chase_shuffle with 2 parties and logsz = 22 of [22]
+Testing logbatch = 4
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 5
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 6
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 7
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 8
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 9
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 10
+[]
+list index out of range
+Error. Restarting.
+['off_comm', ' -1']
+Testing Chase_shuffle with 2 parties and logsz = 22 of [22]
+Testing logbatch = 4
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 5
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 6
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 7
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 8
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 9
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 10
+[]
+list index out of range
+Error. Restarting.
+['off_comm', ' -1']
+Testing semi_my_shuffle with 2 parties and logsz = 22 of [22]
+Testing logbatch = 4
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 5
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 6
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 7
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 8
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 9
+[]
+list index out of range
+Error. Restarting.
+Testing logbatch = 10
+[]
+list index out of range
+Error. Restarting.

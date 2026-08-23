@@ -1,0 +1,219 @@
+
+===== Song_shuffle,total_time,n=2,logsz=10,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=10,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=10,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=10,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=10,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=10,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=10,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=12,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=12,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=12,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=12,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=12,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=12,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=12,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=14,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=14,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=14,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=14,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=14,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=14,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=14,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=16,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=16,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=16,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=16,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=16,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=16,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=16,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=18,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=18,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=18,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=18,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=18,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=18,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,total_time,n=2,logsz=18,logbatch=10,attempt=1 =====
+terminate called after throwing an instance of 'boost::wrapexcept<boost::system::system_error>'
+  what():  write_some: Broken pipe [system:32]
+Aborted (core dumped)
+
+===== Song_shuffle,on_time,n=2,logsz=10,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=10,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=10,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=10,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=10,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=10,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=10,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=12,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=12,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=12,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=12,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=12,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=12,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=12,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=14,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=14,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=14,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=14,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=14,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=14,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=14,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=16,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=16,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=16,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=16,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=16,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=16,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=16,logbatch=10,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=18,logbatch=4,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=18,logbatch=5,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=18,logbatch=6,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=18,logbatch=7,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=18,logbatch=8,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=18,logbatch=9,attempt=1 =====
+
+===== Song_shuffle,on_time,n=2,logsz=18,logbatch=10,attempt=1 =====
+terminate called after throwing an instance of 'boost::wrapexcept<boost::system::system_error>'
+  what():  write_some: Broken pipe [system:32]
+Aborted (core dumped)
+
+===== my_shuffle,total_time,n=2,logsz=10,logbatch=4,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=10,logbatch=5,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=10,logbatch=6,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=10,logbatch=7,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=10,logbatch=8,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=10,logbatch=9,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=10,logbatch=10,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=12,logbatch=4,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=12,logbatch=5,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=12,logbatch=6,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=12,logbatch=7,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=12,logbatch=8,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=12,logbatch=9,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=12,logbatch=10,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=14,logbatch=4,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=14,logbatch=5,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=14,logbatch=6,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=14,logbatch=7,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=14,logbatch=8,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=14,logbatch=9,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=14,logbatch=10,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=16,logbatch=4,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=16,logbatch=5,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=16,logbatch=6,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=16,logbatch=7,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=16,logbatch=8,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=16,logbatch=9,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=16,logbatch=10,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=18,logbatch=4,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=18,logbatch=5,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=18,logbatch=6,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=18,logbatch=7,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=18,logbatch=8,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=18,logbatch=9,attempt=1 =====
+
+===== my_shuffle,total_time,n=2,logsz=18,logbatch=10,attempt=1 =====
+terminate called after throwing an instance of 'boost::wrapexcept<boost::system::system_error>'
+  what():  write_some: Broken pipe [system:32]
+Aborted (core dumped)

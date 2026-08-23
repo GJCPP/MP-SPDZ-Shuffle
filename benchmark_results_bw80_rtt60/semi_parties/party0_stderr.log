@@ -1,0 +1,210 @@
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=10,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=4,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=5,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=6,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=7,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=8,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=9,attempt=1 =====
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=10,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=4,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=5,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=6,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=7,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=8,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=9,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=10,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=4,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=5,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=6,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=7,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=8,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=9,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=10,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=4,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=5,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=6,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=7,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=8,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=9,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=10,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=4,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=5,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=6,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=7,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=8,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=9,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=10,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=4,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=5,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=6,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=7,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=8,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=9,attempt=1 =====
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=10,attempt=1 =====

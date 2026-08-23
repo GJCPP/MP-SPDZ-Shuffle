@@ -1,0 +1,315 @@
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=4,attempt=1 =====
+216277288 12 34.4761 8388608 3 3.2981
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=5,attempt=1 =====
+206315816 12 49.4744 7340032 3 3.60786
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=6,attempt=1 =====
+187179304 12 65.1872 6291456 3 4.46565
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=7,attempt=1 =====
+178954536 12 102.252 5242880 3 6.02208
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=8,attempt=1 =====
+172056872 12 193.065 4194304 3 10.35
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=9,attempt=1 =====
+163897640 12 253.343 4194304 3 13.5274
+
+===== Chase_shuffle,total_time,n=3,logsz=16,logbatch=10,attempt=1 =====
+157368616 12 459.257 4194304 3 22.6757
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=4,attempt=1 =====
+540693220 24 125.341 20971520 6 11.9221
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=5,attempt=1 =====
+515789540 24 183.084 18350080 6 14.7208
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=6,attempt=1 =====
+467948260 24 246.007 15728640 6 18.8776
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=7,attempt=1 =====
+447386340 24 386.007 13107200 6 27.1994
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=8,attempt=1 =====
+430142180 24 735.512 10485760 6 47.9487
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=9,attempt=1 =====
+409744100 24 953.063 10485760 6 61.8538
+
+===== Chase_shuffle,total_time,n=6,logsz=16,logbatch=10,attempt=1 =====
+393421540 24 1746.28 10485760 6 110.093
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=4,attempt=1 =====
+865109152 36 275.306 33554432 9 24.6796
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=5,attempt=1 =====
+825263264 36 406.492 29360128 9 28.2787
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=6,attempt=1 =====
+748717216 36 544.654 25165824 9 36.6272
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=7,attempt=1 =====
+715818144 36 860.481 20971520 9 52.0547
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=8,attempt=1 =====
+688227488 36 1629.45 16777216 9 89.3585
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=9,attempt=1 =====
+655590560 36 2115.34 16777216 9 116.663
+
+===== Chase_shuffle,total_time,n=9,logsz=16,logbatch=10,attempt=1 =====
+629474464 36 3906.49 16777216 9 209.01
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=4,attempt=1 =====
+1189525084 48 485.039 46137344 12 37.6458
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=5,attempt=1 =====
+1134736988 48 712.493 40370176 12 44.2558
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=6,attempt=1 =====
+1029486172 48 956.124 34603008 12 56.0598
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=7,attempt=1 =====
+984249948 48 1517.42 28835840 12 78.6553
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=8,attempt=1 =====
+946312796 48 2886.99 23068672 12 134.799
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=9,attempt=1 =====
+901437020 48 3777.83 23068672 12 174.412
+
+===== Chase_shuffle,total_time,n=12,logsz=16,logbatch=10,attempt=1 =====
+865527388 48 6931.55 23068672 12 310.419
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=4,attempt=1 =====
+1513941016 60 749.06 58720256 15 54.87
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=5,attempt=1 =====
+1444210712 60 1111.3 51380224 15 61.919
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=6,attempt=1 =====
+1310255128 60 1494.73 44040192 15 78.0181
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=7,attempt=1 =====
+1252681752 60 2366.95 36700160 15 106.31
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=8,attempt=1 =====
+1204398104 60 4505.36 29360128 15 178.061
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=9,attempt=1 =====
+1147283480 60 5875.99 29360128 15 233.124
+
+===== Chase_shuffle,total_time,n=15,logsz=16,logbatch=10,attempt=1 =====
+1101580312 60 10914.2 29360128 15 418.711
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=4,attempt=1 =====
+216277288 12 35.7038 8388608 3 3.36585
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=5,attempt=1 =====
+206315816 12 51.4894 7340032 3 3.68277
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=6,attempt=1 =====
+187179304 12 66.8564 6291456 3 4.72177
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=7,attempt=1 =====
+178954536 12 104.672 5242880 3 6.27346
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=8,attempt=1 =====
+172056872 12 196.298 4194304 3 10.384
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=9,attempt=1 =====
+163897640 12 257.542 4194304 3 13.5413
+
+===== Chase_shuffle,on_time,n=3,logsz=16,logbatch=10,attempt=1 =====
+157368616 12 463.198 4194304 3 23.1908
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=4,attempt=1 =====
+540693220 24 127.4 20971520 6 12.5111
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=5,attempt=1 =====
+515789540 24 187.524 18350080 6 15.0386
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=6,attempt=1 =====
+467948260 24 248.653 15728640 6 19.2425
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=7,attempt=1 =====
+447386340 24 398.667 13107200 6 28.2188
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=8,attempt=1 =====
+430142180 24 744.931 10485760 6 49.151
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=9,attempt=1 =====
+409744100 24 973.542 10485760 6 62.8416
+
+===== Chase_shuffle,on_time,n=6,logsz=16,logbatch=10,attempt=1 =====
+393421540 24 1769.15 10485760 6 114.48
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=4,attempt=1 =====
+865109152 36 279.72 33554432 9 24.6839
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=5,attempt=1 =====
+825263264 36 411.601 29360128 9 28.5383
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=6,attempt=1 =====
+748717216 36 548.058 25165824 9 36.962
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=7,attempt=1 =====
+715818144 36 856.824 20971520 9 53.599
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=8,attempt=1 =====
+688227488 36 1658.22 16777216 9 92.0447
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=9,attempt=1 =====
+655590560 36 2261.88 16777216 9 125.559
+
+===== Chase_shuffle,on_time,n=9,logsz=16,logbatch=10,attempt=1 =====
+629474464 36 4000.07 16777216 9 217.34
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=4,attempt=1 =====
+1189525084 48 490.363 46137344 12 39.263
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=5,attempt=1 =====
+1134736988 48 728.419 40370176 12 44.6651
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=6,attempt=1 =====
+1029486172 48 972.395 34603008 12 57.1827
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=7,attempt=1 =====
+984249948 48 1545.82 28835840 12 79.81
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=8,attempt=1 =====
+946312796 48 2958.85 23068672 12 138.672
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=9,attempt=1 =====
+901437020 48 3819.83 23068672 12 176.492
+
+===== Chase_shuffle,on_time,n=12,logsz=16,logbatch=10,attempt=1 =====
+865527388 48 6928.33 23068672 12 309.996
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=4,attempt=1 =====
+1513941016 60 748.247 58720256 15 53.9584
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=5,attempt=1 =====
+1444210712 60 1109.07 51380224 15 62.1034
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=6,attempt=1 =====
+1310255128 60 1487.18 44040192 15 77.8345
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=7,attempt=1 =====
+1252681752 60 2364.7 36700160 15 106.529
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=8,attempt=1 =====
+1204398104 60 4503.73 29360128 15 179.637
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=9,attempt=1 =====
+1147283480 60 5877.32 29360128 15 236.137
+
+===== Chase_shuffle,on_time,n=15,logsz=16,logbatch=10,attempt=1 =====
+1101580312 60 10843.4 29360128 15 413.873
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=4,attempt=1 =====
+225364946 6 37.5622 1048576 3 0.370698
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=5,attempt=1 =====
+214354898 6 52.6708 1048576 3 0.353777
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=6,attempt=1 =====
+194169810 6 70.6139 1048576 3 0.345543
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=7,attempt=1 =====
+184896466 6 108.331 1048576 3 0.354958
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=8,attempt=1 =====
+176950226 6 203.014 1048576 3 0.336862
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=9,attempt=1 =====
+168790994 6 260.434 1048576 3 0.33569
+
+===== semi_my_shuffle,total_time,n=3,logsz=16,logbatch=10,attempt=1 =====
+162261970 6 473.404 1048576 3 0.353075
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=4,attempt=1 =====
+563849273 9 138.481 1310720 4 0.91108
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=5,attempt=1 =====
+536324153 9 198.253 1310720 4 0.786272
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=6,attempt=1 =====
+485861433 9 264.651 1310720 4 0.847799
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=7,attempt=1 =====
+462678073 9 414.051 1310720 4 0.791894
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=8,attempt=1 =====
+442812473 9 781.409 1310720 4 0.711403
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=9,attempt=1 =====
+422414393 9 1016.07 1310720 4 0.808904
+
+===== semi_my_shuffle,total_time,n=6,logsz=16,logbatch=10,attempt=1 =====
+406091833 9 1853.56 1310720 4 0.789851
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=4,attempt=1 =====
+902391854 12 298.846 1398101 4 1.43193
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=5,attempt=1 =====
+858351662 12 430.996 1398101 4 1.19998
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=6,attempt=1 =====
+777611310 12 581.548 1398101 4 1.27898
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=7,attempt=1 =====
+740517934 12 906.851 1398101 4 1.24494
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=8,attempt=1 =====
+708732974 12 1724.12 1398101 4 1.07485
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=9,attempt=1 =====
+676096046 12 2249.57 1398101 4 1.27043
+
+===== semi_my_shuffle,total_time,n=9,logsz=16,logbatch=10,attempt=1 =====
+649979950 12 4147.8 1398101 4 1.26713
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=4,attempt=1 =====
+1240948998 15 524.345 1441792 4 1.94624
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=5,attempt=1 =====
+1180393734 15 768.652 1441792 4 1.80006
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=6,attempt=1 =====
+1069375750 15 1041.88 1441792 4 2.08329
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=7,attempt=1 =====
+1018372358 15 1660.14 1441792 4 1.84126
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=8,attempt=1 =====
+974668038 15 3120.26 1441792 4 1.51272
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=9,attempt=1 =====
+929792262 15 4221.65 1441792 4 1.94686
+
+===== semi_my_shuffle,total_time,n=12,logsz=16,logbatch=10,attempt=1 =====
+893882630 15 7589.7 1441792 4 1.9164
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=4,attempt=1 =====
+1579511968 18 822.162 1468006 4 2.60759
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=5,attempt=1 =====
+1502441632 18 1221.01 1468006 4 2.19867
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=6,attempt=1 =====
+1361146016 18 1629.52 1468006 4 2.49126
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=7,attempt=1 =====
+1296232608 18 2553.96 1468006 4 2.30844
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=8,attempt=1 =====
+1240608928 18 4754.22 1468006 4 1.89128
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=9,attempt=1 =====
+1183494304 18 6165.23 1468006 4 2.28785
+
+===== semi_my_shuffle,total_time,n=15,logsz=16,logbatch=10,attempt=1 =====
+1137791136 18 11311.7 1468006 4 2.32532

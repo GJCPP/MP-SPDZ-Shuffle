@@ -1,0 +1,32 @@
+| scale | point | variant | protocol | off_comm | off_round | off_time | on_comm | on_round | on_time |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| size | n=2, logsz=14 | baseline-total | Chase_shuffle | 23105684 | 8 | 3.89923 | 917504 | 2 | 0.260991 |
+| size | n=2, logsz=14 | baseline-online | Chase_shuffle | 16528020 | 8 | 34.0852 | 393216 | 2 | 0.21384 |
+| size | n=2, logsz=14 | ours | semi_my_shuffle | 24088724 | 6 | 4.03569 | 196608 | 3 | 0.191362 |
+| size | n=2, logsz=16 | baseline-total | Chase_shuffle | 108138644 | 8 | 17.473 | 4194304 | 2 | 0.86984 |
+| size | n=2, logsz=16 | baseline-online | Chase_shuffle | 86028436 | 8 | 92.2531 | 2097152 | 2 | 0.577385 |
+| size | n=2, logsz=16 | ours | semi_my_shuffle | 112595092 | 6 | 17.7429 | 786432 | 3 | 0.216359 |
+| size | n=2, logsz=18 | baseline-total | Chase_shuffle | 479727764 | 8 | 73.2155 | 18874368 | 2 | 4.14531 |
+| size | n=2, logsz=18 | baseline-online | Chase_shuffle | 377573524 | 8 | 731.939 | 8388608 | 2 | 2.37443 |
+| size | n=2, logsz=18 | ours | semi_my_shuffle | 499650708 | 6 | 76.8278 | 3145728 | 3 | 0.314337 |
+| size | n=2, logsz=20 | baseline-total | Chase_shuffle | 2170556564 | 8 | 335.915 | 83886080 | 2 | 28.502 |
+| size | n=2, logsz=20 | baseline-online | Chase_shuffle | 1629098132 | 8 | 1553.54 | 41943040 | 2 | 12.5986 |
+| size | n=2, logsz=20 | ours | semi_my_shuffle | 2258636948 | 6 | 360.182 | 12582912 | 3 | 0.53947 |
+| size | n=2, logsz=22 | baseline-total | Chase_shuffle | 9437188244 | 8 | 1476.57 | 369098752 | 2 | 126.576 |
+| size | n=2, logsz=22 | baseline-online | Chase_shuffle | 7050367124 | 8 | 11491 | 167772160 | 2 | 76.726 |
+| size | n=2, logsz=22 | ours | semi_my_shuffle | 9823064212 | 6 | 1594.27 | 50331648 | 3 | 1.68514 |
+| parties | n=3, logsz=16 | baseline-total | Chase_shuffle | 216277288 | 12 | 34.4761 | 8388608 | 3 | 3.2981 |
+| parties | n=3, logsz=16 | baseline-online | Chase_shuffle | 216277288 | 12 | 35.7038 | 8388608 | 3 | 3.36585 |
+| parties | n=3, logsz=16 | ours | semi_my_shuffle | 225364946 | 6 | 37.5622 | 1048576 | 3 | 0.370698 |
+| parties | n=6, logsz=16 | baseline-total | Chase_shuffle | 540693220 | 24 | 125.341 | 20971520 | 6 | 11.9221 |
+| parties | n=6, logsz=16 | baseline-online | Chase_shuffle | 540693220 | 24 | 127.4 | 20971520 | 6 | 12.5111 |
+| parties | n=6, logsz=16 | ours | semi_my_shuffle | 563849273 | 9 | 138.481 | 1310720 | 4 | 0.91108 |
+| parties | n=9, logsz=16 | baseline-total | Chase_shuffle | 865109152 | 36 | 275.306 | 33554432 | 9 | 24.6796 |
+| parties | n=9, logsz=16 | baseline-online | Chase_shuffle | 865109152 | 36 | 279.72 | 33554432 | 9 | 24.6839 |
+| parties | n=9, logsz=16 | ours | semi_my_shuffle | 902391854 | 12 | 298.846 | 1398101 | 4 | 1.43193 |
+| parties | n=12, logsz=16 | baseline-total | Chase_shuffle | 1189525084 | 48 | 485.039 | 46137344 | 12 | 37.6458 |
+| parties | n=12, logsz=16 | baseline-online | Chase_shuffle | 1189525084 | 48 | 490.363 | 46137344 | 12 | 39.263 |
+| parties | n=12, logsz=16 | ours | semi_my_shuffle | 1240948998 | 15 | 524.345 | 1441792 | 4 | 1.94624 |
+| parties | n=15, logsz=16 | baseline-total | Chase_shuffle | 1513941016 | 60 | 749.06 | 58720256 | 15 | 54.87 |
+| parties | n=15, logsz=16 | baseline-online | Chase_shuffle | 1513941016 | 60 | 748.247 | 58720256 | 15 | 53.9584 |
+| parties | n=15, logsz=16 | ours | semi_my_shuffle | 1579511968 | 18 | 822.162 | 1468006 | 4 | 2.60759 |

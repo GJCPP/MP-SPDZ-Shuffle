@@ -1,0 +1,22 @@
+protocol,target,n_party,logsz,logbatch,attempt,status,elapsed_wall_time,off_comm,off_round,off_time,on_comm,on_round,on_time,reason
+Chase_shuffle,total_time,2,22,4,1,error,0.026446104049682617,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,total_time,2,22,5,1,error,0.02661585807800293,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,total_time,2,22,6,1,error,0.02602219581604004,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,total_time,2,22,7,1,error,0.02567911148071289,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,total_time,2,22,8,1,error,0.025662899017333984,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,total_time,2,22,9,1,error,0.024419069290161133,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,total_time,2,22,10,1,error,0.025223255157470703,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,on_time,2,22,4,1,error,0.027917861938476562,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,on_time,2,22,5,1,error,0.02663588523864746,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,on_time,2,22,6,1,error,0.030416488647460938,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,on_time,2,22,7,1,error,0.025886058807373047,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,on_time,2,22,8,1,error,0.026189327239990234,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,on_time,2,22,9,1,error,0.030129432678222656,-1,-1,-1,-1,-1,-1,list index out of range
+Chase_shuffle,on_time,2,22,10,1,error,0.02496027946472168,-1,-1,-1,-1,-1,-1,list index out of range
+semi_my_shuffle,total_time,2,22,4,1,error,0.0309751033782959,-1,-1,-1,-1,-1,-1,list index out of range
+semi_my_shuffle,total_time,2,22,5,1,error,0.02749037742614746,-1,-1,-1,-1,-1,-1,list index out of range
+semi_my_shuffle,total_time,2,22,6,1,error,0.025753259658813477,-1,-1,-1,-1,-1,-1,list index out of range
+semi_my_shuffle,total_time,2,22,7,1,error,0.02935171127319336,-1,-1,-1,-1,-1,-1,list index out of range
+semi_my_shuffle,total_time,2,22,8,1,error,0.026040077209472656,-1,-1,-1,-1,-1,-1,list index out of range
+semi_my_shuffle,total_time,2,22,9,1,error,0.026967763900756836,-1,-1,-1,-1,-1,-1,list index out of range
+semi_my_shuffle,total_time,2,22,10,1,error,0.025456905364990234,-1,-1,-1,-1,-1,-1,list index out of range
