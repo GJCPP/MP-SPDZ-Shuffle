@@ -32,7 +32,7 @@ bool permutation::operator!=(const permutation& beta) const
 size_t& permutation::operator[](size_t pos)
 {
 #ifdef DEBUG
-    if (pos < 0 || pos >= n) {
+    if (pos >= n) {
         std::cerr << "permutation::operator[] : out of range, " << pos << "/" << n << std::endl;
         throw std::runtime_error("permutation::operator[] : Out of range.");
     }
@@ -42,7 +42,7 @@ size_t& permutation::operator[](size_t pos)
 const size_t& permutation::operator[](size_t pos) const
 {
 #ifdef DEBUG
-    if (pos < 0 || pos >= n) {
+    if (pos >= n) {
         std::cerr << "permutation::operator[] : out of range, " << pos << "/" << n << std::endl;
         throw std::runtime_error("permutation::operator[] : Out of range.");
     }

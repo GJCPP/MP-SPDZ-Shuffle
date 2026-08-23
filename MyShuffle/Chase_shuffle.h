@@ -57,14 +57,27 @@ namespace chase2020 {
 		std::vector<int> perm;
 	};
 
+	class clear_shuffle_pair {
+	public:
+		int sender, permuter;
+		int logsz, veclen, bat;
+		std::vector<std::vector<ClearType>> a, b, delta; // a[vec_entry][pos]
+		std::vector<int> perm;
+	};
+
 	/*
 		Prepare shuffle_pair for permutation.
 	*/
 	shuffle_pair prepare_permute(myShuffle::mpc_comm& com, int sender, int permuter,
 		const std::vector<int>& perm, int sz, int veclen, int batch);
 
+	clear_shuffle_pair prepare_permute_clear(myShuffle::mpc_comm& com, int sender, int permuter,
+		const std::vector<int>& perm, int sz, int veclen, int batch);
+
 	/*
 		A complete two-party shuffle protocol consists of two calls to permute.
 	*/
 	void permute(myShuffle::mpc_comm& com, vectors<block_wrapper>& val, shuffle_pair& plan);
+
+	void permute(myShuffle::mpc_comm& com, vectors<ClearType>& val, clear_shuffle_pair& plan);
 }

@@ -2,6 +2,11 @@
 
 This is an implementation of secure multi-party shuffle protocol based on [MP-SPDZ project](https://github.com/data61/MP-SPDZ).
 
+The shuffle implementation was started from MP-SPDZ commit
+`bf38ddbc6bf164b67d3c4175921bd62c90e70308`. Third-party dependencies are
+pinned through Git submodules and should be initialized with
+`git submodule update --init --recursive`.
+
 ## Compilation
 
 Please read [the instruction of MP-SPDZ](https://github.com/data61/MP-SPDZ) for setting up the MP-SPDZ part of the project.
@@ -41,7 +46,7 @@ Use `make benchmark-semi` to run the semi-honest benchmark suite:
 Scripts/setup-ssl.sh 20
 SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/semi_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=14,16,18,20,22 python3 -u my_benchmark.py semi-parties 10000
 SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/semi_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=16 python3 -u my_benchmark.py semi-parties 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py semi
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py semi --strict
 ```
 
 Use `make benchmark-mali` to run the malicious benchmark suite:
@@ -50,7 +55,7 @@ Use `make benchmark-mali` to run the malicious benchmark suite:
 Scripts/setup-ssl.sh 20
 SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/mali_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py malicious 10000
 SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/mali_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py malicious 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py mali
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py mali --strict
 ```
 
 Use `make benchmark-strong` to run only the strong abort-privacy variant of
@@ -60,7 +65,7 @@ Use `make benchmark-strong` to run only the strong abort-privacy variant of
 Scripts/setup-ssl.sh 20
 SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
 SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py strong
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py strong --strict
 ```
 
 Use `make benchmark` to run both suites in sequence.

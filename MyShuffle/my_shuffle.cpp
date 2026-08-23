@@ -21,7 +21,7 @@ namespace myShuffle {
         ;
     }
 
-    void book_shuffle_session(mpc_comm &com, shuffle_session *session)
+    void book_shuffle_session(mpc_comm&, shuffle_session *session)
     {
         shuffle_info info(session->logsz, session->veclen);
         auto que = booked_shuffle.find(info);
@@ -32,7 +32,7 @@ namespace myShuffle {
         que->second.push_back(order_info(session));
     }
     
-    void malloc_random_resource(mpc_comm& com) {
+    void malloc_random_resource(mpc_comm&) {
         // Fetch all random resource
         for (auto &info : booked_shuffle) {
             for (auto &order : info.second) {
@@ -102,23 +102,33 @@ namespace myShuffle {
 
     void compute_permuted_random_resource(mpc_comm& com) {
         // Perform all permute.
-        song2023::process_all_orders(com);
+        size_t sequential_session_rounds = 0;
+        size_t parallel_session_rounds = 0;
         for (auto& info : booked_shuffle) {
             for (auto& order : info.second) {
+                size_t session_rounds_before = com.count_total_rounds();
                 shuffle_session &session = *order.session;
                 shuffle_cor &cor = session.cor;
+                const size_t num = size_t(1) << session.logsz;
                 static vectors<ShareType> r_betar_rp;
-                r_betar_rp.resize(1 << session.logsz, session.veclen * 3);
+                r_betar_rp.resize(num, session.veclen * 3);
+                size_t sequential_rounds = 0;
+                size_t parallel_rounds = 0;
                 for (int party(0); party != session.n_party; ++party) {
-                    for (size_t i(0); i != (1 << session.logsz); ++i) {
+                    for (size_t i(0); i != num; ++i) {
                         for (size_t j(0); j != 3 * session.veclen; j += 3) {
                             r_betar_rp[i][j] = cor.r[party][i][j / 3];
                             r_betar_rp[i][j + 1] = cor.beta_r[party][i][j / 3];
                             r_betar_rp[i][j + 2] = cor.rp[party][i][j / 3];
                         }
                     }
+                    size_t rounds_before = com.count_total_rounds();
                     session.permute_sessions[party].perform(com, r_betar_rp);
-                    for (size_t i(0); i != 1 << session.logsz; ++i) {
+                    size_t rounds_after = com.count_total_rounds();
+                    size_t delta_rounds = rounds_after - rounds_before;
+                    sequential_rounds += delta_rounds;
+                    parallel_rounds = std::max(parallel_rounds, delta_rounds);
+                    for (size_t i(0); i != num; ++i) {
                         for (size_t j(0); j != 3 * session.veclen; j += 3) {
                             cor.permuted_r[party][i][j / 3] = r_betar_rp[i][j];
                             cor.permuted_beta_r[party][i][j / 3] = r_betar_rp[i][j + 1];
@@ -126,7 +136,18 @@ namespace myShuffle {
                         }
                     }
                 }
+                if (sequential_rounds > parallel_rounds) {
+                    com.add_round_adjustment(-static_cast<long long>(sequential_rounds - parallel_rounds));
+                }
+                size_t session_rounds_after = com.count_total_rounds();
+                size_t session_rounds = session_rounds_after - session_rounds_before;
+                sequential_session_rounds += session_rounds;
+                parallel_session_rounds = std::max(parallel_session_rounds, session_rounds);
             }
+        }
+        if (sequential_session_rounds > parallel_session_rounds) {
+            com.add_round_adjustment(-static_cast<long long>(
+                    sequential_session_rounds - parallel_session_rounds));
         }
     }
 
@@ -136,10 +157,11 @@ namespace myShuffle {
             for (auto& order : info.second) {
                 shuffle_session &session = *order.session;
                 shuffle_cor &cor = session.cor;
+                const size_t num = size_t(1) << session.logsz;
                 for (int party(1); party != session.n_party; ++party) {
                     static vectors<ShareType> z;
-                    z.resize(1 << session.logsz, session.veclen * 2);
-                    for (size_t i(0); i != 1 << session.logsz; ++i) {
+                    z.resize(num, session.veclen * 2);
+                    for (size_t i(0); i != num; ++i) {
                         for (size_t j(0); j != session.veclen; ++j) {
                             z[i][j] = cor.permuted_r[party - 1][i][j] - cor.r[party][i][j];
                             z[i][j + session.veclen] = cor.permuted_beta_r[party - 1][i][j]
@@ -158,13 +180,14 @@ namespace myShuffle {
             for (auto& order : info.second) {
                 shuffle_session &session = *order.session;
                 shuffle_cor &cor = session.cor;
-                buff.resize(1 << session.logsz, session.veclen * 2);
+                const size_t num = size_t(1) << session.logsz;
+                buff.resize(num, session.veclen * 2);
                 for (int party(1); party != session.n_party; ++party) {
                     com.private_output_consume(party, buff);
                     if (com.get_my_number() == party) {
-                        cor.z[0].resize(1 << session.logsz, session.veclen);
-                        cor.z[1].resize(1 << session.logsz, session.veclen);
-                        for (size_t i(0); i != 1 << session.logsz; ++i) {
+                        cor.z[0].resize(num, session.veclen);
+                        cor.z[1].resize(num, session.veclen);
+                        for (size_t i(0); i != num; ++i) {
                             for (size_t j(0); j != session.veclen; ++j) {
                                 cor.z[0][i][j] = buff[i][j];
                                 cor.z[1][i][j] = buff[i][j + session.veclen];
@@ -229,12 +252,35 @@ namespace myShuffle {
             }
         }
 
+        size_t parallel_prepare_sequential_rounds = 0;
+        size_t parallel_prepare_rounds = 0;
+        auto add_prepare_task_rounds = [&](size_t before) {
+            size_t after = com.count_total_rounds();
+            size_t delta = after - before;
+            parallel_prepare_sequential_rounds += delta;
+            parallel_prepare_rounds = std::max(parallel_prepare_rounds, delta);
+        };
+
+        size_t stage_rounds_before = com.count_total_rounds();
         com.prepare_more_random_now();
+        add_prepare_task_rounds(stage_rounds_before);
         // std::cout << "Random resource prepared." << std::endl;
+        com.prepare_more_mul_lazy(require_mul);
+        stage_rounds_before = com.count_total_rounds();
         com.prepare_more_mul_now();
+        add_prepare_task_rounds(stage_rounds_before);
         // std::cout << "Mul resource prepared." << std::endl;
+        stage_rounds_before = com.count_total_rounds();
         com.prepare_more_private_output_now();
+        add_prepare_task_rounds(stage_rounds_before);
         // std::cout << "Private resource prepared." << std::endl;
+        stage_rounds_before = com.count_total_rounds();
+        song2023::process_all_orders(com);
+        add_prepare_task_rounds(stage_rounds_before);
+        if (parallel_prepare_sequential_rounds > parallel_prepare_rounds) {
+            com.add_round_adjustment(-static_cast<long long>(
+                    parallel_prepare_sequential_rounds - parallel_prepare_rounds));
+        }
 
         malloc_random_resource(com);
         fill_in_random_resource(com); // 2 * n * n_party randoms.
@@ -250,9 +296,6 @@ namespace myShuffle {
         set_init_flag();
         clear_unused();
         booked_shuffle.clear();
-        com.prepare_more_mul_now(require_mul);
-        
-        com.output_check();
     }
 
     void verify(mpc_comm &com, ClearType a, ClearType b, ShareType beta, ShareType r)
@@ -310,7 +353,7 @@ namespace myShuffle {
     void shuffle_session::perform(mpc_comm &com, vectors<ShareType> &val,
             bool strong_abort_privacy)
     {
-        if (val.num != (1 << logsz) || val.len != veclen) {
+        if (val.num != (size_t(1) << logsz) || val.len != veclen) {
             std::cerr << "shuffle_session::perform : Invalid input size," << val
                     << " != " << (1 << logsz) << " or " << val.len << " != " << veclen << std::endl;
             throw std::runtime_error("shuffle_session::perform : Invalid input size.");

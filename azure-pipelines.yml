@@ -4,6 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/c-cpp/gcc
 
 trigger:
+- main
 - master
 - to-publish
 
@@ -11,6 +12,8 @@ pool:
   vmImage: 'ubuntu-20.04'
 
 steps:
+  - checkout: self
+    submodules: recursive
   - script: |
       bash -c "sudo apt-get update && sudo apt-get install libsodium-dev libntl-dev python3-gmpy2 python3-networkx"
   - script: |
@@ -31,3 +34,42 @@ steps:
       Scripts/setup-ssl.sh 4
   - script:
       skip_binary=1 Scripts/test_tutorial.sh -X
+  - script: |
+      make my_shuffle_main.x
+    displayName: Build shuffle executable
+  - script: |
+      set -euo pipefail
+      Scripts/setup-ssl.sh 3
+      run_three_party() {
+        protocol="$1"
+        port="$2"
+        pids=""
+        for party in 0 1 2; do
+          ./build/my_shuffle_main.x "$protocol" "$party" 3 3 2 4 "$port" 1 \
+            >"/tmp/${protocol}-${party}.out" \
+            2>"/tmp/${protocol}-${party}.err" &
+          pids="$pids $!"
+        done
+        status=0
+        for pid in $pids; do
+          wait "$pid" || status=1
+        done
+        if [ "$status" -ne 0 ]; then
+          cat "/tmp/${protocol}-"*.err
+          return 1
+        fi
+      }
+      run_three_party test_my_shuffle 12000
+      run_three_party test_my_shuffle_strong 13000
+      run_three_party test_semi_my_shuffle 14000
+    displayName: Test weak, strong, and semi-honest shuffles
+  - script: |
+      set -euo pipefail
+      SHUFFLE_BENCHMARK_DIR=/tmp/shuffle-benchmark-smoke \
+      SHUFFLE_BENCHMARK_PARTIES=3 \
+      SHUFFLE_BENCHMARK_LOGSZ=6 \
+      SHUFFLE_BENCHMARK_LOGBATCH=4 \
+      python3 -u my_benchmark.py my_shuffle_strong 15000
+      test -s /tmp/shuffle-benchmark-smoke/my_shuffle_strong_total_time_n_3.csv
+      python3 tests/test_summarize_benchmarks.py
+    displayName: Smoke-test benchmark and summaries

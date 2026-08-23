@@ -15,6 +15,7 @@ namespace myShuffle {
             expand_random_size(0),
             expand_triple_size(0),
             cnt_private_output(n_party),
+            round_adjustment(0),
             otSendChannel(n_party, nullptr),
             otRecvChannel(n_party, nullptr)
     {
@@ -132,7 +133,7 @@ namespace myShuffle {
         if (party == my_number) {
             for (auto& v : val) input->add_mine(v);
         } else {
-            for (auto& v : val) input->add_other(party);
+            for (size_t i = 0; i < val.size(); ++i) input->add_other(party);
         }
     }
 
@@ -177,6 +178,9 @@ namespace myShuffle {
         size_t expand = expand_triple_size + num;
         expand_triple_size = 0;
         if (expand == 0) {
+            if (!triple_resource.empty()) {
+                return;
+            }
             expand = default_expand;
             default_expand <<= 1;
         }
@@ -324,6 +328,9 @@ namespace myShuffle {
         size_t expand = expand_random_size + num;
         expand_random_size = 0;
         if (expand == 0) { // Called under situation random_resourece.empty() && expand_random_size == 0
+            if (!random_resource.empty()) {
+                return;
+            }
             expand = default_expand;
             default_expand <<= 1;
         }
@@ -403,8 +410,6 @@ namespace myShuffle {
 
     void mpc_comm::private_output_exchange()
     {
-        bool needExpand(false);
-        
         output_exchange();
     }
 
@@ -443,28 +448,123 @@ namespace myShuffle {
         output->Check(P);
     }
 
+    size_t mpc_comm::chunk_count(size_t size)
+    {
+        return size == 0 ? 1 : (size + large_message_chunk_bytes - 1) / large_message_chunk_bytes;
+    }
+
+    void mpc_comm::adjust_chunk_rounds(size_t messages)
+    {
+        if (messages > 1) {
+            add_round_adjustment(-static_cast<long long>(messages - 1));
+        }
+    }
+
+    void mpc_comm::send_chunked_payload(int party, const octet *data, size_t size, bool send_empty)
+    {
+        if (size == 0) {
+            if (send_empty) {
+                octetStream o;
+                P.send_to(party, o);
+            }
+            return;
+        }
+
+        const size_t messages = chunk_count(size);
+        size_t offset = 0;
+        while (offset < size) {
+            const size_t chunk = std::min(large_message_chunk_bytes, size - offset);
+            octetStream o;
+            o.append(data + offset, chunk);
+            P.send_to(party, o);
+            offset += chunk;
+        }
+        adjust_chunk_rounds(messages);
+    }
+
+    void mpc_comm::recv_chunked_payload(int party, octet *data, size_t size, bool recv_empty)
+    {
+        if (size == 0) {
+            if (recv_empty) {
+                octetStream o;
+                P.receive_player(party, o);
+            }
+            return;
+        }
+
+        const size_t messages = chunk_count(size);
+        size_t offset = 0;
+        while (offset < size) {
+            const size_t chunk = std::min(large_message_chunk_bytes, size - offset);
+            octetStream o;
+            P.receive_player(party, o);
+            if (o.get_length() != chunk) {
+                throw std::runtime_error("mpc_comm::recv_chunked_payload: unexpected chunk length");
+            }
+            o.consume(data + offset, chunk);
+            offset += chunk;
+        }
+        adjust_chunk_rounds(messages);
+    }
+
     void mpc_comm::send(int recver, const void * data, size_t size)
     {
-        octetStream o;
-        o.append(reinterpret_cast<octet *>(const_cast<void *>(data)), size);
-        P.send_to(recver, o);
+        send_chunked_payload(recver, reinterpret_cast<const octet *>(data), size);
     }
 
     void mpc_comm::recv(int sender, void *data, size_t size)
     {
-        octetStream o;
-        P.receive_player(sender, o);
-        o.consume(reinterpret_cast<octet *>(data), size);
+        recv_chunked_payload(sender, reinterpret_cast<octet *>(data), size);
     }
 
     void mpc_comm::send(int party, octetStream &os)
     {
-        P.send_to(party, os);
+        send(party, os.get_length());
+        if (os.get_length() == 0) {
+            octetStream empty;
+            P.send_to(party, empty);
+            adjust_chunk_rounds(2);
+            return;
+        }
+
+        const size_t messages = chunk_count(os.get_length());
+        size_t offset = 0;
+        while (offset < os.get_length()) {
+            const size_t chunk = std::min(large_message_chunk_bytes, os.get_length() - offset);
+            octetStream part;
+            part.append(os.get_data() + offset, chunk);
+            P.send_to(party, part);
+            offset += chunk;
+        }
+        adjust_chunk_rounds(messages + 1);
     }
 
     void mpc_comm::recv(int party, octetStream &os)
     {
-        P.receive_player(party, os);
+        size_t size = 0;
+        recv(party, size);
+        os.reset_write_head();
+        if (size == 0) {
+            octetStream empty;
+            P.receive_player(party, empty);
+            adjust_chunk_rounds(2);
+            return;
+        }
+
+        const size_t messages = chunk_count(size);
+        size_t offset = 0;
+        while (offset < size) {
+            const size_t chunk = std::min(large_message_chunk_bytes, size - offset);
+            octetStream part;
+            P.receive_player(party, part);
+            if (part.get_length() != chunk) {
+                throw std::runtime_error("mpc_comm::recv: unexpected octetStream chunk length");
+            }
+            os.append(part.get_data(), chunk);
+            offset += chunk;
+        }
+        os.reset_read_head();
+        adjust_chunk_rounds(messages + 1);
     }
 
     void mpc_comm::send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> sendKey,
@@ -697,12 +797,38 @@ namespace myShuffle {
         return ret;
     }
 
+    size_t mpc_comm::count_raw_total_rounds() const
+    {
+        size_t ret = 0;
+        auto stats = P.total_comm();
+        for (auto& x : stats) {
+            ret += x.second.rounds;
+        }
+        return ret;
+    }
+
+    size_t mpc_comm::count_total_rounds() const
+    {
+        size_t raw = count_raw_total_rounds();
+        if (round_adjustment >= 0) {
+            return raw + static_cast<size_t>(round_adjustment);
+        }
+        size_t reduction = static_cast<size_t>(-round_adjustment);
+        return raw < reduction ? 0 : raw - reduction;
+    }
+
+    void mpc_comm::add_round_adjustment(long long adjustment)
+    {
+        round_adjustment += adjustment;
+    }
+
     void mpc_comm::reset_total_comm()
     {
         for (auto channel : otSendChannel) {
             if (channel) channel->resetStats();
         }
         P.reset_stats();
+        round_adjustment = 0;
     }
 
     void mpc_comm::set_online()
@@ -726,15 +852,15 @@ namespace myShuffle {
 
     mpc_comm::~mpc_comm()
     {
-        for (int i(0); i != n_party; ++i) {
-            sessions[i].stop();
-        }
-        ios.stop();
         for (auto channel : otSendChannel) {
             if (channel) delete channel;
         }
         for (auto channel : otRecvChannel) {
             if (channel) delete channel;
         }
+        for (auto& session : sessions) {
+            if (session.mBase) session.stop();
+        }
+        ios.stop();
     }
 }

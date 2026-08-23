@@ -16,12 +16,12 @@
 #include "Math/gfp.hpp"
 #include "Machines/SPDZ.hpp"
 #include "Protocols/ProtocolSet.h"
-#include "deps/libOTe/libOTe/Base/SimplestOT.h"
+#include <libOTe/libOTe/Base/SimplestOT.h>
 // #include "deps/libOTe/libOTe/TwoChooseOne/OTExtInterface.h"
 // #include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtSender.h"
 // #include "deps/libOTe/libOTe/TwoChooseOne/IknpOtExtReceiver.h"
-#include "deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h"
-#include "deps/libOTe/libOTe/TwoChooseOne/KosOtExtReceiver.h"
+#include <libOTe/libOTe/TwoChooseOne/KosOtExtSender.h>
+#include <libOTe/libOTe/TwoChooseOne/KosOtExtReceiver.h>
 #include "libOTe/TwoChooseOne/SoftSpokenOT/TwoOneMalicious.h"
 
 #include "global.h"
@@ -73,6 +73,7 @@ namespace myShuffle {
 
         size_t expand_random_size, expand_triple_size;
         std::vector<size_t> cnt_private_output;
+        long long round_adjustment;
         
         std::vector<osuCrypto::Channel *> otSendChannel, otRecvChannel;
 
@@ -83,6 +84,18 @@ namespace myShuffle {
         void send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> send_key, osuCrypto::Channel *channel = nullptr);
         void send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> send_key);
         void recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recv_key);
+
+        static constexpr size_t large_message_chunk_bytes = size_t(1) << 30;
+
+        static size_t chunk_count(size_t size);
+        void adjust_chunk_rounds(size_t messages);
+        void send_chunked_payload(int party, const octet *data, size_t size, bool send_empty = true);
+        void recv_chunked_payload(int party, octet *data, size_t size, bool recv_empty = true);
+
+        template <typename T, typename Range>
+        void send_range_chunked(int party, const Range& val);
+        template <typename T, typename Range>
+        void recv_range_chunked(int party, Range& val);
     public:
         mpc_comm(int n_party, int my_number, int port_base = default_port_base);
         
@@ -271,6 +284,9 @@ namespace myShuffle {
             Count the total communication of THIS SINGLE party.
         */
         size_t count_total_comm() const;
+        size_t count_raw_total_rounds() const;
+        size_t count_total_rounds() const;
+        void add_round_adjustment(long long adjustment);
         void reset_total_comm();
 
         /*
@@ -395,61 +411,89 @@ namespace myShuffle {
     template <typename T>
     inline void mpc_comm::send(int party, const vectors<T> &val)
     {
-        octetStream o;
-        for (const T& v : val) {
-            o.store(v);
-        }
-        P.send_to(party, o);
+        send_range_chunked<T>(party, val);
     }
 
     template <typename T>
     inline void mpc_comm::recv(int party, vectors<T> &val)
     {
-        octetStream o;
-        P.receive_player(party, o);
-        for (T& v : val) {
-            o.get(v);
-        }
+        recv_range_chunked<T>(party, val);
     }
 
     template <typename T>
     inline void mpc_comm::send(int party, const std::vector<T> &val)
     {
-        octetStream o;
-        for (const T& v : val) {
-            o.store(v);
-        }
-        P.send_to(party, o);
+        send_range_chunked<T>(party, val);
     }
 
     template <typename T>
     inline void mpc_comm::recv(int party, std::vector<T> &val)
     {
-        octetStream o;
-        P.receive_player(party, o);
-        for (T& v : val) {
-            o.get(v);
-        }
+        recv_range_chunked<T>(party, val);
     }
 
     template <typename T>
     inline void mpc_comm::send(int party, const osuCrypto::span<T> val)
     {
-        octetStream o;
-        for (const T& v : val) {
-            o.store(v);
-        }
-        P.send_to(party, o);
+        send_range_chunked<T>(party, val);
     }
 
     template <typename T>
     inline void mpc_comm::recv(int party, osuCrypto::span<T> val)
     {
-        octetStream o;
-        P.receive_player(party, o);
-        for (T& v : val) {
-            o.get(v);
+        recv_range_chunked<T>(party, val);
+    }
+
+    template <typename T, typename Range>
+    inline void mpc_comm::send_range_chunked(int party, const Range& val)
+    {
+        const size_t max_items = std::max<size_t>(1, large_message_chunk_bytes / std::max<size_t>(sizeof(T), 1));
+        size_t remaining = val.size();
+        size_t messages = remaining == 0 ? 1 : (remaining + max_items - 1) / max_items;
+        auto it = val.begin();
+
+        if (remaining == 0) {
+            octetStream o;
+            P.send_to(party, o);
+            return;
         }
+
+        while (remaining > 0) {
+            const size_t take = std::min(max_items, remaining);
+            octetStream o;
+            for (size_t i = 0; i < take; ++i, ++it) {
+                o.store(*it);
+            }
+            P.send_to(party, o);
+            remaining -= take;
+        }
+        adjust_chunk_rounds(messages);
+    }
+
+    template <typename T, typename Range>
+    inline void mpc_comm::recv_range_chunked(int party, Range& val)
+    {
+        const size_t max_items = std::max<size_t>(1, large_message_chunk_bytes / std::max<size_t>(sizeof(T), 1));
+        size_t remaining = val.size();
+        size_t messages = remaining == 0 ? 1 : (remaining + max_items - 1) / max_items;
+        auto it = val.begin();
+
+        if (remaining == 0) {
+            octetStream o;
+            P.receive_player(party, o);
+            return;
+        }
+
+        while (remaining > 0) {
+            const size_t take = std::min(max_items, remaining);
+            octetStream o;
+            P.receive_player(party, o);
+            for (size_t i = 0; i < take; ++i, ++it) {
+                o.get(*it);
+            }
+            remaining -= take;
+        }
+        adjust_chunk_rounds(messages);
     }
 }
 #endif

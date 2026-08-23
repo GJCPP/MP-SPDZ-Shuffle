@@ -8,8 +8,8 @@
 #include <cryptoTools/Common/BitVector.h>
 
 #include "libOTe/libOTe/Base/SimplestOT.h"
-#include "deps/libOTe/libOTe/TwoChooseOne/KosOtExtSender.h"
-#include "deps/libOTe/libOTe/TwoChooseOne/KosOtExtReceiver.h"
+#include <libOTe/libOTe/TwoChooseOne/KosOtExtSender.h>
+#include <libOTe/libOTe/TwoChooseOne/KosOtExtReceiver.h>
 
 
 #include "vectors.h"

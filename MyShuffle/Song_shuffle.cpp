@@ -56,7 +56,7 @@ namespace song2023 {
     void book_permute_session(mpc_comm &com, permute_session *session)
     {
         int me = com.get_my_number(), permuter = session->permuter,
-            logsz = session->logsz, veclen = session->veclen, batch = session->batch;
+            logsz = session->logsz, batch = session->batch;
         int sz = 1 << logsz;
         std::vector<int> dest(sz);
 		if (me == permuter) {
@@ -68,16 +68,12 @@ namespace song2023 {
 		auto route = BenesNetwork::route(logsz, dest);
 		auto sub_route = BenesNetwork::decompose(route, batch);
 		BenesNetwork::desttask_to_permtask(sz, sub_route);
-		std::vector<int> map(sz), inv_map(sz);
-		for (size_t bat(0); bat != sub_route.size(); ++bat) {
-			const auto& task = all_tasks[bat];
-			int next(0);
-            size_t batch_sz(task[0].size());
-			int log_batch_sz = math_gadget::log2(batch_sz);
-			for (const auto& touched : task) {
-                count_permute_task[log_batch_sz] = count_permute_task[log_batch_sz] + 1;
+			for (size_t bat(0); bat != sub_route.size(); ++bat) {
+				const auto& task = all_tasks[bat];
+	            size_t batch_sz(task[0].size());
+				int log_batch_sz = math_gadget::log2(batch_sz);
+	            count_permute_task[log_batch_sz] += task.size();
 			}
-		}
         booked_sessions.push_back(session);
         com.prepare_more_random_lazy((1 << session->logsz) * session->veclen + 1);
     }
@@ -87,7 +83,6 @@ namespace song2023 {
         for (auto session : booked_sessions) {
             int me = com.get_my_number(), permuter = session->permuter,
                 logsz = session->logsz, batch = session->batch;
-            size_t veclen = session->veclen;
             int sz = 1 << logsz;
             std::vector<int> dest(sz);
             if (me == permuter) {
@@ -137,7 +132,7 @@ namespace song2023 {
 
     void book_shuffle_session(mpc_comm &com, shuffle_session *session)
     {
-        int me = com.get_my_number(), n = com.get_n_party();
+        int n = com.get_n_party();
         for (int i(0); i != n; ++i) {
             book_permute_session(com, &session->permute_sessions[i]);
         }
@@ -353,7 +348,17 @@ namespace song2023 {
                 }
             }
         }
+        size_t sequential_offline_rounds = 0;
+        size_t parallel_offline_rounds = 0;
+        auto add_parallel_task_rounds = [&](size_t before) {
+            size_t after = com.count_total_rounds();
+            size_t delta = after - before;
+            sequential_offline_rounds += delta;
+            parallel_offline_rounds = std::max(parallel_offline_rounds, delta);
+        };
+        size_t rounds_before = com.count_total_rounds();
         com.prepare_more_random_now();
+        add_parallel_task_rounds(rounds_before);
         decompose_permute_sessions(com);
         int me = com.get_my_number(), n = com.get_n_party();
         for (auto keyval : booked_permute) {
@@ -362,6 +367,7 @@ namespace song2023 {
             if (me == info.permuter) {
                 for (int sender(0); sender != n; ++sender) {
                     if (me == sender) continue;
+                    rounds_before = com.count_total_rounds();
 
                     // Select a random permutation to hide the order of the orders.
                     permutation random_perm(orders.size(), true);
@@ -385,8 +391,10 @@ namespace song2023 {
                         next_output->expand(order.session->veclen, true);
                         order.session->pairs[sender][info.logsz].push_back(*next_output++);
                     }
+                    add_parallel_task_rounds(rounds_before);
                 }
             } else {
+                rounds_before = com.count_total_rounds();
                 std::vector<permute_pair> output, reordered_output;
                 process_orders(com, info, me, orders, output);
 
@@ -402,7 +410,12 @@ namespace song2023 {
                     next_output->expand(order.session->veclen, false);
                     order.session->pairs[info.permuter][info.logsz].push_back(*next_output++);
                 }
+                add_parallel_task_rounds(rounds_before);
             }
+        }
+        if (sequential_offline_rounds > parallel_offline_rounds) {
+            com.add_round_adjustment(-static_cast<long long>(
+                    sequential_offline_rounds - parallel_offline_rounds));
         }
         for (auto& keyval : booked_permute) {
             for (auto& session : keyval.second) {
@@ -426,7 +439,6 @@ namespace song2023 {
 
     void permute_session::perform(mpc_comm &com, vectors<ClearType> &val)
     {
-        double send_time = 0, recv_time = 0;
         int n = com.get_n_party(), me = com.get_my_number();
         size_t sz = (1 << logsz);
 
@@ -470,11 +482,12 @@ namespace song2023 {
             }
         }
 
-        double tot_send_time = 0;
-        double A_time=0, B_time = 0, C_time = 0, D_time = 0, E_time = 0;
+        size_t sequential_sender_rounds = 0;
+        size_t parallel_sender_rounds = 0;
         for (int sender(0); sender != n; ++sender) {
             if (sender == permuter) continue;
             if (me != permuter && me != sender) continue;
+            size_t rounds_before = com.count_total_rounds();
             static std::vector<permute_pair>::iterator next_pair[MAX_BATCH_SIZE];
             vectors<ClearType> dum_val(val.num, val.len); // Permuter only permutes dummy values.
 
@@ -492,7 +505,10 @@ namespace song2023 {
                 const auto& task = all_tasks[bat];
                 int next(0), batch_sz(task[0].size());
                 int log_batch_sz = math_gadget::log2(batch_sz);
+                size_t sequential_component_rounds = 0;
+                size_t parallel_component_rounds = 0;
                 for (const auto& touched : task) {
+                    size_t component_rounds_before = com.count_total_rounds();
                     next = 0;
 
                     for (int v : touched) { // touched is the component specified by (depth, rank of task)
@@ -557,10 +573,26 @@ namespace song2023 {
                             else val[v][j] = local_val[map[v]][j];
                         }
                     }
+                    size_t component_rounds_after = com.count_total_rounds();
+                    size_t component_rounds = component_rounds_after - component_rounds_before;
+                    sequential_component_rounds += component_rounds;
+                    parallel_component_rounds = std::max(parallel_component_rounds, component_rounds);
+                }
+                if (sequential_component_rounds > parallel_component_rounds) {
+                    com.add_round_adjustment(-static_cast<long long>(
+                            sequential_component_rounds - parallel_component_rounds));
                 }
             }
             // Add the permuted dummy value to result.
             result += dum_val;
+            size_t rounds_after = com.count_total_rounds();
+            size_t delta_rounds = rounds_after - rounds_before;
+            sequential_sender_rounds += delta_rounds;
+            parallel_sender_rounds = std::max(parallel_sender_rounds, delta_rounds);
+        }
+        if (sequential_sender_rounds > parallel_sender_rounds) {
+            com.add_round_adjustment(-static_cast<long long>(
+                    sequential_sender_rounds - parallel_sender_rounds));
         }
         if (me == permuter) {
             val = result;

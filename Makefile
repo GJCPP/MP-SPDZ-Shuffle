@@ -1,37 +1,43 @@
 
 include CONFIG
 
-MATH = $(patsubst %.cpp,%.o,$(wildcard Math/*.cpp))
+BUILD_DIR ?= build
 
-TOOLS = $(patsubst %.cpp,%.o,$(wildcard Tools/*.cpp))
+define objs
+$(addprefix $(BUILD_DIR)/,$(patsubst %.cpp,%.o,$(1)))
+endef
 
-NETWORK = $(patsubst %.cpp,%.o,$(wildcard Networking/*.cpp))
+MATH = $(call objs,$(wildcard Math/*.cpp))
 
-PROCESSOR = $(patsubst %.cpp,%.o,$(wildcard Processor/*.cpp))
+TOOLS = $(call objs,$(wildcard Tools/*.cpp))
 
-FHEOBJS = $(patsubst %.cpp,%.o,$(wildcard FHEOffline/*.cpp FHE/*.cpp)) Protocols/CowGearOptions.o
+NETWORK = $(call objs,$(wildcard Networking/*.cpp))
 
-GC = $(patsubst %.cpp,%.o,$(wildcard GC/*.cpp)) $(PROCESSOR)
-GC_SEMI = GC/SemiPrep.o GC/square64.o GC/Semi.o
+PROCESSOR = $(call objs,$(wildcard Processor/*.cpp))
 
-OT = $(patsubst %.cpp,%.o,$(wildcard OT/*.cpp)) $(LIBSIMPLEOT)
+FHEOBJS = $(call objs,$(wildcard FHEOffline/*.cpp FHE/*.cpp)) $(BUILD_DIR)/Protocols/CowGearOptions.o
+
+GC = $(call objs,$(wildcard GC/*.cpp)) $(PROCESSOR)
+GC_SEMI = $(BUILD_DIR)/GC/SemiPrep.o $(BUILD_DIR)/GC/square64.o $(BUILD_DIR)/GC/Semi.o
+
+OT = $(call objs,$(wildcard OT/*.cpp)) $(LIBSIMPLEOT)
 OT_EXE = ot.x ot-offline.x
 
-COMMONOBJS = $(MATH) $(TOOLS) $(NETWORK) GC/square64.o Processor/OnlineOptions.o Processor/BaseMachine.o Processor/DataPositions.o Processor/ThreadQueues.o Processor/ThreadQueue.o
+COMMONOBJS = $(MATH) $(TOOLS) $(NETWORK) $(BUILD_DIR)/GC/square64.o $(BUILD_DIR)/Processor/OnlineOptions.o $(BUILD_DIR)/Processor/BaseMachine.o $(BUILD_DIR)/Processor/DataPositions.o $(BUILD_DIR)/Processor/ThreadQueues.o $(BUILD_DIR)/Processor/ThreadQueue.o
 COMPLETE = $(COMMON) $(PROCESSOR) $(FHEOFFLINE) $(TINYOTOFFLINE) $(GC) $(OT)
-YAO = $(patsubst %.cpp,%.o,$(wildcard Yao/*.cpp)) $(OT) BMR/Key.o
-BMR = $(patsubst %.cpp,%.o,$(wildcard BMR/*.cpp BMR/network/*.cpp))
-VMOBJS = $(PROCESSOR) $(COMMONOBJS) GC/square64.o GC/Instruction.o OT/OTTripleSetup.o OT/BaseOT.o $(LIBSIMPLEOT)
+YAO = $(call objs,$(wildcard Yao/*.cpp)) $(OT) $(BUILD_DIR)/BMR/Key.o
+BMR = $(call objs,$(wildcard BMR/*.cpp BMR/network/*.cpp))
+VMOBJS = $(PROCESSOR) $(COMMONOBJS) $(BUILD_DIR)/GC/square64.o $(BUILD_DIR)/GC/Instruction.o $(BUILD_DIR)/OT/OTTripleSetup.o $(BUILD_DIR)/OT/BaseOT.o $(LIBSIMPLEOT)
 VM = $(MINI_OT) $(SHAREDLIB)
 COMMON = $(SHAREDLIB)
-TINIER =  Machines/Tinier.o $(OT)
-SPDZ = Machines/SPDZ.o $(TINIER)
+TINIER =  $(BUILD_DIR)/Machines/Tinier.o $(OT)
+SPDZ = $(BUILD_DIR)/Machines/SPDZ.o $(TINIER)
 
 
-LIB = libSPDZ.a
-SHAREDLIB = libSPDZ.so
-FHEOFFLINE = libFHE.so
-LIBRELEASE = librelease.a
+LIB = $(BUILD_DIR)/libSPDZ.a
+SHAREDLIB = $(BUILD_DIR)/libSPDZ.so
+FHEOFFLINE = $(BUILD_DIR)/libFHE.so
+LIBRELEASE = $(BUILD_DIR)/librelease.a
 LIBSIMPLEOT_C = deps/SimplestOT_C/ref10/libSimplestOT.a
 LIBSIMPLEOT += $(LIBSIMPLEOT_C)
 
@@ -52,8 +58,8 @@ endif
 endif
 
 # used for dependency generation
-OBJS = $(patsubst %.cpp,%.o,$(wildcard */*.cpp */*/*.cpp)) $(STATIC_OTE)
-DEPS := $(wildcard */*.d */*/*.d)
+OBJS = $(call objs,$(wildcard */*.cpp */*/*.cpp)) $(STATIC_OTE)
+DEPS := $(shell find $(BUILD_DIR) -name '*.d' 2>/dev/null)
 
 # never delete
 .SECONDARY: $(OBJS)
@@ -73,14 +79,15 @@ all: overdrive she-offline
 arithmetic: semi-he gear
 
 -include $(DEPS)
-include $(wildcard *.d static/*.d)
+include $(wildcard static/*.d)
 
 $(OBJS): CONFIG CONFIG.mine
 CONFIG.mine:
 	touch CONFIG.mine
 
-%.o: %.cpp
-	$(CXX) -o $@ $< $(CFLAGS) -MMD -MP -c
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(@D)
+	$(CXX) -o $@ $< $(CFLAGS) -MMD -MP -MF $(@:.o=.d) -MT $@ -c
 
 online: Fake-Offline.x Server.x Player-Online.x Check-Offline.x emulate.x mascot-party.x
 
@@ -140,10 +147,12 @@ $(LIBRELEASE): Protocols/MalRepRingOptions.o $(PROCESSOR) $(COMMONOBJS) $(TINIER
 CFLAGS += -fPIC
 LDLIBS += -Wl,-rpath -Wl,$(CURDIR)
 
-$(SHAREDLIB): $(PROCESSOR) $(COMMONOBJS) GC/square64.o GC/Instruction.o
+$(SHAREDLIB): $(PROCESSOR) $(COMMONOBJS) $(BUILD_DIR)/GC/square64.o $(BUILD_DIR)/GC/Instruction.o
+	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) -shared -o $@ $^ $(LDLIBS)
 
 $(FHEOFFLINE): $(FHEOBJS) $(SHAREDLIB)
+	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) -shared -o $@ $^ $(LDLIBS)
 
 static/%.x: Machines/%.o $(LIBRELEASE) $(LIBSIMPLEOT) local/lib/libcryptoTools.a local/lib/liblibOTe.a
@@ -296,7 +305,7 @@ $(LIBSIMPLEOT_C): deps/SimplestOT_C/ref10/Makefile
 OT/BaseOT.o: deps/SimplestOT_C/ref10/Makefile
 
 deps/SimplestOT_C/ref10/Makefile:
-	git submodule update --init deps/SimplestOT_C || git clone git@github.com:mkskeller/SimplestOT_C.git deps/SimplestOT_C
+	git submodule update --init deps/SimplestOT_C || git clone https://github.com/mkskeller/SimplestOT_C.git deps/SimplestOT_C
 	cd deps/SimplestOT_C/ref10; PATH="$(CURDIR)/local/bin:$(PATH)" cmake .
 
 .PHONY: Programs/Circuits
@@ -380,28 +389,46 @@ clean: clean-deps
 # 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 MY_SRC_DIR := MyShuffle
-MY_OBJ_DIR := MyShuffle
+MY_OBJ_DIR := $(BUILD_DIR)/MyShuffle
+MY_BIN := $(BUILD_DIR)/my_shuffle_main.x
 
 MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
 MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
 BENCHMARK_BASE_DIR ?= benchmark_results_bw80_rtt60
 
-%.x: MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)
+$(BUILD_DIR)/%.x: $(BUILD_DIR)/MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)
+	@mkdir -p $(@D)
 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
+.PHONY: my_shuffle_main.x benchmark benchmark-semi benchmark-mali benchmark-strong
+my_shuffle_main.x:
+	cmake -S . -B $(BUILD_DIR)
+	cmake --build $(BUILD_DIR) --target my_shuffle_main
+
 example: my_shuffle_main.x
-	for i in 0 1 2; do ./my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
+	for i in 0 1 2; do ./$(MY_BIN) my_shuffle $$i 3 6 1 1 10000 1 & true; done
 
 benchmark: my_shuffle_main.x
-	Scripts/setup-ssl.sh 20
-	python3 my_benchmark.py
+	$(MAKE) benchmark-semi
+	$(MAKE) benchmark-mali
 
-.PHONY: benchmark-strong
+benchmark-semi: my_shuffle_main.x
+	Scripts/setup-ssl.sh 20
+	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/semi_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=14,16,18,20,22 python3 -u my_benchmark.py semi-parties 10000
+	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/semi_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=16 python3 -u my_benchmark.py semi-parties 10000
+	SHUFFLE_BENCHMARK_BASE_DIR=$(BENCHMARK_BASE_DIR) python3 -u summarize_benchmarks.py semi --strict
+
+benchmark-mali: my_shuffle_main.x
+	Scripts/setup-ssl.sh 20
+	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/mali_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py malicious 10000
+	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/mali_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py malicious 10000
+	SHUFFLE_BENCHMARK_BASE_DIR=$(BENCHMARK_BASE_DIR) python3 -u summarize_benchmarks.py mali --strict
+
 benchmark-strong: my_shuffle_main.x
 	Scripts/setup-ssl.sh 20
 	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
 	SHUFFLE_BENCHMARK_DIR=$(BENCHMARK_BASE_DIR)/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
-	SHUFFLE_BENCHMARK_BASE_DIR=$(BENCHMARK_BASE_DIR) python3 -u summarize_benchmarks.py strong
+	SHUFFLE_BENCHMARK_BASE_DIR=$(BENCHMARK_BASE_DIR) python3 -u summarize_benchmarks.py strong --strict
 
 kill:
 	pkill my_shuffle_main

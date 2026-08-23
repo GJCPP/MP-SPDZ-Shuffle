@@ -4,6 +4,7 @@ import sys
 
 
 BASE_DIR = os.environ.get("SHUFFLE_BENCHMARK_BASE_DIR", "benchmark_results")
+METRIC_KEYS = ["off_comm", "off_round", "off_time", "on_comm", "on_round", "on_time"]
 
 
 def read_result(path):
@@ -65,7 +66,7 @@ def add_rows(rows, label, directory, points, baseline, ours):
                 "protocol": protocol,
             }
             if metrics is None:
-                row.update({k: "NA" for k in ["off_comm", "off_round", "off_time", "on_comm", "on_round", "on_time"]})
+                row.update({k: "NA" for k in METRIC_KEYS})
             else:
                 row.update(metrics)
             rows.append(row)
@@ -84,7 +85,7 @@ def add_single_protocol_rows(rows, label, directory, points, variant, protocol):
             "protocol": protocol,
         }
         if metrics is None:
-            row.update({k: "NA" for k in ["off_comm", "off_round", "off_time", "on_comm", "on_round", "on_time"]})
+            row.update({k: "NA" for k in METRIC_KEYS})
         else:
             row.update(metrics)
         rows.append(row)
@@ -111,6 +112,13 @@ def write_markdown(name, rows):
         f.write(content)
     print(content)
     print(f"Wrote {out_path}")
+
+
+def missing_rows(rows):
+    return [
+        row for row in rows
+        if any(row[key] == "NA" for key in METRIC_KEYS)
+    ]
 
 
 def build_summary(name):
@@ -175,7 +183,17 @@ def build_summary(name):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <semi|mali|strong>")
+    if len(sys.argv) not in (2, 3) or (len(sys.argv) == 3 and sys.argv[2] != "--strict"):
+        print(f"Usage: {sys.argv[0]} <semi|mali|strong> [--strict]")
         sys.exit(1)
-    write_markdown(sys.argv[1], build_summary(sys.argv[1]))
+    rows = build_summary(sys.argv[1])
+    missing = missing_rows(rows)
+    if len(sys.argv) == 3 and missing:
+        for row in missing:
+            print(
+                f"Missing result: {row['scale']} / {row['point']} / "
+                f"{row['variant']} / {row['protocol']}",
+                file=sys.stderr,
+            )
+        sys.exit(1)
+    write_markdown(sys.argv[1], rows)

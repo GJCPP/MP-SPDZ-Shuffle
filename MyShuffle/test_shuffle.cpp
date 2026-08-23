@@ -134,8 +134,9 @@ bool test_Song_shuffle(myShuffle::mpc_comm &com)
         }
         song2023::process_all_orders(com);
         for (int rank(0); rank != num_test; ++rank) {
-            int logsz = all_logsz[rank], veclen = all_veclen[rank];
-            int sz = 1 << logsz;
+            int logsz = all_logsz[rank];
+            size_t veclen = all_veclen[rank];
+            size_t sz = size_t(1) << logsz;
             permutation perm = all_perm[rank][me];
             vectors<ShareType> val(sz, veclen);
             shuffle_session *plan = plans[rank];
@@ -175,7 +176,7 @@ bool test_Song_shuffle(myShuffle::mpc_comm &com)
     return true;
 }
 
-bool test_my_shuffle(myShuffle::mpc_comm &com)
+bool test_my_shuffle(myShuffle::mpc_comm &com, bool strong_abort_privacy)
 {
     using namespace myShuffle;
 
@@ -220,7 +221,7 @@ bool test_my_shuffle(myShuffle::mpc_comm &com)
         for (int rank(0); rank != num_test; ++rank) {
             int logsz = all_logsz[rank];
             size_t veclen = all_veclen[rank];
-            int sz = 1 << logsz;
+            size_t sz = size_t(1) << logsz;
             permutation perm = all_perm[rank][me];
             vectors<ShareType> val(sz, veclen);
             shuffle_session *plan = plans[rank];
@@ -235,7 +236,7 @@ bool test_my_shuffle(myShuffle::mpc_comm &com)
                                 res(val.num, val.len);
             
             
-            plan->perform(com, val);
+            plan->perform(com, val, strong_abort_privacy);
             
             
             
@@ -260,6 +261,88 @@ bool test_my_shuffle(myShuffle::mpc_comm &com)
     return true;
 }
 
+bool test_semi_my_shuffle(myShuffle::mpc_comm &com, int max_logsz, int max_veclen, int batch)
+{
+    int me = com.get_my_number(), n = com.get_n_party();
+    int num_test = max_logsz * max_veclen;
+    std::vector<int> all_logsz, all_veclen, all_batch;
+    std::vector<std::vector<permutation>> all_perm;
+    if (me == 0) {
+        for (int logsz(1); logsz <= max_logsz; ++logsz) {
+            for (int veclen(1); veclen <= max_veclen; ++veclen) {
+                all_logsz.push_back(logsz);
+                all_veclen.push_back(veclen);
+                all_batch.push_back(batch);
+                all_perm.push_back({});
+                for (int i(0); i != n; ++i) {
+                    all_perm.back().push_back(permutation(1 << logsz, true));
+                }
+            }
+        }
+    } else {
+        all_logsz.resize(num_test);
+        all_veclen.resize(num_test);
+        all_batch.resize(num_test);
+        all_perm.resize(num_test);
+    }
+    com.unchecked_broadcast(0, all_logsz);
+    com.unchecked_broadcast(0, all_veclen);
+    com.unchecked_broadcast(0, all_batch);
+    for (int rank(0); rank != num_test; ++rank) {
+        if (me != 0) all_perm[rank].resize(n, permutation(1 << all_logsz[rank]));
+        for (int i(0); i != n; ++i) {
+            com.unchecked_broadcast(0, all_perm[rank][i].perm);
+        }
+    }
+
+    std::vector<semiHonest::shuffle_session *> plans;
+    for (int rank(0); rank != num_test; ++rank) {
+        plans.push_back(semiHonest::book_shuffle_session(com,
+                        all_logsz[rank], all_veclen[rank], all_batch[rank],
+                        all_perm[rank][me]));
+    }
+    semiHonest::process_all_orders(com);
+
+    for (int rank(0); rank != num_test; ++rank) {
+        int logsz = all_logsz[rank];
+        size_t veclen = all_veclen[rank];
+        int sz = 1 << logsz;
+        vectors<ClearType> val(sz, veclen), ori(sz, veclen), res(sz, veclen);
+        for (int i(0); i != sz; ++i) {
+            for (size_t j(0); j != veclen; ++j) {
+                ori[i][j] = ClearType(i * veclen + j);
+                val[i][j] = me == 0 ? ori[i][j] : ClearType(0);
+            }
+        }
+
+        plans[rank]->perform(com, val);
+        res = val;
+        myShuffle::insecure_recon(com, 0, res);
+
+        permutation pi(1 << logsz);
+        for (int i(0); i != n; ++i) {
+            pi = pi * all_perm[rank][i];
+        }
+        pi.perform(ori);
+
+        if (me == 0 && !check_shuffle(ori, res, true)) {
+            std::cerr << "test_semi_my_shuffle : test FAILED!!!!!" << std::endl;
+            return false;
+        }
+    }
+
+    for (auto plan : plans) {
+        delete plan;
+    }
+    if (me == 0) {
+        std::cerr << "test_semi_my_shuffle : test passed for n=" << n
+                  << ", logsz=1.." << max_logsz
+                  << ", veclen=1.." << max_veclen
+                  << ", batch=" << batch << "." << std::endl;
+    }
+    return true;
+}
+
 bool test_mpspdz_shuffle() {
-    ;
+    return true;
 }

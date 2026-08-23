@@ -38,8 +38,14 @@ void all_record::save() const
 
 double comm_time(size_t comm)
 {
-    const size_t rate = 40 * 1024 * 1024; // 40MB/s
-    return comm / rate;
+    const size_t rate = 80 * 1024 * 1024; // 80MB/s
+    return static_cast<double>(comm) / rate;
+}
+
+double round_time(size_t rounds)
+{
+    constexpr double rtt = 0.060; // 60 ms
+    return rounds * rtt;
 }
 
 std::string get_filename(std::string protocol, std::string target, int n_party) {
@@ -106,8 +112,8 @@ void load_record(std::string filename, all_record &rec) {
 
 void execute_Song_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
-                            size_t& off_comm, double& off_time,
-                            size_t& on_comm, double& on_time)
+                            size_t& off_comm, size_t& off_round, double& off_time,
+                            size_t& on_comm, size_t& on_round, double& on_time)
 {
     using namespace song2023;
     static vectors<ShareType> val; val.resize(1 << logsz, veclen);
@@ -133,7 +139,8 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
     off_time_timer.tock();
     off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
-    off_time += comm_time(off_comm);
+    off_round = com.count_total_rounds();
+    off_time += comm_time(off_comm) + round_time(off_round);
     com.reset_total_comm();
     
     com.output_check();
@@ -148,7 +155,8 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
     on_time_timer.tock();
     on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
-    on_time += comm_time(on_comm);
+    on_round = com.count_total_rounds();
+    on_time += comm_time(on_comm) + round_time(on_round);
     com.reset_total_comm();
 
     for (auto plan : plans) {
@@ -157,15 +165,74 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
 
     // Average
     off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
     off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
     on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
+    on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
+}
+
+void execute_Chase_shuffle(myShuffle::mpc_comm &com,
+                            int logsz, int veclen, int logbatch, int rep,
+                            size_t& off_comm, size_t& off_round, double& off_time,
+                            size_t& on_comm, size_t& on_round, double& on_time)
+{
+    using semiHonest::chase_permute_session;
+    static vectors<ClearType> val; val.resize(1 << logsz, veclen);
+    size_t val_sz = val.size();
+    for (size_t k(0); k != val_sz; ++k) {
+        val.at(k) = com.get_my_number() == 0 ? ClearType(k) : ClearType(0);
+    }
+    com.reset_total_comm();
+
+    static std::vector<chase_permute_session> plans;
+    plans.clear();
+    plans.reserve(rep * com.get_n_party());
+
+    com.set_offline();
+    myShuffle::timer off_time_timer, on_time_timer;
+    off_time_timer.tick();
+    for (int rank(0); rank != rep; ++rank) {
+        for (int permuter(0); permuter != com.get_n_party(); ++permuter) {
+            plans.emplace_back();
+            plans.back().init(permuter, logsz, veclen, logbatch,
+                    permutation(1 << logsz, true));
+            plans.back().prepare(com);
+        }
+    }
+
+    off_time_timer.tock();
+    off_time = off_time_timer.duration();
+    off_comm = com.count_total_comm();
+    off_round = com.count_total_rounds();
+    off_time += comm_time(off_comm) + round_time(off_round);
+    com.reset_total_comm();
+
+    com.set_online();
+    on_time_timer.tick();
+    for (auto& plan : plans) {
+        plan.perform(com, val);
+    }
+
+    on_time_timer.tock();
+    on_time = on_time_timer.duration();
+    on_comm = com.count_total_comm();
+    on_round = com.count_total_rounds();
+    on_time += comm_time(on_comm) + round_time(on_round);
+    com.reset_total_comm();
+
+    off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
+    off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
+    on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
     on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
 void execute_my_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
-                            size_t& off_comm, double& off_time,
-                            size_t& on_comm, double& on_time,
+                            size_t& off_comm, size_t& off_round, double& off_time,
+                            size_t& on_comm, size_t& on_round, double& on_time,
                             bool strong_abort_privacy)
 {
     using namespace myShuffle;
@@ -191,7 +258,11 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
     off_time_timer.tock();
     off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
-    off_time += comm_time(off_comm);
+    off_round = com.count_total_rounds();
+    off_time += comm_time(off_comm) + round_time(off_round);
+    com.reset_total_comm();
+
+    com.output_check();
     com.reset_total_comm();
 
     // std::cout << "Offline Phase Done." << std::endl;
@@ -207,7 +278,8 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
     on_time_timer.tock();
     on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
-    on_time += comm_time(on_comm);
+    on_round = com.count_total_rounds();
+    on_time += comm_time(on_comm) + round_time(on_round);
     com.reset_total_comm();
 
     for (auto plan : plans) {
@@ -216,7 +288,64 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
 
     // Average
     off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
     off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
     on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
+    on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
+}
+
+void execute_semi_my_shuffle(myShuffle::mpc_comm &com,
+                            int logsz, int veclen, int logbatch, int rep,
+                            size_t& off_comm, size_t& off_round, double& off_time,
+                            size_t& on_comm, size_t& on_round, double& on_time)
+{
+    using namespace semiHonest;
+    static vectors<ClearType> val; val.resize(1 << logsz, veclen);
+    size_t val_sz = val.size();
+    for (size_t k(0); k != val_sz; ++k) {
+        val.at(k) = com.get_my_number() == 0 ? ClearType(k) : ClearType(0);
+    }
+    com.reset_total_comm();
+    static std::vector<semiHonest::shuffle_session *> plans; plans.clear();
+
+    com.set_offline();
+    myShuffle::timer off_time_timer, on_time_timer;
+    off_time_timer.tick();
+    for (int rank(0); rank != rep; ++rank) {
+        plans.push_back(semiHonest::book_shuffle_session(
+                        com, logsz, veclen, logbatch, permutation(1 << logsz, true)));
+    }
+    semiHonest::process_all_orders(com);
+
+    off_time_timer.tock();
+    off_time = off_time_timer.duration();
+    off_comm = com.count_total_comm();
+    off_round = com.count_total_rounds();
+    off_time += comm_time(off_comm) + round_time(off_round);
+    com.reset_total_comm();
+
+    com.set_online();
+    on_time_timer.tick();
+    for (auto plan : plans) {
+        plan->perform(com, val);
+    }
+
+    on_time_timer.tock();
+    on_time = on_time_timer.duration();
+    on_comm = com.count_total_comm();
+    on_round = com.count_total_rounds();
+    on_time += comm_time(on_comm) + round_time(on_round);
+    com.reset_total_comm();
+
+    for (auto plan : plans) {
+        delete plan;
+    }
+
+    off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
+    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
+    off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
+    on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
+    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
     on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
