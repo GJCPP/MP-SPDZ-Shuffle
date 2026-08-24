@@ -165,10 +165,12 @@ namespace myShuffle {
     */
     void process_all_orders(mpc_comm& com);
 
-    // Check if beta * a = b + r
-    void verify(mpc_comm& com, ClearType a, ClearType b, ShareType beta, ShareType r);
-    // Check if beta * a = b + r
-    bool verify(mpc_comm & com, int who, const vectors<ClearType>& a,
+    // Algorithm 3: check publicly whether beta * a = b + r.
+    bool verify(mpc_comm& com, const vectors<ClearType>& a,
+            const vectors<ClearType>& b, ShareType beta,
+            const vectors<ShareType>& r, bool authenticate_now = true);
+    // Algorithm 4: check the compressed relation received by one party.
+    bool partial_verify(mpc_comm & com, int who, const vectors<ClearType>& a,
             const vectors<ClearType>& b, ShareType beta,
             const vectors<ShareType>& r, bool authenticate_now = true);
 }

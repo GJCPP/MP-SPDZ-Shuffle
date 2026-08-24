@@ -240,11 +240,14 @@ namespace myShuffle {
                     song2023::book_permute_session(com, &order.session->permute_sessions[i]);
                 }
                 size_t n = (1 << order.session->logsz) * order.session->veclen;
-                // Prepare <beta> and <r_i>, <r^'_i>
-                com.prepare_more_random_lazy(2 * n_party * n + 1);
-                // Prepare multiplication of <r_i> and <real data> and randomness of verification
+                // Prepare <beta>, <r_i>, <r^'_i>, and the random values used
+                // to compress and blind the online verification residuals.
+                com.prepare_more_random_lazy(2 * n_party * n + n_party + 2);
+                // Prepare multiplication of <beta> with <r_i> and the input.
                 com.prepare_more_mul_lazy(n_party * n);
-                require_mul += n;
+                // Each PartialVerify and the final Verify use one additional
+                // multiplication to blind their residual before opening it.
+                require_mul += n + n_party;
                 // Prepare private output of <z_i> (offline) and <masked real data> (online)
                 for (int party(0); party != n_party; ++party) {
                     com.prepare_more_private_output_lazy(party, 2 * n);
@@ -298,19 +301,50 @@ namespace myShuffle {
         booked_shuffle.clear();
     }
 
-    void verify(mpc_comm &com, ClearType a, ClearType b, ShareType beta, ShareType r)
+    static bool open_blinded_residual(mpc_comm& com,
+            const ShareType& residual, bool authenticate_now)
     {
+        ShareType gamma = com.get_random();
+        com.mul_init();
+        com.mul_append(gamma, residual);
+        com.mul_exchange();
+        ShareType blinded = com.mul_consume();
+
         ClearType res;
-        ShareType val = a * beta - ShareType::constant(b, com.get_my_number(), ShareType::get_mac_key()) - r;
-        com.output_immediately(val, res);
-        if (res.is_zero() == false) {
-            std::cerr << __FUNCTION__ << " : Verification failed." << std::endl;
-            throw std::runtime_error("verify : Verification failed.");
+        com.output_immediately(blinded, res);
+        if (authenticate_now) {
+            com.output_check();
         }
-        com.output_check();
+        return res.is_zero();
     }
 
-    bool verify(mpc_comm & com, int who, const vectors<ClearType>& a,
+    bool verify(mpc_comm& com, const vectors<ClearType>& a,
+            const vectors<ClearType>& b, ShareType beta,
+            const vectors<ShareType>& r, bool authenticate_now)
+    {
+        if (a.size() == 0 || a.size() != b.size() || a.size() != r.size()) {
+            throw std::runtime_error("verify : Invalid input size.");
+        }
+
+        ShareType shared_e = com.get_random();
+        ClearType e;
+        com.output_immediately(shared_e, e);
+
+        auto mac_key = ShareType::get_mac_key();
+        ClearType power(1);
+        ShareType residual = a.at(0) * beta
+                - ShareType::constant(b.at(0), com.get_my_number(), mac_key)
+                - r.at(0);
+        for (size_t i(1); i != a.size(); ++i) {
+            power *= e;
+            residual += power * (a.at(i) * beta
+                    - ShareType::constant(b.at(i), com.get_my_number(), mac_key)
+                    - r.at(i));
+        }
+        return open_blinded_residual(com, residual, authenticate_now);
+    }
+
+    bool partial_verify(mpc_comm & com, int who, const vectors<ClearType>& a,
             const vectors<ClearType>& b, ShareType beta,
             const vectors<ShareType>& r, bool authenticate_now)
     {
@@ -332,12 +366,7 @@ namespace myShuffle {
         for (size_t i(1); i != r.size(); ++i) {
             sum_r = c * sum_r + r.at(i);
         }
-        ClearType res;
-        com.output_immediately(val - sum_r, res);
-        if (authenticate_now) {
-            com.output_check();
-        }
-        return res.is_zero();
+        return open_blinded_residual(com, val - sum_r, authenticate_now);
     }
 
     void shuffle_session::set_init_flag()
@@ -396,10 +425,10 @@ namespace myShuffle {
         }
 
         bool verification_failed = false;
-        auto verify_opening = [&](int who, const vectors<ClearType>& a,
-                                  const vectors<ClearType>& b,
-                                  const vectors<ShareType>& r) {
-            bool valid = verify(com, who, a, b, cor.beta, r,
+        auto partial_verify_opening = [&](int who, const vectors<ClearType>& a,
+                                          const vectors<ClearType>& b,
+                                          const vectors<ShareType>& r) {
+            bool valid = partial_verify(com, who, a, b, cor.beta, r,
                     strong_abort_privacy);
             if (!valid && strong_abort_privacy) {
                 std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
@@ -416,17 +445,19 @@ namespace myShuffle {
             z = vectors<ClearType>::cat(z00, z01);
             com.send(1, z);
             for (int who(1); who != com.get_n_party(); ++who) {
-                verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
+                partial_verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
             }
         } else {
             for (int who(1); who != me; ++who) {
-                verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
+                partial_verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
             }
             com.recv(me - 1, z);
             z.split(num, z00, z01);
-            verify_opening(me, z00, z01, cor.permuted_rp[me - 1]);
+            partial_verify_opening(me, z00, z01, cor.permuted_rp[me - 1]);
             z00 += cor.z[0];
             z01 += cor.z[1];
+            // Algorithm 6 verifies the incoming message before this party's
+            // secret permutation can affect the next message.
             cor.perm.perform(z00);
             cor.perm.perform(z01);
             if (me + 1 != com.get_n_party()) {
@@ -434,12 +465,23 @@ namespace myShuffle {
                 com.send(me + 1, z);
             }
             for (int who(me + 1); who != com.get_n_party(); ++who) {
-                verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
+                partial_verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
             }
         }
         z = vectors<ClearType>::cat(z00, z01);
         com.broadcast(com.get_n_party() - 1, z);
         z.split(num, z00, z01);
+
+        // Algorithm 3 verifies the final public pair after the last party's
+        // permutation and before it is converted back to a shared output.
+        bool final_valid = verify(com, z00, z01, cor.beta,
+                cor.permuted_rp[com.get_n_party() - 1],
+                strong_abort_privacy);
+        if (!final_valid && strong_abort_privacy) {
+            std::cerr << FAIL_INFO << " : Final verification failed." << std::endl;
+            throw std::runtime_error("verify : Final verification failed.");
+        }
+        verification_failed = verification_failed || !final_valid;
 
         if (!strong_abort_privacy) {
             com.output_check();
