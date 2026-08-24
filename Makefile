@@ -402,7 +402,7 @@ MY_BIN := $(BUILD_DIR)/my_shuffle_main.x
 
 MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
 MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
-BENCHMARK_BASE_DIR ?= benchmark_results_bw80_rtt60
+BENCHMARK_BASE_DIR ?= benchmark_results_network_sweeps
 
 $(BUILD_DIR)/%.x: $(BUILD_DIR)/MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)
 	@mkdir -p $(@D)

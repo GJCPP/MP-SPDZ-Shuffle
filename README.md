@@ -44,18 +44,18 @@ Use `make benchmark-semi` to run the semi-honest benchmark suite:
 
 ```
 Scripts/setup-ssl.sh 20
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/semi_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=14,16,18,20,22 python3 -u my_benchmark.py semi-parties 10000
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/semi_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=16 python3 -u my_benchmark.py semi-parties 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py semi --strict
+SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/semi_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=14,16,18,20,22 python3 -u my_benchmark.py semi-parties 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/semi_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=16 python3 -u my_benchmark.py semi-parties 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_network_sweeps python3 -u summarize_benchmarks.py semi --strict
 ```
 
 Use `make benchmark-mali` to run the malicious benchmark suite:
 
 ```
 Scripts/setup-ssl.sh 20
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/mali_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py malicious 10000
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/mali_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py malicious 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py mali --strict
+SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/mali_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py malicious 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/mali_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py malicious 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_network_sweeps python3 -u summarize_benchmarks.py mali --strict
 ```
 
 Use `make benchmark-strong` to run only the strong abort-privacy variant of
@@ -63,9 +63,9 @@ Use `make benchmark-strong` to run only the strong abort-privacy variant of
 
 ```
 Scripts/setup-ssl.sh 20
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
-SHUFFLE_BENCHMARK_DIR=benchmark_results_bw80_rtt60/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_bw80_rtt60 python3 -u summarize_benchmarks.py strong --strict
+SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/strong_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py my_shuffle_strong 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/strong_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py my_shuffle_strong 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_network_sweeps python3 -u summarize_benchmarks.py strong --strict
 ```
 
 Use `make benchmark` to run both suites in sequence.
@@ -82,7 +82,31 @@ baseline optimized for total time, baseline optimized for online time, and
 ours. The strong summary has one `my_shuffle_strong` row per point.
 
 Benchmark CSVs, temporary party-0 stdout, and summary tables are written under
-`benchmark_results_bw80_rtt60/` by default.
+`benchmark_results_network_sweeps/` by default. This separate directory avoids
+mixing the v2 compute-time measurements with legacy modeled-time CSVs.
+
+Each protocol execution records network-independent compute time,
+communication bytes, and rounds in `raw_measurements_v2.csv`. The benchmark
+driver keeps the existing result CSVs at the default decimal `80 MB/s` and
+`60 ms` RTT, and also rewrites `network_sweep.csv` after every successful
+candidate run. The sweep file independently selects the best `logbatch` for
+each network setting and contains both:
+
+- fixed `80 MB/s`, RTT `0.5, 1, 5, 20, 60, 100 ms`;
+- fixed `0.5 ms` RTT, bandwidth `12.5, 80, 125, 312.5, 1250 MB/s`.
+
+Modeled phase time is `compute_seconds + comm_bytes / (MBps * 1,000,000) +
+rounds * RTT_ms / 1,000`. Thus `MB/s` is decimal, not MiB/s. The sweep can be
+regenerated without running the MPC protocols:
+
+```
+python3 -u derive_network_sweeps.py \
+    benchmark_results_network_sweeps/mali_size/raw_measurements_v2.csv \
+    --strict
+```
+
+For plots, use `rtt_ms` or `bandwidth_MBps` from `network_sweep.csv` as a
+log-scale x-axis. The CSV stores untransformed numeric values.
 
 Use `make my_shuffle_main.x` to build `build/my_shuffle_main.x`.
 
@@ -98,7 +122,9 @@ for i in 0 1 2; do ./build/my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & tr
 
 launches a shuffle protocol that repeats once, which shuffles $2^6$ many $1$-sized vectors among $3$ parties.
 
-By default, at the end of the execution, each party outputs its offline communication (bytes), offline time (seconds), online communication and online time.
+At the end of an execution, party 0 outputs offline communication (bytes),
+rounds, and measured compute time (seconds), followed by the corresponding
+online values. Network-model time is derived by `my_benchmark.py`.
 
 See also `MyShuffle/my_shuffle_main.cpp`.
 

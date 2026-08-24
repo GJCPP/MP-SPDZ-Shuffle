@@ -6,10 +6,17 @@ import time
 import sys
 import threading
 
-OUTPUT_DIR = os.environ.get("SHUFFLE_BENCHMARK_DIR", "benchmark_results")
+from derive_network_sweeps import modeled_phase_time, write_network_sweeps
+
+OUTPUT_DIR = os.environ.get(
+    "SHUFFLE_BENCHMARK_DIR", "benchmark_results_network_sweeps")
 STDOUT_FILE = os.path.join(OUTPUT_DIR, "stdout")
 STDERR_FILE = os.path.join(OUTPUT_DIR, "stderr_party0")
-RAW_LOG_FILE = os.path.join(OUTPUT_DIR, "raw_batches.csv")
+RAW_LOG_FILE = os.path.join(OUTPUT_DIR, "raw_measurements_v2.csv")
+NETWORK_SWEEP_FILE = os.path.join(OUTPUT_DIR, "network_sweep.csv")
+DEFAULT_BANDWIDTH_MBPS = float(os.environ.get(
+    "SHUFFLE_BENCHMARK_BANDWIDTH_MBPS", "80"))
+DEFAULT_RTT_MS = float(os.environ.get("SHUFFLE_BENCHMARK_RTT_MS", "60"))
 
 # Run a party
 def run_command(command: list, redir: bool, return_codes: list, party: int):
@@ -64,25 +71,21 @@ def run_protocol(protocol: str, n_party: int, logsz: int, veclen: int, logbatch:
         raise RuntimeError("; ".join(failures))
     return return_codes
 
-# Spare the output of protocol into (offline comm, rounds, time, online comm, rounds, time)
+# Parse network-independent compute time, communication, and rounds.
 def sparse_output(proc: list):
     with open(STDOUT_FILE, 'r') as f:
         line = f.readline().split()
         print(line)
+        if len(line) != 6:
+            raise ValueError(f"expected 6 benchmark metrics, got {len(line)}")
         off_comm = int(line[0])
-        if len(line) == 4:
-            off_round = -1
-            off_time = float(line[1])
-            on_comm = int(line[2])
-            on_round = -1
-            on_time = float(line[3])
-        else:
-            off_round = int(line[1])
-            off_time = float(line[2])
-            on_comm = int(line[3])
-            on_round = int(line[4])
-            on_time = float(line[5])
-        return off_comm, off_round, off_time, on_comm, on_round, on_time
+        off_round = int(line[1])
+        off_compute_time = float(line[2])
+        on_comm = int(line[3])
+        on_round = int(line[4])
+        on_compute_time = float(line[5])
+        return (off_comm, off_round, off_compute_time,
+                on_comm, on_round, on_compute_time)
 
 def append_party0_logs(protocol: str,
                        target: str,
@@ -111,15 +114,16 @@ def append_raw_result(protocol: str,
                       n_party: int,
                       logsz: int,
                       logbatch: int,
+                      veclen: int,
                       attempt: int,
                       status: str,
                       elapsed: float,
-                      off_comm: int = -1,
-                      off_round: int = -1,
-                      off_time: float = -1,
-                      on_comm: int = -1,
-                      on_round: int = -1,
-                      on_time: float = -1,
+                      off_comm_bytes: int = -1,
+                      off_rounds: int = -1,
+                      off_compute_seconds: float = -1,
+                      on_comm_bytes: int = -1,
+                      on_rounds: int = -1,
+                      on_compute_seconds: float = -1,
                       reason: str = ""):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     write_header = not os.path.isfile(RAW_LOG_FILE) or os.path.getsize(RAW_LOG_FILE) == 0
@@ -127,37 +131,41 @@ def append_raw_result(protocol: str,
         writer = csv.writer(f)
         if write_header:
             writer.writerow([
+                "schema_version",
                 "protocol",
                 "target",
                 "n_party",
                 "logsz",
+                "veclen",
                 "logbatch",
                 "attempt",
                 "status",
                 "elapsed_wall_time",
-                "off_comm",
-                "off_round",
-                "off_time",
-                "on_comm",
-                "on_round",
-                "on_time",
+                "off_comm_bytes",
+                "off_rounds",
+                "off_compute_seconds",
+                "on_comm_bytes",
+                "on_rounds",
+                "on_compute_seconds",
                 "reason",
             ])
         writer.writerow([
+            2,
             protocol,
             target,
             n_party,
             logsz,
+            veclen,
             logbatch,
             attempt,
             status,
             elapsed,
-            off_comm,
-            off_round,
-            off_time,
-            on_comm,
-            on_round,
-            on_time,
+            off_comm_bytes,
+            off_rounds,
+            off_compute_seconds,
+            on_comm_bytes,
+            on_rounds,
+            on_compute_seconds,
             reason,
         ])
 
@@ -206,6 +214,13 @@ def save_result(filename : str,
             f.write(str(i) + ", ")
         f.write("\n")
         f.write("current, " + str(cur_logsz) + ", " + str(cur_logbatch) + ", " + str(cur_off_comm) + ", " + str(cur_off_round) + ", " + str(cur_off_time) + ", " + str(cur_on_comm) + ", " + str(cur_on_round) + ", " + str(cur_on_time) + ", \n")
+        f.write(
+            "network_model, 1, decimal_MBps, "
+            + str(DEFAULT_BANDWIDTH_MBPS)
+            + ", rtt_ms, "
+            + str(DEFAULT_RTT_MS)
+            + ", \n"
+        )
 
 # Load existing result
 def load_result(filename : str):
@@ -224,7 +239,8 @@ def load_result(filename : str):
     cur_on_comm = -1
     cur_on_round = -1
     cur_on_time = -1
-    if not os.path.isfile(filename):
+    model_is_current = False
+    if not os.path.isfile(filename) or os.path.getsize(filename) == 0:
         save_result(filename, res_off_comm, res_off_round, res_off_time, res_on_comm, res_on_round, res_on_time)
     with open(filename, "r") as f:
         for ind, line in enumerate(f.readlines()):
@@ -232,6 +248,16 @@ def load_result(filename : str):
                 saved_all_logsz = [int(i) for i in line.strip(',\n ').split(',')[1:]]
                 all_logsz = saved_all_logsz
             line = line.strip(',\n ').split(',')
+            if line[0].strip() == "network_model":
+                model_is_current = (
+                    len(line) >= 6
+                    and int(line[1]) == 1
+                    and line[2].strip() == "decimal_MBps"
+                    and float(line[3]) == DEFAULT_BANDWIDTH_MBPS
+                    and line[4].strip() == "rtt_ms"
+                    and float(line[5]) == DEFAULT_RTT_MS
+                )
+                continue
             if ind == 1: # Offline comm
                 print(line)
                 res_off_comm = [int(i) for i in line[1:]]
@@ -266,6 +292,11 @@ def load_result(filename : str):
                 cur_on_comm = int(line[6])
                 cur_on_round = int(line[7])
                 cur_on_time = float(line[8])
+    if not model_is_current:
+        raise ValueError(
+            f"{filename} uses a legacy or different network model; "
+            "choose a new SHUFFLE_BENCHMARK_DIR"
+        )
     return res_off_comm, res_off_round, res_off_time, res_on_comm, res_on_round, res_on_time, cur_logsz, cur_logbatch, cur_off_comm, cur_off_round, cur_off_time, cur_on_comm, cur_on_round, cur_on_time
 
 def get_filename(protocol : str, target: str, n_party: int):
@@ -329,7 +360,8 @@ had_failure = False
 
 
 def logbatches_for_point(logsz):
-    if is_semi_benchmark and logsz == 22:
+    if ((is_semi_benchmark and logsz == 22)
+            or (not is_semi_benchmark and logsz == 18)):
         return [logbatch for logbatch in __all_logbatch if logbatch != 10]
     return __all_logbatch
 
@@ -392,7 +424,8 @@ for protocol in all_protocol:
                             elapse = time.time() - current_time
                             append_party0_logs(protocol, target, n_party, logsz, logbatch, attempts)
                             # print(proc)
-                            off_comm, off_round, off_time, on_comm, on_round, on_time = sparse_output(proc)
+                            (off_comm, off_round, off_compute_time,
+                             on_comm, on_round, on_compute_time) = sparse_output(proc)
 
                             if off_comm == -1:
                                 print("WARNING: No valid output, logsz = ", logsz, ", logbatch = ", logbatch)
@@ -402,6 +435,7 @@ for protocol in all_protocol:
                                     n_party,
                                     logsz,
                                     logbatch,
+                                    veclen,
                                     attempts,
                                     "invalid_output",
                                     elapse,
@@ -416,24 +450,44 @@ for protocol in all_protocol:
                                 else:
                                     save_result(filename, res_off_comm, res_off_round, res_off_time, res_on_comm, res_on_round, res_on_time, logsz, logbatch)
                                 continue
-                            improved = ((target == 'total_time' and off_time + on_time < best_total_time)
-                                        or (target == 'on_time' and on_time < best_on_time))
                             append_raw_result(
                                 protocol,
                                 target,
                                 n_party,
                                 logsz,
                                 logbatch,
+                                veclen,
                                 attempts,
                                 "ok",
                                 elapse,
                                 off_comm,
                                 off_round,
-                                off_time,
+                                off_compute_time,
                                 on_comm,
                                 on_round,
-                                on_time,
+                                on_compute_time,
                             )
+                            write_network_sweeps(
+                                RAW_LOG_FILE,
+                                NETWORK_SWEEP_FILE,
+                                strict=True,
+                            )
+                            off_time = modeled_phase_time(
+                                off_compute_time,
+                                off_comm,
+                                off_round,
+                                DEFAULT_BANDWIDTH_MBPS,
+                                DEFAULT_RTT_MS,
+                            )
+                            on_time = modeled_phase_time(
+                                on_compute_time,
+                                on_comm,
+                                on_round,
+                                DEFAULT_BANDWIDTH_MBPS,
+                                DEFAULT_RTT_MS,
+                            )
+                            improved = ((target == 'total_time' and off_time + on_time < best_total_time)
+                                        or (target == 'on_time' and on_time < best_on_time))
                             if off_comm != -1 and improved:
                                 has_valid_result = True
                                 best_total_time = off_time + on_time
@@ -461,6 +515,7 @@ for protocol in all_protocol:
                                 n_party,
                                 logsz,
                                 logbatch,
+                                veclen,
                                 attempts,
                                 "error",
                                 elapse,

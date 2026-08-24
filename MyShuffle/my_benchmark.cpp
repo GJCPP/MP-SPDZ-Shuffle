@@ -36,18 +36,6 @@ void all_record::save() const
     ofs.close();
 }
 
-double comm_time(size_t comm)
-{
-    const size_t rate = 80 * 1024 * 1024; // 80MB/s
-    return static_cast<double>(comm) / rate;
-}
-
-double round_time(size_t rounds)
-{
-    constexpr double rtt = 0.060; // 60 ms
-    return rounds * rtt;
-}
-
 std::string get_filename(std::string protocol, std::string target, int n_party) {
     return protocol + "_" + target + "_n_" + std::to_string(n_party) + ".csv";
 }
@@ -140,7 +128,6 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
     off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
     off_round = com.count_total_rounds();
-    off_time += comm_time(off_comm) + round_time(off_round);
     com.reset_total_comm();
     
     com.output_check();
@@ -156,7 +143,6 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
     on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
     on_round = com.count_total_rounds();
-    on_time += comm_time(on_comm) + round_time(on_round);
     com.reset_total_comm();
 
     for (auto plan : plans) {
@@ -205,7 +191,6 @@ void execute_Chase_shuffle(myShuffle::mpc_comm &com,
     off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
     off_round = com.count_total_rounds();
-    off_time += comm_time(off_comm) + round_time(off_round);
     com.reset_total_comm();
 
     com.set_online();
@@ -218,7 +203,6 @@ void execute_Chase_shuffle(myShuffle::mpc_comm &com,
     on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
     on_round = com.count_total_rounds();
-    on_time += comm_time(on_comm) + round_time(on_round);
     com.reset_total_comm();
 
     off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
@@ -259,7 +243,6 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
     off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
     off_round = com.count_total_rounds();
-    off_time += comm_time(off_comm) + round_time(off_round);
     com.reset_total_comm();
 
     com.output_check();
@@ -279,7 +262,6 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
     on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
     on_round = com.count_total_rounds();
-    on_time += comm_time(on_comm) + round_time(on_round);
     com.reset_total_comm();
 
     for (auto plan : plans) {
@@ -322,7 +304,6 @@ void execute_semi_my_shuffle(myShuffle::mpc_comm &com,
     off_time = off_time_timer.duration();
     off_comm = com.count_total_comm();
     off_round = com.count_total_rounds();
-    off_time += comm_time(off_comm) + round_time(off_round);
     com.reset_total_comm();
 
     com.set_online();
@@ -335,7 +316,6 @@ void execute_semi_my_shuffle(myShuffle::mpc_comm &com,
     on_time = on_time_timer.duration();
     on_comm = com.count_total_comm();
     on_round = com.count_total_rounds();
-    on_time += comm_time(on_comm) + round_time(on_round);
     com.reset_total_comm();
 
     for (auto plan : plans) {
