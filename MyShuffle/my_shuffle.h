@@ -46,6 +46,7 @@ namespace myShuffle {
 
         permutation perm; // The (secret) permutation chosen by the party.
         ShareType beta; // MAC key
+        std::vector<ShareType> c, d; // PartialVerify correlations for parties 1, ..., n - 1.
         std::vector<vectors<ShareType>> r, beta_r, rp;
         std::vector<vectors<ShareType>> permuted_r, permuted_beta_r, permuted_rp;
         vectors<ClearType> z[2]; // If the party is not zero party, z is non-empty.
@@ -79,6 +80,7 @@ namespace myShuffle {
         friend void fill_in_random_resource(mpc_comm& com);
         friend void compute_beta_r(mpc_comm& com);
         friend void compute_permuted_random_resource(mpc_comm& com);
+        friend void compute_partial_verification_correlations(mpc_comm& com);
         friend void compute_z(mpc_comm& com);
         friend void set_init_flag();
         friend void clear_unused();
@@ -172,5 +174,5 @@ namespace myShuffle {
     // Algorithm 4: check the compressed relation received by one party.
     bool partial_verify(mpc_comm & com, int who, const vectors<ClearType>& a,
             const vectors<ClearType>& b, ShareType beta,
-            const vectors<ShareType>& r, bool authenticate_now = true);
+            ShareType c, ShareType d, bool authenticate_now = true);
 }

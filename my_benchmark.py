@@ -304,7 +304,7 @@ def get_filename(protocol : str, target: str, n_party: int):
 
 def configure_suite(argv):
     all_n_party = [i for i in range(3, 18, 3)]
-    all_protocol = ['Song_shuffle', 'my_shuffle']
+    all_protocol = ['Song_shuffle', 'my_shuffle', 'my_shuffle_strong']
     port_base = 10000
     suite = 'malicious'
 
@@ -317,7 +317,7 @@ def configure_suite(argv):
 
     if suite_or_protocol == 'malicious':
         suite = 'malicious'
-        all_protocol = ['Song_shuffle', 'my_shuffle']
+        all_protocol = ['Song_shuffle', 'my_shuffle', 'my_shuffle_strong']
         all_n_party = [i for i in range(3, 18, 3)]
     elif suite_or_protocol == 'semi':
         suite = 'semi'

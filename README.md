@@ -49,7 +49,12 @@ SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/semi_parties SHUFFLE_BENC
 SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_network_sweeps python3 -u summarize_benchmarks.py semi --strict
 ```
 
-Use `make benchmark-mali` to run the malicious benchmark suite:
+Use `make benchmark-mali` to run the malicious benchmark suite. Every point
+includes four variants: `Song_shuffle` optimized for total time (Song1),
+`Song_shuffle` optimized for online time (Song2), weak `my_shuffle`, and strong
+`my_shuffle_strong`. Both Song variants and `my_shuffle_strong` authenticate
+every permutation-dependent intermediate state before returning; weak
+`my_shuffle` deliberately retains its deferred online MAC-check mode:
 
 ```
 Scripts/setup-ssl.sh 20
@@ -77,9 +82,11 @@ The four benchmark groups are:
 - Malicious size scale: fixed `n = 2`, `logsz = 10, 12, 14, 16, 18`.
 - Malicious party scale: fixed `logsz = 12`, `n = 3, 6, 9, 12, 15`.
 
-The semi-honest and malicious summary tables have three rows per point:
-baseline optimized for total time, baseline optimized for online time, and
-ours. The strong summary has one `my_shuffle_strong` row per point.
+The semi-honest summary has three rows per point: baseline optimized for total
+time, baseline optimized for online time, and ours. The malicious summary has
+four rows per point: Song1, Song2, weak `my_shuffle`, and strong
+`my_shuffle_strong`. The dedicated strong summary has one
+`my_shuffle_strong` row per point.
 
 Benchmark CSVs, temporary party-0 stdout, and summary tables are written under
 `benchmark_results_network_sweeps/` by default. This separate directory avoids

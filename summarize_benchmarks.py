@@ -50,12 +50,13 @@ def result_file(directory, protocol, target, n_party):
     return os.path.join(BASE_DIR, directory, f"{protocol}_{target}_n_{n_party}.csv")
 
 
-def add_rows(rows, label, directory, points, baseline, ours):
+def add_rows(rows, label, directory, points, baseline, ours,
+             extra_variants=()):
     variants = [
         ("baseline-total", baseline, "total_time"),
         ("baseline-online", baseline, "on_time"),
         ("ours", ours, "total_time"),
-    ]
+    ] + list(extra_variants)
     for point_label, n_party, logsz in points:
         for variant, protocol, target in variants:
             metrics = metric_at(read_result(result_file(directory, protocol, target, n_party)), logsz)
@@ -150,6 +151,7 @@ def build_summary(name):
             [(f"n=2, logsz={logsz}", 2, logsz) for logsz in [10, 12, 14, 16, 18]],
             "Song_shuffle",
             "my_shuffle",
+            [("ours-strong", "my_shuffle_strong", "total_time")],
         )
         add_rows(
             rows,
@@ -158,6 +160,7 @@ def build_summary(name):
             [(f"n={n_party}, logsz=12", n_party, 12) for n_party in [3, 6, 9, 12, 15]],
             "Song_shuffle",
             "my_shuffle",
+            [("ours-strong", "my_shuffle_strong", "total_time")],
         )
         return rows
     if name == "strong":

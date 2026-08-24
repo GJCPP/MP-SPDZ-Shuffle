@@ -1,5 +1,20 @@
 #include "permutation.h"
 
+#include "Tools/random.h"
+
+namespace {
+    size_t random_below(PRNG& prg, size_t upper)
+    {
+        const word bound = static_cast<word>(upper);
+        const word threshold = -bound % bound;
+        word sample;
+        do {
+            sample = prg.get_word();
+        } while (sample < threshold);
+        return static_cast<size_t>(sample % bound);
+    }
+}
+
 permutation::permutation(size_t _n) 
     : n(_n), perm(_n)
 {
@@ -11,7 +26,10 @@ permutation::permutation(size_t _n, bool random)
 {
     for (size_t i(0); i != n; ++i) perm[i] = i;
     if (random) {
-        std::shuffle(perm.begin(), perm.end(), std::mt19937(std::random_device()()));
+        SeededPRNG prg;
+        for (size_t i = n; i > 1; --i) {
+            std::swap(perm[i - 1], perm[random_below(prg, i)]);
+        }
     }
 }
 

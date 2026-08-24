@@ -1,4 +1,5 @@
 #include "mpc_communicator.h"
+#include "double_length_prg.h"
 
 namespace myShuffle {
 
@@ -19,7 +20,7 @@ namespace myShuffle {
             otSendChannel(n_party, nullptr),
             otRecvChannel(n_party, nullptr)
     {
-        prg.InitSeed();
+        prg.ReSeed();
         int session_port_base = N.get_portnum_base() + 4 * n_party;
 
         for (int i(0); i != n_party; ++i) {
@@ -757,34 +758,24 @@ namespace myShuffle {
     void mpc_comm::mac_check(const vectors<ShareType> &val)
     {
         size_t num(val.size());
-        ShareType shared_r(get_random());
-        std::vector<ShareType> shared_c(num);
-        std::vector<ClearType> clear_c(num);
-        for (size_t i(0); i != num; ++i) {
-            shared_c[i] = get_random();
+        prg_seed local_seed = random_seed();
+        std::vector<prg_seed> all_seeds;
+        commit_and_open(local_seed, all_seeds);
+        prg_seed joint_seed = {};
+        for (const auto& seed : all_seeds) {
+            joint_seed ^= seed;
         }
-        output_immediately(shared_c, clear_c);
+        vectors<ClearType> clear_c(num, 1);
+        arbitrary_prg(joint_seed, clear_c);
+
+        ShareType shared_r(get_random());
         ShareType shared_t(shared_r);
         ClearType clear_t;
         for (size_t i(0); i != num; ++i) {
-            shared_t += clear_c[i] * val.at(i);
+            shared_t += clear_c.at(i) * val.at(i);
         } // <t> = <r> + sum([c_i] * <val_i>)
         output_immediately(shared_t, clear_t);
-        ClearType shared_s = shared_t.get_mac() - clear_t * ShareType::get_mac_key();
-        std::vector<ClearType> all_s(n_party);
-        
-        
-        commit_and_open(shared_s, all_s);
-
-
-        ClearType sum(0);
-        for (int i(0); i != n_party; ++i) {
-            sum += all_s[i];
-        }
-        if (sum.is_zero() == false) {
-            std::cerr << "mpc_comm::mac_check : MAC check failed." << std::endl;
-            throw std::runtime_error("mpc_comm::mac_check : MAC check failed.");
-        }
+        output_check();
     }
 
     size_t mpc_comm::count_total_comm() const

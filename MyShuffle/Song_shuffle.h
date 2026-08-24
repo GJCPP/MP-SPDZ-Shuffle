@@ -139,7 +139,8 @@ namespace song2023 {
         }
 
         // Perform the magic of permute protocol!
-        void perform(mpc_comm& com, vectors<ClearType>& val);
+        void perform(mpc_comm& com, vectors<ClearType>& val,
+                vectors<ClearType>* checked_intermediates = nullptr);
         void perform(mpc_comm& com, vectors<ShareType>& val);
 
         const permutation& get_perm() const;

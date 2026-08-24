@@ -5,7 +5,7 @@
 #include "Protocols/Share.h"
 
 // bit length of prime
-const int prime_length = 40;
+const int prime_length = 64;
 
 // compute number of 64-bit words needed
 const int n_limbs = (prime_length + 63) / 64;
@@ -27,4 +27,3 @@ typedef typename ShareType::clear ClearType;
 #define FAIL_INFO __FILE__ << __FUNCTION__ << ", " << __LINE__ << " : "
 
 #endif
-

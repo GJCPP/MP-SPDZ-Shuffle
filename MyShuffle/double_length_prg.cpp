@@ -5,7 +5,7 @@ prg_seed random_seed() {
 	static PRNG prg;
 	static bool init = false;
 	if (!init) {
-		prg.InitSeed();
+		prg.ReSeed();
 		init = true;
 	}
 	prg.get_octets(ret.data, SEED_SIZE);

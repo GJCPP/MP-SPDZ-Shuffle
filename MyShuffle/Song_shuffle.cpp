@@ -75,7 +75,10 @@ namespace song2023 {
 	            count_permute_task[log_batch_sz] += task.size();
 			}
         booked_sessions.push_back(session);
-        com.prepare_more_random_lazy((1 << session->logsz) * session->veclen + 1);
+        // One random mask for the batched post-execution MAC check. Public
+        // coefficients are derived from a committed joint seed after all
+        // intermediate states have been fixed.
+        com.prepare_more_random_lazy(1);
     }
 
     void decompose_permute_sessions(mpc_comm &com)
@@ -437,7 +440,8 @@ namespace song2023 {
         destroyed = true;
     }
 
-    void permute_session::perform(mpc_comm &com, vectors<ClearType> &val)
+    void permute_session::perform(mpc_comm &com, vectors<ClearType> &val,
+            vectors<ClearType>* checked_intermediates)
     {
         int n = com.get_n_party(), me = com.get_my_number();
         size_t sz = (1 << logsz);
@@ -470,6 +474,82 @@ namespace song2023 {
 
 		static std::vector<int> map, inv_map;
         map.resize(sz); inv_map.resize(sz);
+
+        if (checked_intermediates != nullptr) {
+            size_t check_entries = 0;
+            for (size_t bat(0); bat != sub_route.size(); ++bat) {
+                const auto& task = all_tasks[bat];
+                const int log_batch_sz = math_gadget::log2(task[0].size());
+                const size_t rep = bucket_size[log_batch_sz];
+                for (const auto& touched : task) {
+                    check_entries += rep * touched.size();
+                }
+            }
+            checked_intermediates->resize(check_entries, veclen);
+        }
+
+        // The permuter's original local share also passes through every
+        // sub-permutation. Record its contribution to each authenticated
+        // intermediate state before adding the receiver-side contributions
+        // associated with the other parties.
+        if (checked_intermediates != nullptr && me == permuter) {
+            if (n < 2) {
+                throw std::runtime_error("permute_session::perform : At least two parties required.");
+            }
+            const int first_sender = permuter == 0 ? 1 : 0;
+            static std::vector<permute_pair>::iterator base_next_pair[MAX_BATCH_SIZE];
+            for (int i(0); i != MAX_BATCH_SIZE; ++i) {
+                base_next_pair[i] = pairs[first_sender][i].begin();
+            }
+            vectors<ClearType> base_val(val), local_val, temp_val;
+            size_t check_pos = 0;
+            for (size_t bat(0); bat != sub_route.size(); ++bat) {
+                const auto& task = all_tasks[bat];
+                for (const auto& touched : task) {
+                    const int batch_sz = task[0].size();
+                    const int log_batch_sz = math_gadget::log2(batch_sz);
+                    int next = 0;
+                    for (int v : touched) {
+                        inv_map[next] = v;
+                        map[v] = next++;
+                    }
+                    local_val.resize(batch_sz, veclen);
+                    temp_val.resize(batch_sz, veclen);
+                    for (int v : touched) {
+                        for (size_t j(0); j != veclen; ++j) {
+                            local_val[map[v]][j] = base_val[v][j];
+                        }
+                    }
+                    const int rep = bucket_size[log_batch_sz];
+                    for (int cnt(0); cnt != rep; ++cnt) {
+                        if (base_next_pair[log_batch_sz]
+                                == pairs[first_sender][log_batch_sz].end()) {
+                            throw std::runtime_error(
+                                    "permute_session::perform : unexpected end of base permute_pair.");
+                        }
+                        const permutation& small_perm = base_next_pair[log_batch_sz]->perm;
+                        for (int i(0); i != batch_sz; ++i) {
+                            for (size_t j(0); j != veclen; ++j) {
+                                temp_val[i][j] = local_val[small_perm[i]][j];
+                            }
+                        }
+                        local_val = temp_val;
+                        for (int i(0); i != batch_sz; ++i) {
+                            for (size_t j(0); j != veclen; ++j) {
+                                (*checked_intermediates)[check_pos + i][j] = local_val[i][j];
+                            }
+                        }
+                        check_pos += batch_sz;
+                        ++base_next_pair[log_batch_sz];
+                    }
+                    for (int v : touched) {
+                        for (size_t j(0); j != veclen; ++j) {
+                            base_val[v][j] = local_val[map[v]][j];
+                        }
+                    }
+                }
+            }
+        }
         // permute_pair * next_pair[MAX_BATCH_SIZE];
         // for (int bat(0); bat != MAX_BATCH_SIZE; ++bat) {
         //     if (me == permuter) next_pair[i] = &pairs[bat][0][0];
@@ -501,6 +581,7 @@ namespace song2023 {
                 }
             }
             size_t sub_route_size = sub_route.size();
+            size_t check_pos = 0;
             for (size_t bat(0); bat != sub_route_size; ++bat) {
                 const auto& task = all_tasks[bat];
                 int next(0), batch_sz(task[0].size());
@@ -548,6 +629,15 @@ namespace song2023 {
                             }
 
                             local_val = temp_val;
+                            if (checked_intermediates != nullptr) {
+                                for (int i(0); i != batch_sz; ++i) {
+                                    for (size_t j(0); j != veclen; ++j) {
+                                        (*checked_intermediates)[check_pos + i][j]
+                                                += local_val[i][j];
+                                    }
+                                }
+                                check_pos += batch_sz;
+                            }
                             ++next_pair[log_batch_sz];
                         }
                         // booked_permute[{permuter, logsz, veclen}].push_back({small_perm, session});
@@ -563,6 +653,15 @@ namespace song2023 {
                             com.send(permuter, sum);
 
                             local_val = next_pair[log_batch_sz]->b;
+                            if (checked_intermediates != nullptr) {
+                                for (int i(0); i != batch_sz; ++i) {
+                                    for (size_t j(0); j != veclen; ++j) {
+                                        (*checked_intermediates)[check_pos + i][j]
+                                                = local_val[i][j];
+                                    }
+                                }
+                                check_pos += batch_sz;
+                            }
                             ++next_pair[log_batch_sz];
                         }
                     }
@@ -610,14 +709,27 @@ namespace song2023 {
                 valMac[i][j * 2 + 1] = val[i][j].get_mac();
             }
         }
-        perform(com, valMac);
+        vectors<ClearType> intermediate_valmac;
+        perform(com, valMac, &intermediate_valmac);
         for (size_t i(0); i != val.num; ++i) {
             for (size_t j(0); j != val.len; ++j) {
                 val[i][j].set_share(valMac[i][j * 2]);
                 val[i][j].set_mac(valMac[i][j * 2 + 1]);
             }
         }
-        com.mac_check(val);
+        vectors<ShareType> checked(intermediate_valmac.num + val.num, val.len);
+        for (size_t i(0); i != intermediate_valmac.num; ++i) {
+            for (size_t j(0); j != val.len; ++j) {
+                checked[i][j].set_share(intermediate_valmac[i][j * 2]);
+                checked[i][j].set_mac(intermediate_valmac[i][j * 2 + 1]);
+            }
+        }
+        for (size_t i(0); i != val.num; ++i) {
+            for (size_t j(0); j != val.len; ++j) {
+                checked[intermediate_valmac.num + i][j] = val[i][j];
+            }
+        }
+        com.mac_check(checked);
     }
 
     const permutation& permute_session::get_perm() const

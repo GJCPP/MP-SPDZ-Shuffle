@@ -40,6 +40,8 @@ namespace myShuffle {
                 size_t num = size_t(1) << session.logsz;
                 size_t len = session.veclen;
                 shuffle_cor &cor = session.cor;
+                cor.c.resize(session.n_party);
+                cor.d.resize(session.n_party);
                 for (int party(0); party != session.n_party; ++party) {
                     cor.r[party].resize(num, len);
                     cor.beta_r[party].resize(num, len);
@@ -60,12 +62,87 @@ namespace myShuffle {
             for (auto &order : info.second) {
                 shuffle_session &session = *order.session;
                 shuffle_cor &cor = session.cor;
+                cor.beta = com.get_random();
+                for (int party(1); party != session.n_party; ++party) {
+                    cor.c[party] = com.get_random();
+                }
                 for (int party(0); party != session.n_party; ++party) {
                     for (auto& v : cor.r[party]) {
                         v = com.get_random();
                     }
                     for (auto& v : cor.rp[party]) {
                         v = com.get_random();
+                    }
+                }
+            }
+        }
+    }
+
+    void compute_partial_verification_correlations(mpc_comm& com) {
+        struct correlation_work {
+            shuffle_cor* cor;
+            std::vector<std::vector<ShareType>> powers;
+        };
+
+        for (auto& info : booked_shuffle) {
+            const size_t n = (size_t(1) << info.first.logsz) * info.first.veclen;
+            std::vector<correlation_work> work;
+            work.reserve(info.second.size());
+            for (auto& order : info.second) {
+                work.push_back({&order.session->cor,
+                        std::vector<std::vector<ShareType>>(order.session->n_party)});
+                if (n > 1) {
+                    for (int party(1); party != order.session->n_party; ++party) {
+                        work.back().powers[party].resize(n);
+                        work.back().powers[party][1] = order.session->cor.c[party];
+                    }
+                }
+            }
+
+            // Compute c^2, ..., c^(n-1) in O(log n) multiplication rounds.
+            size_t highest_power = 1;
+            while (n > 1 && highest_power < n - 1) {
+                const size_t next_highest = std::min(n - 1, 2 * highest_power);
+                com.mul_init();
+                for (auto& item : work) {
+                    for (int party(1); party != com.get_n_party(); ++party) {
+                        for (size_t exponent = highest_power + 1;
+                                exponent <= next_highest; ++exponent) {
+                            const size_t left = exponent / 2;
+                            com.mul_append(item.powers[party][left],
+                                    item.powers[party][exponent - left]);
+                        }
+                    }
+                }
+                com.mul_exchange();
+                for (auto& item : work) {
+                    for (int party(1); party != com.get_n_party(); ++party) {
+                        for (size_t exponent = highest_power + 1;
+                                exponent <= next_highest; ++exponent) {
+                            item.powers[party][exponent] = com.mul_consume();
+                        }
+                    }
+                }
+                highest_power = next_highest;
+            }
+
+            if (n > 1) {
+                com.mul_init();
+                for (auto& item : work) {
+                    for (int party(1); party != com.get_n_party(); ++party) {
+                        const auto& r = item.cor->permuted_rp[party - 1];
+                        for (size_t j(1); j != n; ++j) {
+                            com.mul_append(item.powers[party][j], r.at(j));
+                        }
+                    }
+                }
+                com.mul_exchange();
+            }
+            for (auto& item : work) {
+                for (int party(1); party != com.get_n_party(); ++party) {
+                    item.cor->d[party] = item.cor->permuted_rp[party - 1].at(0);
+                    for (size_t j(1); j != n; ++j) {
+                        item.cor->d[party] += com.mul_consume();
                     }
                 }
             }
@@ -240,17 +317,23 @@ namespace myShuffle {
                     song2023::book_permute_session(com, &order.session->permute_sessions[i]);
                 }
                 size_t n = (1 << order.session->logsz) * order.session->veclen;
-                // Prepare <beta>, <r_i>, <r^'_i>, and the random values used
-                // to compress and blind the online verification residuals.
-                com.prepare_more_random_lazy(2 * n_party * n + n_party + 2);
+                // Prepare <beta>, <r_i>, <r^'_i>, <c_i>, and the random values
+                // used to compress and blind the online verification residuals.
+                com.prepare_more_random_lazy(2 * n_party * n + 2 * n_party + 1);
                 // Prepare multiplication of <beta> with <r_i> and the input.
                 com.prepare_more_mul_lazy(n_party * n);
                 // Each PartialVerify and the final Verify use one additional
                 // multiplication to blind their residual before opening it.
                 require_mul += n + n_party;
+                // For every PartialVerify, compute c^2, ..., c^(n-1), followed
+                // by d = sum_j c^j * permuted_rp[j].
+                if (n > 1) {
+                    require_mul += (n_party - 1) * (2 * n - 3);
+                }
                 // Prepare private output of <z_i> (offline) and <masked real data> (online)
                 for (int party(0); party != n_party; ++party) {
-                    com.prepare_more_private_output_lazy(party, 2 * n);
+                    com.prepare_more_private_output_lazy(party,
+                            2 * n + (party == 0 ? 0 : 1));
                 }
             }
         }
@@ -292,6 +375,7 @@ namespace myShuffle {
         // std::cout << "Beta r computed." << std::endl;
 
         compute_permuted_random_resource(com);
+        compute_partial_verification_correlations(com);
         compute_z(com); // 2 * n private output PER party.
 
         // std::cout << "z computed." << std::endl;
@@ -329,6 +413,9 @@ namespace myShuffle {
         ShareType shared_e = com.get_random();
         ClearType e;
         com.output_immediately(shared_e, e);
+        if (authenticate_now) {
+            com.output_check();
+        }
 
         auto mac_key = ShareType::get_mac_key();
         ClearType power(1);
@@ -346,27 +433,35 @@ namespace myShuffle {
 
     bool partial_verify(mpc_comm & com, int who, const vectors<ClearType>& a,
             const vectors<ClearType>& b, ShareType beta,
-            const vectors<ShareType>& r, bool authenticate_now)
+            ShareType c, ShareType d, bool authenticate_now)
     {
-        ClearType c(com.rand_int()), w1(0), w2(0); // Challenge.
-        std::vector<ClearType> msg;
+        ClearType opened_c, w1(0), w2(0);
+        com.private_output_init();
+        com.private_output_append(who, c);
+        com.private_output_exchange();
+        com.private_output_consume(who, opened_c);
+        if (authenticate_now) {
+            com.output_check();
+        }
+
         if (com.get_my_number() == who) {
-            for (auto& v : a) {
-                w1 = w1 * c + v;
+            if (a.size() == 0 || a.size() != b.size()) {
+                throw std::runtime_error("partial_verify : Invalid input size.");
             }
-            for (auto& v : b) {
-                w2 = w2 * c + v;
+            ClearType power(1);
+            for (size_t i(0); i != a.size(); ++i) {
+                w1 += power * a.at(i);
+                w2 += power * b.at(i);
+                power *= opened_c;
             }
         }
-        msg = { c, w1, w2 };
+        std::vector<ClearType> msg = { w1, w2 };
         com.broadcast(who, msg);
-        c = msg[0], w1 = msg[1], w2 = msg[2];
-        ShareType val = w1 * beta - ShareType::constant(w2, com.get_my_number(), ShareType::get_mac_key());
-        ShareType sum_r = r.at(0);
-        for (size_t i(1); i != r.size(); ++i) {
-            sum_r = c * sum_r + r.at(i);
-        }
-        return open_blinded_residual(com, val - sum_r, authenticate_now);
+        w1 = msg[0], w2 = msg[1];
+        ShareType residual = w1 * beta
+                - ShareType::constant(w2, com.get_my_number(), ShareType::get_mac_key())
+                - d;
+        return open_blinded_residual(com, residual, authenticate_now);
     }
 
     void shuffle_session::set_init_flag()
@@ -426,9 +521,9 @@ namespace myShuffle {
 
         bool verification_failed = false;
         auto partial_verify_opening = [&](int who, const vectors<ClearType>& a,
-                                          const vectors<ClearType>& b,
-                                          const vectors<ShareType>& r) {
-            bool valid = partial_verify(com, who, a, b, cor.beta, r,
+                                          const vectors<ClearType>& b) {
+            bool valid = partial_verify(com, who, a, b, cor.beta,
+                    cor.c[who], cor.d[who],
                     strong_abort_privacy);
             if (!valid && strong_abort_privacy) {
                 std::cerr << FAIL_INFO << " : Verification failed." << std::endl;
@@ -445,15 +540,15 @@ namespace myShuffle {
             z = vectors<ClearType>::cat(z00, z01);
             com.send(1, z);
             for (int who(1); who != com.get_n_party(); ++who) {
-                partial_verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
+                partial_verify_opening(who, {}, {});
             }
         } else {
             for (int who(1); who != me; ++who) {
-                partial_verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
+                partial_verify_opening(who, {}, {});
             }
             com.recv(me - 1, z);
             z.split(num, z00, z01);
-            partial_verify_opening(me, z00, z01, cor.permuted_rp[me - 1]);
+            partial_verify_opening(me, z00, z01);
             z00 += cor.z[0];
             z01 += cor.z[1];
             // Algorithm 6 verifies the incoming message before this party's
@@ -465,7 +560,7 @@ namespace myShuffle {
                 com.send(me + 1, z);
             }
             for (int who(me + 1); who != com.get_n_party(); ++who) {
-                partial_verify_opening(who, {}, {}, cor.permuted_rp[who - 1]);
+                partial_verify_opening(who, {}, {});
             }
         }
         z = vectors<ClearType>::cat(z00, z01);

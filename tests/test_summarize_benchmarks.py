@@ -68,6 +68,7 @@ def create_fixture(base):
             ("Song_shuffle", "total_time"),
             ("Song_shuffle", "on_time"),
             ("my_shuffle", "total_time"),
+            ("my_shuffle_strong", "total_time"),
         ],
     )
     for n_party in [3, 6, 9, 12, 15]:
@@ -80,6 +81,7 @@ def create_fixture(base):
                 ("Song_shuffle", "total_time"),
                 ("Song_shuffle", "on_time"),
                 ("my_shuffle", "total_time"),
+                ("my_shuffle_strong", "total_time"),
             ],
         )
 
@@ -114,6 +116,26 @@ class SummaryTests(unittest.TestCase):
                 summary = base / f"{name}_summary.md"
                 self.assertTrue(summary.is_file())
                 self.assertNotIn("| NA |", summary.read_text())
+                if name == "mali":
+                    self.assertIn(
+                        "| ours-strong | my_shuffle_strong |",
+                        summary.read_text(),
+                    )
+
+            missing_mali = (
+                base / "mali_parties" /
+                "my_shuffle_strong_total_time_n_15.csv"
+            )
+            missing_mali.unlink()
+            result = subprocess.run(
+                [sys.executable, str(SUMMARY_SCRIPT), "mali", "--strict"],
+                check=False,
+                env=env,
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("my_shuffle_strong", result.stderr)
 
             missing = (
                 base / "strong_parties" /
