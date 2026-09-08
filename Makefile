@@ -417,7 +417,6 @@ example: my_shuffle_main.x
 	for i in 0 1 2; do ./$(MY_BIN) my_shuffle $$i 3 6 1 1 10000 1 & true; done
 
 benchmark: my_shuffle_main.x
-	$(MAKE) benchmark-semi
 	$(MAKE) benchmark-mali
 
 benchmark-semi: my_shuffle_main.x

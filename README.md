@@ -2,11 +2,6 @@
 
 This is an implementation of secure multi-party shuffle protocol based on [MP-SPDZ project](https://github.com/data61/MP-SPDZ).
 
-The shuffle implementation was started from MP-SPDZ commit
-`bf38ddbc6bf164b67d3c4175921bd62c90e70308`. Third-party dependencies are
-pinned through Git submodules and should be initialized with
-`git submodule update --init --recursive`.
-
 ## Compilation
 
 Please read [the instruction of MP-SPDZ](https://github.com/data61/MP-SPDZ) for setting up the MP-SPDZ part of the project.
@@ -21,10 +16,8 @@ cmake --build build --target my_shuffle_main
 ```
 
 This writes build artifacts under `build/`, including `build/my_shuffle_main.x`.
-For compatibility, `make my_shuffle_main.x` runs the same CMake build.
 
 In directory `MP-SPDZ-Shuffle`, use `make example` to run a 3-party example, which translates to
-
 
 ```
 for i in 0 1 2; do ./build/my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
@@ -34,24 +27,7 @@ The arguments are explained in later section.
 
 ## Benchmark
 
-The dedicated benchmark entry points are:
-
-- `make benchmark-semi`
-- `make benchmark-mali`
-
-Use `make benchmark-semi` to run the semi-honest benchmark suite:
-
-```
-Scripts/setup-ssl.sh 20
-SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/semi_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=14,16,18,20,22 python3 -u my_benchmark.py semi-parties 10000
-SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/semi_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=16 python3 -u my_benchmark.py semi-parties 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_network_sweeps python3 -u summarize_benchmarks.py semi --strict
-```
-
-Use `make benchmark-mali` to run the malicious benchmark suite. Every point
-includes three variants: `Song_shuffle` optimized for total time (Song1),
-`Song_shuffle` optimized for online time (Song2), and the unified malicious
-`my_shuffle` protocol:
+Use `make benchmark` to run only the benchmark. Every point includes three variants: `Song_shuffle` optimized for total time (Song1), `Song_shuffle` optimized for online time (Song2), and the unified malicious `my_shuffle` protocol:
 
 ```
 Scripts/setup-ssl.sh 20
@@ -60,47 +36,10 @@ SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/mali_parties SHUFFLE_BENC
 SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_network_sweeps python3 -u summarize_benchmarks.py mali --strict
 ```
 
-Use `make benchmark` to run both suites in sequence.
+The two benchmark groups are:
 
-The four benchmark groups are:
-
-- Semi-honest size scale: fixed `n = 2`, `logsz = 14, 16, 18, 20, 22`.
-- Semi-honest party scale: fixed `logsz = 16`, `n = 3, 6, 9, 12, 15`.
 - Malicious size scale: fixed `n = 2`, `logsz = 10, 12, 14, 16, 18`.
 - Malicious party scale: fixed `logsz = 12`, `n = 3, 6, 9, 12, 15`.
-
-The semi-honest and malicious summaries each have three rows per point:
-baseline optimized for total time, baseline optimized for online time, and
-ours.
-
-Benchmark CSVs, temporary party-0 stdout, and summary tables are written under
-`benchmark_results_network_sweeps/` by default. This separate directory avoids
-mixing the v2 compute-time measurements with legacy modeled-time CSVs.
-
-Each protocol execution records network-independent compute time,
-communication bytes, and rounds in `raw_measurements_v2.csv`. The benchmark
-driver keeps the existing result CSVs at the default decimal `80 MB/s` and
-`60 ms` RTT, and also rewrites `network_sweep.csv` after every successful
-candidate run. The sweep file independently selects the best `logbatch` for
-each network setting and contains both:
-
-- fixed `80 MB/s`, RTT `0.5, 1, 5, 20, 60, 100 ms`;
-- fixed `0.5 ms` RTT, bandwidth `12.5, 80, 125, 312.5, 1250 MB/s`.
-
-Modeled phase time is `compute_seconds + comm_bytes / (MBps * 1,000,000) +
-rounds * RTT_ms / 1,000`. Thus `MB/s` is decimal, not MiB/s. The sweep can be
-regenerated without running the MPC protocols:
-
-```
-python3 -u derive_network_sweeps.py \
-    benchmark_results_network_sweeps/mali_size/raw_measurements_v2.csv \
-    --strict
-```
-
-For plots, use `rtt_ms` or `bandwidth_MBps` from `network_sweep.csv` as a
-log-scale x-axis. The CSV stores untransformed numeric values.
-
-Use `make my_shuffle_main.x` to build `build/my_shuffle_main.x`.
 
 ## Arguments
 
@@ -113,18 +52,6 @@ for i in 0 1 2; do ./build/my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & tr
 ```
 
 launches a shuffle protocol that repeats once, which shuffles $2^6$ many $1$-sized vectors among $3$ parties.
-
-At the end of an execution, party 0 outputs offline communication (bytes),
-rounds, and measured compute time (seconds), followed by the corresponding
-online values. Network-model time is derived by `my_benchmark.py`.
-
-See also `MyShuffle/my_shuffle_main.cpp`.
-
-`my_shuffle` implements the paper's unified malicious protocol. It fixes all
-online messages first, verifies every retained intermediate message and the
-final broadcast in one terminal batched check, authenticates the complete
-tentative transcript before revealing the blinded aggregate, and releases the
-output only after that aggregate opening is authenticated.
 
 ## Shuffle Protocols
 
@@ -140,15 +67,11 @@ In context, [2] can be seen as an enhancement to [1], and [3] is instantiated by
 
 Protocol [1] includes an additional parameter $k$ ("logbatch" in code) for balancing communication and computation, which is inherited by [2] and [3]. Increasing $k$ reduces communication and increases computation.
 
-The malicious benchmark suite compares [2] and the malicious instantiation
-of [3]. The semi-honest benchmark suites compare [1] and the semi-honest
-instantiation of [3], including an n-party Chase baseline formed by composing
-one Chase permutation session per party.
+The malicious benchmark suite compares [2] and the malicious instantiation of [3].
 
 ## File Structure
 
 Directory `MyShuffle` includes all codes for implementing shuffle protocols. All files mentioned below are in this directory.
-
 
 Entries:
 
@@ -167,9 +90,6 @@ Shuffle protocols:
   - `Song_shuffle.cpp/h` implements the shuffle protocol by [Song et al.](https://www.ndss-symposium.org/wp-content/uploads/2024-21-paper.pdf).
 
   - `my_shuffle.cpp/h` implements the shuffle protocol by this paper.
-
-  - `semi_my_shuffle.cpp/h` implements a semi-honest version of `my_shuffle`
-    using `Chase_shuffle` as the permutation primitive.
 
 MPC gadgets:
 
