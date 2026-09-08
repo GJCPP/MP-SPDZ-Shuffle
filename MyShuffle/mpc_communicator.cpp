@@ -1,0 +1,858 @@
+#include "mpc_communicator.h"
+#include "double_length_prg.h"
+
+namespace myShuffle {
+
+    mpc_comm::mpc_comm(int _n_party, int _my_number, int _port_base)
+        : n_party(_n_party), my_number(_my_number), sessions(n_party), ios(),
+            N(my_number, n_party, "localhost", _port_base),
+            P(N),
+            setup(P, prime_length),
+            osuPrg(osuCrypto::sysRandomSeed()),
+            prg(),
+            shared_mask(n_party),
+            random_resource(),
+            triple_resource(),
+            expand_random_size(0),
+            expand_triple_size(0),
+            cnt_private_output(n_party),
+            logical_rounds(0), round_adjustment(0),
+            otSendChannel(n_party, nullptr),
+            otRecvChannel(n_party, nullptr)
+    {
+        prg.ReSeed();
+        int session_port_base = N.get_portnum_base() + 4 * n_party;
+
+        for (int i(0); i != n_party; ++i) {
+            if (i < my_number) {
+                // This party acts as server
+                sessions[i].start(ios, "localhost", session_port_base + my_number, osuCrypto::SessionMode::Server);
+            }
+            if (i > my_number) {
+                sessions[i].start(ios, N.get_name(i), session_port_base + i, osuCrypto::SessionMode::Client);
+            }
+        }
+        P.reset_stats();
+        // setup = new ProtocolSetup<ShareType>(P, prime_length);
+    }
+
+    void mpc_comm::init(MascotFieldPrep<ShareType> *_prep, Input<ShareType> *_input, SPDZ<ShareType> *_protocol, MAC_Check_<ShareType> *_output)
+    {
+        prep = _prep;
+        input = _input;
+        protocol = _protocol;
+        output = _output;
+
+    }
+
+    CryptoPlayer &mpc_comm::get_P()
+    {
+        return P;
+    }
+
+    ProtocolSetup<ShareType> &mpc_comm::get_setup()
+    {
+        return setup;
+    }
+
+    int mpc_comm::get_port(int party) const
+    {
+        if (party == -1) party = my_number;
+        if (party < 0 || party >= n_party) {
+            cerr << "mpc_comm::get_port : Invalid party number: " << party << endl;
+            throw std::runtime_error("mpc_comm::get_port : Invalid party number.");
+        }
+        return N.ports[party];
+    }
+
+    int mpc_comm::get_my_number() const
+    {
+        return my_number;
+    }
+
+    int mpc_comm::get_n_party() const
+    {
+        return n_party;
+    }
+
+    void mpc_comm::rand_bytes(octet * dest, size_t size)
+    {
+        osuPrg.get(dest, size);
+    }
+
+    void mpc_comm::rand_blocks(block_wrapper *dest, size_t num)
+    {
+        osuPrg.get(dest, num);
+    }
+
+    ClearType mpc_comm::rand_int()
+    {
+        ClearType res;
+        res.randomize(prg);
+        return res;
+    }
+
+    void mpc_comm::rand_int(ClearType &dest)
+    {
+        dest.randomize(prg);
+    }
+
+    void mpc_comm::rand_int(std::vector<ClearType> &dest)
+    {
+        for (auto &i : dest) i.randomize(prg);
+    }
+
+    void mpc_comm::rand_int(vectors<ClearType> &dest)
+    {
+        for (auto &i : dest) i.randomize(prg);
+    }
+
+    void mpc_comm::input_init()
+    {
+        input->reset_all(P);
+    }
+
+    void mpc_comm::input_append_all(const ClearType &val)
+    {
+        input->add_from_all(val);
+    }
+
+    void mpc_comm::input_append(int party, const ClearType &val)
+    {
+        if (party == my_number) input->add_mine(val);
+        else input->add_other(party);
+    }
+
+    void mpc_comm::input_append_all(const vectors<ClearType>& val)
+    {
+        for (const ClearType& v : val)
+            input->add_from_all(v);
+    }
+
+    void mpc_comm::input_append(int party, const vectors<ClearType> &val)
+    {
+        if (party == my_number) {
+            for (auto& v : val) input->add_mine(v);
+        } else {
+            for (size_t i = 0; i < val.size(); ++i) input->add_other(party);
+        }
+    }
+
+    void mpc_comm::input_exchange()
+    {
+        input->exchange();
+        add_logical_rounds();
+    }
+
+    void mpc_comm::input_consume(int party, ShareType& val)
+    {
+        val = input->finalize(party);
+    }
+
+    void mpc_comm::input_consume(int party, vectors<ShareType>& val)
+    {
+        for (auto& v : val) v = input->finalize(party);
+    }
+
+    ShareType mpc_comm::input_consume(int party)
+    {
+        return input->finalize(party);
+    }
+
+    void mpc_comm::prepare_more_mul(size_t num)
+    {
+        if (num == 0) return;
+        if (my_number == 0 && online_phase) {
+            std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << num << std::endl;
+        }
+        prep->buffer_extra(DATA_TRIPLE, num, &triple_resource);
+        //prep->buffer_extra(DATA_TRIPLE, num);
+    }
+
+    void mpc_comm::prepare_more_mul_lazy(size_t num)
+    {
+        expand_triple_size += num;
+    }
+
+    void mpc_comm::prepare_more_mul_now(size_t num)
+    {
+        static size_t default_expand = DEFAULT_EXPAND_SIZE;
+        size_t expand = expand_triple_size + num;
+        expand_triple_size = 0;
+        if (expand == 0) {
+            if (!triple_resource.empty()) {
+                return;
+            }
+            expand = default_expand;
+            default_expand <<= 1;
+        }
+        prepare_more_mul(expand);
+    }
+
+    void mpc_comm::mul_init()
+    {
+        protocol->init_mul();
+    }
+
+    void mpc_comm::mul_exchange()
+    {
+        protocol->exchange();
+        add_logical_rounds();
+    }
+
+    void mpc_comm::mul_consume(ShareType &val)
+    {
+        val = protocol->finalize_mul();
+    }
+     
+    void mpc_comm::mul_consume(vectors<ShareType>& val)
+    {
+        for (auto& v : val) {
+            v = protocol->finalize_mul();
+        }
+    }
+
+    ShareType mpc_comm::mul_consume()
+    {
+        auto ret = protocol->finalize_mul();
+        return ret;
+    }
+
+    void mpc_comm::mul_append(const vectors<ShareType> &v1, const vectors<ShareType> &v2)
+    {
+        if (triple_resource.size() < v1.size()) {
+            if (my_number == 0) {
+                std::cerr << "Warning: " << __FUNCTION__ << " is called with insufficient triples, size = " << v1.size() << std::endl;
+            }
+            prepare_more_mul_now(v1.size());
+        }
+        for (size_t i(0); i != v1.size(); ++i) {
+            protocol->prepare_mul(v1.at(i), v2.at(i), triple_resource.front());
+            triple_resource.pop_front();
+            // protocol->prepare_mul(v1.at(i), v2.at(i));
+        }
+    }
+
+    void mpc_comm::mul_append(const ShareType &v1, const ShareType &v2)
+    {
+        if (triple_resource.size() < 1) {
+            if (my_number == 0) {
+                std::cerr << "Warning: " << __FUNCTION__ << " is called with insufficient triples, size = " << 1 << std::endl;
+            }
+            prepare_more_mul_now(1);
+        }
+        protocol->prepare_mul(v1, v2, triple_resource.front());
+        triple_resource.pop_front();
+        // protocol->prepare_mul(v1, v2);
+    }
+
+    void mpc_comm::output_immediately(const ShareType& val, ClearType& res)
+    {
+        output_init();
+        output_append(val);
+        output_exchange();
+        output_consume(res);
+    }
+
+    void mpc_comm::output_immediately(const vectors<ShareType>& val, vectors<ClearType>& res)
+    {
+        output_init();
+        output_append(val);
+        output_exchange();
+        res.resize(val.num, val.len);
+        output_consume(res);
+    }
+
+    void mpc_comm::output_immediately(const vector<ShareType>& val, std::vector<ClearType>& res)
+    {
+        output_init();
+        output_append(val);
+        output_exchange();
+        res.resize(val.size());
+        output_consume(res);
+    }
+
+    void mpc_comm::output_init()
+    {
+        output->init_open(P);
+    }
+
+    void mpc_comm::output_append(const ShareType &val)
+    {
+        output->prepare_open(val);
+    }
+
+    void mpc_comm::output_append(const vectors<ShareType> &val)
+    {
+        for (auto& v : val) output->prepare_open(v);
+    }
+
+    void mpc_comm::output_append(const std::vector<ShareType>& val)
+    {
+        for (auto& v : val) output->prepare_open(v);
+    }
+
+    void mpc_comm::output_exchange()
+    {
+        output->exchange(P);
+        add_logical_rounds();
+    }
+
+    void mpc_comm::output_consume(ClearType &val)
+    {
+        val = output->finalize_open();
+    }
+
+    void mpc_comm::output_consume(vectors<ClearType> & val)
+    {
+        for (auto& v : val) v = output->finalize_open();
+    }
+
+    void mpc_comm::output_consume(std::vector<ClearType> &val)
+    {
+        for (auto& v : val) v = output->finalize_open();
+    }
+
+    ClearType mpc_comm::output_consume()
+    {
+        return  output->finalize_open();
+    }
+
+    void mpc_comm::prepare_more_random_lazy(size_t num)
+    {
+        expand_random_size += num;
+    }
+
+    void mpc_comm::prepare_more_random_now(size_t num)
+    {
+        if (my_number == 0 && online_phase) {
+            std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << num << std::endl;
+        }
+        static size_t default_expand(DEFAULT_EXPAND_SIZE);
+        size_t expand = expand_random_size + num;
+        expand_random_size = 0;
+        if (expand == 0) { // Called under situation random_resourece.empty() && expand_random_size == 0
+            if (!random_resource.empty()) {
+                return;
+            }
+            expand = default_expand;
+            default_expand <<= 1;
+        }
+        // Generate random numbers
+        for (size_t i(0); i != expand; ++i) {
+            random_resource.push_back(prep->get_random());
+        }
+    }
+
+    ShareType mpc_comm::get_random()
+    {
+        if (random_resource.empty()) {
+            prepare_more_random_now();
+        }
+        ShareType res = random_resource.front();
+        random_resource.pop_front();
+        return res;
+    }
+
+    void mpc_comm::prepare_output_mask(size_t expand)
+    {
+        if (expand == 0) return;
+        if (my_number == 0 && online_phase) {
+            std::cerr << "Warning: " << __FUNCTION__ << " is called in online phase, size = " << expand << std::endl;
+        }
+        input_init();
+        for (size_t i(0); i != expand; ++i) {
+            ClearType tmp = rand_int();
+            input->add_from_all(tmp);
+            clear_mask.push_back(tmp);
+        }
+        input_exchange();
+        for (int i(0); i != n_party; ++i) {
+            for (size_t j(0); j != expand; ++j) {
+                shared_mask[i].push_back(input_consume(i));
+            }
+        }
+    }
+
+    void mpc_comm::prepare_more_private_output_lazy(int party, size_t num)
+    {
+        cnt_private_output[party] += num;
+    }
+
+    void mpc_comm::prepare_more_private_output_now(size_t num)
+    {
+        size_t expand = 0;
+        for (int party(0); party != n_party; ++party) {
+            if (cnt_private_output[party] + num > expand) {
+                expand = cnt_private_output[party] + num;
+            }
+            cnt_private_output[party] = 0;
+        }
+        if (expand != 0)
+            prepare_output_mask(expand);
+    }
+
+    void mpc_comm::private_output_init()
+    {
+        prepare_more_private_output_now();
+        output->init_open(P);
+    }
+
+    void mpc_comm::private_output_append(int party, const ShareType &val)
+    {
+        output_append(val + shared_mask[party].front());
+        shared_mask[party].pop_front();
+    }
+
+    void mpc_comm::private_output_append(int party, const vectors<ShareType> &val)
+    {
+        for (auto& v : val) {
+            output_append(v + shared_mask[party].front());
+            shared_mask[party].pop_front();
+        }
+    }
+
+    void mpc_comm::private_output_exchange()
+    {
+        output_exchange();
+    }
+
+    void mpc_comm::private_output_consume(int party, ClearType &val)
+    {
+        val = output_consume();
+        if (my_number == party) {
+            val -= clear_mask.front();
+            clear_mask.pop_front();
+        }
+    }
+
+    void mpc_comm::private_output_consume(int party, vectors<ClearType> &val)
+    {
+        for (ClearType& v : val) {
+            v = output_consume();
+            if (my_number == party) {
+                v -= clear_mask.front();
+                clear_mask.pop_front();
+            }
+        }
+    }
+
+    ClearType mpc_comm::private_output_consume(int party)
+    {
+        ClearType res = output_consume();
+        if (my_number == party) {
+            res -= clear_mask.front();
+            clear_mask.pop_front();
+        }
+        return res;
+    }
+
+    void mpc_comm::output_check()
+    {
+        const size_t before = count_raw_total_rounds();
+        output->Check(P);
+        // MP-SPDZ uses two rounds for a small direct check and four rounds
+        // (joint seed plus commit/open) for a batched check.
+        add_logical_rounds(count_raw_total_rounds() - before);
+    }
+
+    void mpc_comm::add_logical_rounds(size_t rounds)
+    {
+        logical_rounds += rounds;
+    }
+
+    void mpc_comm::send_chunked_payload(int party, const octet *data, size_t size, bool send_empty)
+    {
+        if (size == 0) {
+            if (send_empty) {
+                octetStream o;
+                P.send_to(party, o);
+            }
+            add_logical_rounds();
+            return;
+        }
+
+        size_t offset = 0;
+        while (offset < size) {
+            const size_t chunk = std::min(large_message_chunk_bytes, size - offset);
+            octetStream o;
+            o.append(data + offset, chunk);
+            P.send_to(party, o);
+            offset += chunk;
+        }
+        add_logical_rounds();
+    }
+
+    void mpc_comm::recv_chunked_payload(int party, octet *data, size_t size, bool recv_empty)
+    {
+        if (size == 0) {
+            if (recv_empty) {
+                octetStream o;
+                P.receive_player(party, o);
+            }
+            add_logical_rounds();
+            return;
+        }
+
+        size_t offset = 0;
+        while (offset < size) {
+            const size_t chunk = std::min(large_message_chunk_bytes, size - offset);
+            octetStream o;
+            P.receive_player(party, o);
+            if (o.get_length() != chunk) {
+                throw std::runtime_error("mpc_comm::recv_chunked_payload: unexpected chunk length");
+            }
+            o.consume(data + offset, chunk);
+            offset += chunk;
+        }
+        add_logical_rounds();
+    }
+
+    void mpc_comm::send(int recver, const void * data, size_t size)
+    {
+        send_chunked_payload(recver, reinterpret_cast<const octet *>(data), size);
+    }
+
+    void mpc_comm::recv(int sender, void *data, size_t size)
+    {
+        recv_chunked_payload(sender, reinterpret_cast<octet *>(data), size);
+    }
+
+    void mpc_comm::send(int party, octetStream &os)
+    {
+        send(party, os.get_length());
+        if (os.get_length() == 0) {
+            octetStream empty;
+            P.send_to(party, empty);
+            return;
+        }
+
+        size_t offset = 0;
+        while (offset < os.get_length()) {
+            const size_t chunk = std::min(large_message_chunk_bytes, os.get_length() - offset);
+            octetStream part;
+            part.append(os.get_data() + offset, chunk);
+            P.send_to(party, part);
+            offset += chunk;
+        }
+    }
+
+    void mpc_comm::recv(int party, octetStream &os)
+    {
+        size_t size = 0;
+        recv(party, size);
+        os.reset_write_head();
+        if (size == 0) {
+            octetStream empty;
+            P.receive_player(party, empty);
+            return;
+        }
+
+        size_t offset = 0;
+        while (offset < size) {
+            const size_t chunk = std::min(large_message_chunk_bytes, size - offset);
+            octetStream part;
+            P.receive_player(party, part);
+            if (part.get_length() != chunk) {
+                throw std::runtime_error("mpc_comm::recv: unexpected octetStream chunk length");
+            }
+            os.append(part.get_data(), chunk);
+            offset += chunk;
+        }
+        os.reset_read_head();
+    }
+
+    void mpc_comm::send_base_cor_ot(int recver, osuCrypto::span<std::array<osuCrypto::block, 2>> sendKey,
+                                osuCrypto::Channel *channel)
+    {
+        assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
+        using namespace osuCrypto;
+        Channel *sendChannel;
+        if (!channel) {
+            sendChannel = new Channel;
+            *sendChannel = sessions[recver].addChannel();
+        } else {
+            sendChannel = channel;
+        }
+
+
+        my_ote::send_base_cor_ot(sendKey, osuPrg, sendChannel);
+
+
+        if (!channel) delete sendChannel;
+    }
+
+    void mpc_comm::send_base_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendKey)
+    {
+        using namespace osuCrypto;
+        size_t num_ot(sendKey.size());
+        std::vector<std::array<block, 2>> sendBlockMsg(num_ot);
+
+        memcpy(sendBlockMsg.data(), sendKey.data(), 2 * num_ot * sizeof(block));
+        send_base_cor_ot(recver, sendBlockMsg);
+        memcpy(sendKey.data(), sendBlockMsg.data(), 2 * num_ot * sizeof(block));
+    }
+
+    void mpc_comm::recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<osuCrypto::block> recvKey
+                                , osuCrypto::Channel *channel)
+    {
+        assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
+        if (choices.size() != static_cast<size_t>(recvKey.size())) {
+            cerr << "mpc_comm::base_ot_recv : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
+            throw std::runtime_error("mpc_comm::base_ot_recv : choices.size() != recvKey.size()");
+        }
+        using namespace osuCrypto;
+        Channel *recvChannel;
+        if (!channel) {
+            recvChannel = new Channel;
+            *recvChannel = sessions[sender].addChannel();
+        } else {
+            recvChannel = channel;
+        }
+        
+
+        my_ote::recv_base_cor_ot(choices, recvKey, osuPrg, recvChannel);
+
+
+        if (!channel) delete recvChannel;
+    }
+
+    void mpc_comm::recv_base_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvKey)
+    {
+        using namespace osuCrypto;
+        size_t num_ot(recvKey.size());
+        std::vector<block> recvBlockMsg(num_ot);
+
+        recv_base_cor_ot(sender, choices, recvBlockMsg);
+
+        memcpy(recvKey.data(), recvBlockMsg.data(), num_ot * sizeof(block));
+    }
+
+    void mpc_comm::send_ext_cor_ot(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendKey)
+    {
+        assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
+        using namespace osuCrypto;
+        size_t num_ot(sendKey.size());
+
+        std::vector<Channel*>& allSendChannel = otSendChannel;
+        static std::vector<KosOtExtSender*> allExtOT;
+        if (allExtOT.empty()) {
+            allExtOT.resize(n_party);
+        }
+        const bool needs_base_ot = allSendChannel[recver] == nullptr;
+        if (needs_base_ot) {
+            allSendChannel[recver] = new Channel;
+            *allSendChannel[recver] = sessions[recver].addChannel();
+            allExtOT[recver] = new KosOtExtSender;
+
+
+            Channel& sendChannel = *allSendChannel[recver];
+            KosOtExtSender& extOT = *allExtOT[recver];
+
+            // Perform base ot
+            size_t cnt_base_ot = extOT.baseOtCount();
+            osuCrypto::BitVector base_choices(cnt_base_ot);
+            std::vector<block> baseRecv(cnt_base_ot);
+            recv_base_cor_ot(recver, base_choices, baseRecv, &sendChannel);
+
+            allExtOT[recver]->setBaseOts(baseRecv, base_choices, osuPrg, sendChannel);
+        }
+        Channel& sendChannel = *allSendChannel[recver];
+        KosOtExtSender& extOT = *allExtOT[recver];
+
+        std::vector<std::array<block, 2>> sendBlockMsg(num_ot);
+
+        // Perform extened ot
+        memcpy(sendBlockMsg.data(), sendKey.data(), 2 * num_ot * sizeof(block));
+        extOT.send(sendBlockMsg, osuPrg, sendChannel);
+        // SimplestOT is two rounds on first use. Malicious KOS extension is
+        // three rounds (receiver matrix, challenge, correlation response).
+        add_logical_rounds(needs_base_ot ? 5 : 3);
+        memcpy(sendKey.data(), sendBlockMsg.data(), 2 * num_ot * sizeof(block));
+    }
+
+    void mpc_comm::recv_ext_cor_ot(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvKey)
+    {
+        assert(sizeof(osuCrypto::block) == sizeof(block_wrapper));
+        if (choices.size() != static_cast<size_t>(recvKey.size())) {
+            cerr << "mpc_comm::base_ot_recv : choices.size() != recvKey.size(), " << choices.size() << " != " << recvKey.size() << endl;
+            throw std::runtime_error("mpc_comm::base_ot_recv : choices.size() != recvKey.size()");
+        }
+        using namespace osuCrypto;
+        size_t num_ot(recvKey.size());
+
+        
+        std::vector<Channel*>& allRecvChannel = otRecvChannel;
+        static std::vector<KosOtExtReceiver*> allExtOT;
+        if (allExtOT.empty()) {
+            allExtOT.resize(n_party);
+        }
+        const bool needs_base_ot = allRecvChannel[sender] == nullptr;
+        if (needs_base_ot) {
+            allRecvChannel[sender] = new Channel;
+            *allRecvChannel[sender] = sessions[sender].addChannel();
+            allExtOT[sender] = new KosOtExtReceiver;
+            
+
+            Channel& recvChannel = *allRecvChannel[sender];
+            KosOtExtReceiver& extOT = *allExtOT[sender];
+
+            // Perform base ot
+            size_t cnt_base_ot = extOT.baseOtCount();
+            std::vector<std::array<block, 2>> baseSend(cnt_base_ot);
+            osuPrg.get((unsigned char *)baseSend.data(), cnt_base_ot * 2 * sizeof(block));
+            send_base_cor_ot(sender, baseSend, &recvChannel);
+            extOT.setBaseOts(baseSend, osuPrg, recvChannel);
+        }
+
+        Channel& recvChannel = *allRecvChannel[sender];
+        KosOtExtReceiver& extOT = *allExtOT[sender];
+
+        // Perform extened ot
+        std::vector<block> recvBlockMsg(num_ot);
+        extOT.receive(choices, recvBlockMsg, osuPrg, recvChannel);
+        add_logical_rounds(needs_base_ot ? 5 : 3);
+        memcpy(recvKey.data(), recvBlockMsg.data(), num_ot * sizeof(block));
+    }
+
+    void mpc_comm::ext_ot_send(int recver, osuCrypto::span<std::array<block_wrapper, 2>> sendMsg)
+    {
+        size_t numOT = sendMsg.size();
+        std::vector<std::array<block_wrapper, 2>> sendKey(numOT);
+        send_ext_cor_ot(recver, sendKey);
+        for (size_t i = 0; i < numOT; i++) {
+            sendKey[i][0] ^= sendMsg[i][0];
+            sendKey[i][1] ^= sendMsg[i][1];
+        }
+        send(recver, sendKey.data(), numOT * 2 * sizeof(block_wrapper));
+    }
+
+    void mpc_comm::ext_ot_send(int recver, osuCrypto::span<block_wrapper> msg0, osuCrypto::span<block_wrapper> msg1)
+    {
+        assert(msg0.size() == msg1.size());
+        size_t numOT = msg0.size();
+        std::vector<std::array<block_wrapper, 2>> sendKey(numOT);
+        send_ext_cor_ot(recver, sendKey);
+        for (size_t i = 0; i < numOT; i++) {
+            sendKey[i][0] ^= msg0[i];
+            sendKey[i][1] ^= msg1[i];
+        }
+        send(recver, sendKey.data(), numOT * 2 * sizeof(block_wrapper));
+    }
+
+    void mpc_comm::ext_ot_recv(int sender, osuCrypto::BitVector choices, osuCrypto::span<block_wrapper> recvMsg)
+    {
+        size_t numOT = recvMsg.size();
+        std::vector<block_wrapper> recvKey(numOT);
+        std::vector<std::array<block_wrapper, 2>> recvMaskMsg(numOT);
+        recv_ext_cor_ot(sender, choices, recvKey);
+        recv(sender, recvMaskMsg.data(), numOT * 2 * sizeof(block_wrapper));
+        for (size_t i = 0; i < numOT; i++) {
+            recvMsg[i] = recvMaskMsg[i][choices[i]] ^ recvKey[i];
+        }
+    }
+
+    /*
+    * MAC check for the shuffle protocol by Song et al.
+    */
+    void mpc_comm::mac_check(const vectors<ShareType> &val)
+    {
+        size_t num(val.size());
+        prg_seed local_seed = random_seed();
+        std::vector<prg_seed> all_seeds;
+        commit_and_open(local_seed, all_seeds);
+        prg_seed joint_seed = {};
+        for (const auto& seed : all_seeds) {
+            joint_seed ^= seed;
+        }
+        vectors<ClearType> clear_c(num, 1);
+        arbitrary_prg(joint_seed, clear_c);
+
+        ShareType shared_r(get_random());
+        ShareType shared_t(shared_r);
+        ClearType clear_t;
+        for (size_t i(0); i != num; ++i) {
+            shared_t += clear_c.at(i) * val.at(i);
+        } // <t> = <r> + sum([c_i] * <val_i>)
+        output_immediately(shared_t, clear_t);
+        output_check();
+    }
+
+    size_t mpc_comm::count_total_comm() const
+    {
+        size_t ret = 0;
+        for (auto channel : otSendChannel) {
+            if (channel) ret += channel->getTotalDataSent();
+        }
+        ret += P.total_comm().sent;
+        return ret;
+    }
+
+    size_t mpc_comm::count_raw_total_rounds() const
+    {
+        size_t ret = 0;
+        auto stats = P.total_comm();
+        for (auto& x : stats) {
+            ret += x.second.rounds;
+        }
+        return ret;
+    }
+
+    size_t mpc_comm::count_total_rounds() const
+    {
+        size_t raw = logical_rounds;
+        if (round_adjustment >= 0) {
+            return raw + static_cast<size_t>(round_adjustment);
+        }
+        size_t reduction = static_cast<size_t>(-round_adjustment);
+        return raw < reduction ? 0 : raw - reduction;
+    }
+
+    void mpc_comm::add_round_adjustment(long long adjustment)
+    {
+        round_adjustment += adjustment;
+    }
+
+    void mpc_comm::reset_total_comm()
+    {
+        for (auto channel : otSendChannel) {
+            if (channel) channel->resetStats();
+        }
+        P.reset_stats();
+        logical_rounds = 0;
+        round_adjustment = 0;
+    }
+
+    void mpc_comm::set_online()
+    {
+        online_phase = true;
+    }
+
+    void mpc_comm::set_offline()
+    {
+        online_phase = false;
+    }
+
+    // void mpc_comm::unchecked_broadcast(int party, octet* val, size_t len)
+    // {
+    //     std::vector<octetStream> buff(n_party);
+    //     if (party == my_number) buff[party].store_bytes(val, len);
+    //     // buff[party].store_bytes(const_cast<octet *>(reinterpret_cast<const octet *>(&val)), sizeof(T));
+    //     P.unchecked_broadcast(buff);
+    //     buff[party].get_bytes(val, len);
+    // }
+
+    mpc_comm::~mpc_comm()
+    {
+        for (auto channel : otSendChannel) {
+            if (channel) delete channel;
+        }
+        for (auto channel : otRecvChannel) {
+            if (channel) delete channel;
+        }
+        for (auto& session : sessions) {
+            if (session.mBase) session.stop();
+        }
+        ios.stop();
+    }
+}

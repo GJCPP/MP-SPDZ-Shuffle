@@ -1,0 +1,10 @@
+print('11')
+a = sint.Tensor([1000, 10])
+a.randomize()
+
+a.secure_shuffle()
+
+# ./compile.py -F 128 test_shuffle.mpc
+# Scripts/compile-run.py mascot test_shuffle
+# for i in 0 1 2; do ./mascot-party.x -N 3 -p $i --portnumbase 15324 test_shuffle & true; done
+# for i in 0 1 2; do ./mascot-offline.x -N 3 -p $i --portnumbase 15324 test_shuffle & true; done
