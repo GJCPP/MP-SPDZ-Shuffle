@@ -295,6 +295,9 @@ namespace myShuffle {
         size_t count_raw_total_rounds() const;
         size_t count_total_rounds() const;
         void add_round_adjustment(long long adjustment);
+        // Replace the local operation count of a completed stage with its
+        // global interaction depth (e.g. a serial chain or parallel sends).
+        void set_round_depth_since(size_t before, size_t depth);
         void reset_total_comm();
 
         /*

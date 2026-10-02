@@ -4,7 +4,7 @@ from tqdm import tqdm
 import os
 import time
 import sys
-import threading
+from pathlib import Path
 
 from derive_network_sweeps import modeled_phase_time, write_network_sweeps
 
@@ -18,58 +18,28 @@ DEFAULT_BANDWIDTH_MBPS = float(os.environ.get(
     "SHUFFLE_BENCHMARK_BANDWIDTH_MBPS", "80"))
 DEFAULT_RTT_MS = float(os.environ.get("SHUFFLE_BENCHMARK_RTT_MS", "60"))
 
-# Run a party
-def run_command(command: list, redir: bool, return_codes: list, party: int):
-    if redir:
-        with open(STDOUT_FILE, 'w+') as f, open(STDERR_FILE, "w+") as err:
-            result = subprocess.run(command, stdout=f, stderr=err)
-    else:
-        result = subprocess.run(
-            command,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-    return_codes[party] = result.returncode
-
-# Run n_party parties
+# Run only this benchmark's parties; the launcher owns timeout/failure cleanup.
 def run_protocol(protocol: str, n_party: int, logsz: int, veclen: int, logbatch: int, port_base: int, rep: int):
-    threads = []
-    return_codes = [None] * n_party
+    root = Path(__file__).resolve().parent
+    logs = Path(OUTPUT_DIR).resolve() / "latest_party_logs"
+    timeout = os.environ.get("SHUFFLE_BENCHMARK_TIMEOUT", "3600")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    with open(STDOUT_FILE, 'w+') as f:
-        f.write('-1 -1 -1 -1 -1 -1\n')
-
-    for party in range(n_party):
-        redir = (party == 0)
-        command = [
-            "./build/my_shuffle_main.x",
-            protocol,
-            str(party),
-            str(n_party),
-            str(logsz),
-            str(veclen),
-            str(logbatch),
-            str(port_base),
-            str(rep),
-        ]
-        thread = threading.Thread(
-            target=run_command,
-            args=(command, redir, return_codes, party),
-        )
-        thread.start()
-        threads.append(thread)
-
-    for thread in threads:
-        thread.join()
-
-    failures = [
-        f"party {party}: exit {code}"
-        for party, code in enumerate(return_codes)
-        if code != 0
-    ]
-    if failures:
-        raise RuntimeError("; ".join(failures))
-    return return_codes
+    with open(STDOUT_FILE, "w") as stream:
+        stream.write("-1 -1 -1 -1 -1 -1\n")
+    result = subprocess.run(
+        [sys.executable, str(root / "Scripts/run-shuffle.py"), protocol,
+         str(n_party), str(logsz), str(veclen), str(logbatch), str(port_base),
+         str(rep), "--binary", str(root / "build/my_shuffle_main.x"),
+         "--work-dir", str(root), "--log-dir", str(logs), "--timeout", timeout],
+        capture_output=True, text=True,
+    )
+    for source, destination in ((logs / "party0.out", STDOUT_FILE),
+                                (logs / "party0.err", STDERR_FILE)):
+        if source.is_file():
+            Path(destination).write_text(source.read_text(errors="replace"))
+    if result.returncode:
+        raise RuntimeError(result.stderr[-4000:] or result.stdout[-4000:])
+    return [0] * n_party
 
 # Parse network-independent compute time, communication, and rounds.
 def sparse_output(proc: list):
@@ -79,10 +49,10 @@ def sparse_output(proc: list):
         if len(line) != 6:
             raise ValueError(f"expected 6 benchmark metrics, got {len(line)}")
         off_comm = int(line[0])
-        off_round = int(line[1])
+        off_round = float(line[1])
         off_compute_time = float(line[2])
         on_comm = int(line[3])
-        on_round = int(line[4])
+        on_round = float(line[4])
         on_compute_time = float(line[5])
         return (off_comm, off_round, off_compute_time,
                 on_comm, on_round, on_compute_time)
@@ -119,10 +89,10 @@ def append_raw_result(protocol: str,
                       status: str,
                       elapsed: float,
                       off_comm_bytes: int = -1,
-                      off_rounds: int = -1,
+                      off_rounds: float = -1,
                       off_compute_seconds: float = -1,
                       on_comm_bytes: int = -1,
-                      on_rounds: int = -1,
+                      on_rounds: float = -1,
                       on_compute_seconds: float = -1,
                       reason: str = ""):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -179,10 +149,10 @@ def save_result(filename : str,
                 cur_logsz : int = -1,
                 cur_logbatch : int = -1,
                 cur_off_comm : int = -1,
-                cur_off_round : int = -1,
+                cur_off_round : float = -1,
                 cur_off_time : float = -1,
                 cur_on_comm : int = -1,
-                cur_on_round : int = -1,
+                cur_on_round : float = -1,
                 cur_on_time : float = -1):
     with open(filename, "w+") as f:
         f.write('logsz, ')
@@ -221,6 +191,7 @@ def save_result(filename : str,
             + str(DEFAULT_RTT_MS)
             + ", \n"
         )
+        f.write("round_accounting, 2, global_depth_amortized, \n")
 
 # Load existing result
 def load_result(filename : str):
@@ -240,6 +211,7 @@ def load_result(filename : str):
     cur_on_round = -1
     cur_on_time = -1
     model_is_current = False
+    rounds_are_current = False
     if not os.path.isfile(filename) or os.path.getsize(filename) == 0:
         save_result(filename, res_off_comm, res_off_round, res_off_time, res_on_comm, res_on_round, res_on_time)
     with open(filename, "r") as f:
@@ -248,6 +220,13 @@ def load_result(filename : str):
                 saved_all_logsz = [int(i) for i in line.strip(',\n ').split(',')[1:]]
                 all_logsz = saved_all_logsz
             line = line.strip(',\n ').split(',')
+            if line[0].strip() == "round_accounting":
+                rounds_are_current = (
+                    len(line) >= 3
+                    and int(line[1]) == 2
+                    and line[2].strip() == "global_depth_amortized"
+                )
+                continue
             if line[0].strip() == "network_model":
                 model_is_current = (
                     len(line) >= 6
@@ -264,7 +243,7 @@ def load_result(filename : str):
                 while len(res_off_comm) < len(all_logsz):
                     res_off_comm.append(-1)
             elif ind == 2: # Offline round
-                res_off_round = [int(i) for i in line[1:]]
+                res_off_round = [float(i) for i in line[1:]]
                 while len(res_off_round) < len(all_logsz):
                     res_off_round.append(-1)
             elif ind == 3: # Offline time
@@ -276,7 +255,7 @@ def load_result(filename : str):
                 while len(res_on_comm) < len(all_logsz):
                     res_on_comm.append(-1)
             elif ind == 5: # Online round
-                res_on_round = [int(i) for i in line[1:]]
+                res_on_round = [float(i) for i in line[1:]]
                 while len(res_on_round) < len(all_logsz):
                     res_on_round.append(-1)
             elif ind == 6: # Online time
@@ -287,14 +266,14 @@ def load_result(filename : str):
                 cur_logsz = int(line[1])
                 cur_logbatch = int(line[2])
                 cur_off_comm = int(line[3])
-                cur_off_round = int(line[4])
+                cur_off_round = float(line[4])
                 cur_off_time = float(line[5])
                 cur_on_comm = int(line[6])
-                cur_on_round = int(line[7])
+                cur_on_round = float(line[7])
                 cur_on_time = float(line[8])
-    if not model_is_current:
+    if not model_is_current or not rounds_are_current:
         raise ValueError(
-            f"{filename} uses a legacy or different network model; "
+            f"{filename} uses a legacy or different network/round model; "
             "choose a new SHUFFLE_BENCHMARK_DIR"
         )
     return res_off_comm, res_off_round, res_off_time, res_on_comm, res_on_round, res_on_time, cur_logsz, cur_logbatch, cur_off_comm, cur_off_round, cur_off_time, cur_on_comm, cur_on_round, cur_on_time
@@ -508,7 +487,6 @@ for protocol in all_protocol:
                             elapse = time.time() - current_time
                             print(e)
                             print("Error. Restarting.")
-                            os.system("pkill my_shuffle_main")
                             append_raw_result(
                                 protocol,
                                 target,

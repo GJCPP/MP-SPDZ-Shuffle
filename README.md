@@ -2,105 +2,129 @@
 
 This is an implementation of secure multi-party shuffle protocol based on [MP-SPDZ project](https://github.com/data61/MP-SPDZ).
 
-## Compilation
+It accompanies **Free Linear Online Phase for Secure Multiparty Shuffle** by
+Jiacheng Gao, Yuan Zhang, Sheng Zhong, and Changyu Dong (ASIACRYPT 2026).
+The [paper](https://eprint.iacr.org/2024/1936) describes the protocols and experiments.
+License terms are in [LICENSE](LICENSE); OT submodules retain their own licenses.
 
-Please read [the instruction of MP-SPDZ](https://github.com/data61/MP-SPDZ) for setting up the MP-SPDZ part of the project.
+## Installation
 
-Note that in MP-SPDZ, you need to run `Scripts/setup-ssl.sh <nparties>` for setting up communication channel before executing an n-party protocols.
+Run from the repository root on Ubuntu 24.04 x86-64 with AVX2:
 
-Build the shuffle executable with CMake:
+The artifact ZIP includes the OT dependency sources. For a Git checkout, first
+run `git submodule update --init --recursive deps/SimpleOT deps/SimplestOT_C deps/libOTe`.
 
+```sh
+sudo apt-get update
+sudo apt-get install -y automake build-essential cmake curl git libboost-all-dev \
+    libgmp-dev libsodium-dev libssl-dev libtool openssl python3-venv
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-runtime.txt
+make my_shuffle_main.x CXX=g++ BUILD_JOBS=4
 ```
-cmake -S . -B build
-cmake --build build --target my_shuffle_main
-```
 
-This writes build artifacts under `build/`, including `build/my_shuffle_main.x`.
+The Makefile builds the OT dependencies and `build/my_shuffle_main.x`. Use the
+Ubuntu CMake package for the initial build. Binaries use `-march=native`;
+rebuild on the machine that will run the experiments.
 
-In directory `MP-SPDZ-Shuffle`, use `make example` to run a 3-party example, which translates to
+Validated dependencies:
 
-```
-for i in 0 1 2; do ./build/my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
-```
+| Component | Versions |
+| --- | --- |
+| Build tools | G++ 13.3.0, CMake 3.28.3, Make 4.3, Automake 1.16.5, Libtool 2.4.7 |
+| Python | Python 3.12.3, tqdm 4.67.1 |
+| Libraries | Boost 1.83.0, GMP 6.3.0, libsodium 1.0.18, OpenSSL 3.0.13 |
+| SimpleOT | Unversioned snapshot, 2020-07-11 |
+| SimplestOT_C | Unversioned snapshot, 2024-11-29 |
+| libOTe | 1.5.0 (SoftSpoken fork, snapshot 2024-07-05) |
+| cryptoTools | 1.9.0 (SoftSpoken fork, snapshot 2024-07-05) |
 
-The arguments are explained in later section.
+OT version numbers come from the source; snapshot dates are commit dates.
+Exact revisions are pinned by Git submodules.
 
 ## Benchmark
 
-Use `make benchmark` to run only the benchmark. Every point includes three variants: `Song_shuffle` optimized for total time (Song1), `Song_shuffle` optimized for online time (Song2), and the unified malicious `my_shuffle` protocol:
+The paper used Ubuntu 24.04, two Intel Xeon Gold 6326 processors at 2.90 GHz
+(32 physical cores / 64 threads), and one process per party over loopback.
+The validation host has 188 GiB RAM. Large configurations need substantial time
+and memory; reduce the party/size lists below when resources are limited.
 
-```
-Scripts/setup-ssl.sh 20
-SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/mali_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py malicious 10000
-SHUFFLE_BENCHMARK_DIR=benchmark_results_network_sweeps/mali_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py malicious 10000
-SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_network_sweeps python3 -u summarize_benchmarks.py mali --strict
-```
+Each point compares `Song_shuffle` optimized for total time (Song1),
+`Song_shuffle` optimized for online time (Song2), and `my_shuffle` (ours).
+For a small initial run:
 
-The two benchmark groups are:
-
-- Malicious size scale: fixed `n = 2`, `logsz = 10, 12, 14, 16, 18`.
-- Malicious party scale: fixed `logsz = 12`, `n = 3, 6, 9, 12, 15`.
-
-## Arguments
-
-The arguments are: \<protocol name\>, \<party id\>, \<num of parties\>, \<log num of items\>, \<vector length\>, \<logbatch\>, \<port base\>, \<num of repetitions\>.
-
-So the command `make example`, which translates to
-
-```
-for i in 0 1 2; do ./build/my_shuffle_main.x my_shuffle $$i 3 6 1 1 10000 1 & true; done
+```sh
+SHUFFLE_BENCHMARK_DIR=benchmark_results_quick SHUFFLE_BENCHMARK_PARTIES=3 SHUFFLE_BENCHMARK_LOGSZ=6 SHUFFLE_BENCHMARK_LOGBATCH=4 python3 -u my_benchmark.py malicious 15000
 ```
 
-launches a shuffle protocol that repeats once, which shuffles $2^6$ many $1$-sized vectors among $3$ parties.
+For the paper's full benchmark, run
+`make benchmark BENCHMARK_BASE_DIR=benchmark_results_review`, or run the groups
+and summary separately:
 
-## Shuffle Protocols
+```sh
+SHUFFLE_BENCHMARK_DIR=benchmark_results_review/mali_size SHUFFLE_BENCHMARK_PARTIES=2 SHUFFLE_BENCHMARK_LOGSZ=10,12,14,16,18 python3 -u my_benchmark.py malicious 10000
+SHUFFLE_BENCHMARK_DIR=benchmark_results_review/mali_parties SHUFFLE_BENCHMARK_PARTIES=3,6,9,12,15 SHUFFLE_BENCHMARK_LOGSZ=12 python3 -u my_benchmark.py malicious 10000
+SHUFFLE_BENCHMARK_BASE_DIR=benchmark_results_review python3 -u summarize_benchmarks.py mali --strict
+```
 
-| Protocol | Security | Party | Offline | Online | Framework |
-| -------- | -------- | ----- | ------- | ------ | --------- |
-| [1] [Chase et al.](https://link.springer.com/chapter/10.1007/978-3-030-64840-4_12) | Semi-honest | $2$ | $O(m\log m)$ | $O(m)$ | SPDZ |
-| [2] [Song et al.](https://www.ndss-symposium.org/wp-content/uploads/2024-21-paper.pdf) | Malicious | $n$ | $O(Bn^2m\log m)$ | $O(Bn^2m)$ | SPDZ |
-| [3] This paper | Malicious | $n$ | $O(Bn^2m\log m)$ | $O(nm)$ | Arbitrary |
+| Command / output | Paper data |
+| --- | --- |
+| `mali_parties` benchmark | Section 7.2, Table 2 |
+| `mali_size` benchmark | Section 7.3, Table 3 |
+| `summarize_benchmarks.py mali --strict` | Both tables' communication and modeled running time |
+| `mali_size/network_sweep.csv`, `n=2, logsz=18` | Section 7.4, Figures 3/4: size bandwidth/RTT panels |
+| `mali_parties/network_sweep.csv`, `n=15, logsz=12` | Section 7.4, Figures 3/4: party bandwidth/RTT panels |
 
-$n$ is the number of parties, $m$ the number of items (to be shuffled), $B$ a parameter related to security parameter.
+TLS certificates are prepared automatically. Existing results are resumed;
+use a new output directory after changing the code. `SHUFFLE_BENCHMARK_LOGBATCH`
+sets the candidate list (default `4,5,6,7,8,9,10`, excluding `10` at `logsz=18`).
+`SHUFFLE_BENCHMARK_TIMEOUT` sets the per-candidate timeout in seconds (default
+3600). Failures are recorded and cause a nonzero exit status.
+For semi-honest comparisons, use `my_benchmark.py semi-parties` or
+`make benchmark-semi` to compare `Chase_shuffle` and `semi_my_shuffle`.
 
-In context, [2] can be seen as an enhancement to [1], and [3] is instantiated by [2]. Note that [3] can also be implemented with other secret sharing scheme (e.g. Shamir SS) and other basic permutation protocol. In this project, [3] is instantiated by SPDZ and [2].
+## Output
 
-Protocol [1] includes an additional parameter $k$ ("logbatch" in code) for balancing communication and computation, which is inherited by [2] and [3]. Increasing $k$ reduces communication and increases computation.
+`raw_measurements_v2.csv` records measurements and failures. Per-protocol CSVs
+contain selected results; `mali_summary.md` summarizes the paper's table data.
+`network_sweep.csv` is generated automatically. To regenerate
+it from measurements:
 
-The malicious benchmark suite compares [2] and the malicious instantiation of [3].
+```sh
+python3 derive_network_sweeps.py benchmark_results_review/mali_size/raw_measurements_v2.csv --strict
+python3 derive_network_sweeps.py benchmark_results_review/mali_parties/raw_measurements_v2.csv --strict
+```
 
-## File Structure
+The executable outputs six values: offline bytes, rounds, local seconds, then
+online bytes, rounds, local seconds. Bytes and local time are averaged across
+parties; rounds represent global protocol depth. The benchmark uses one
+repetition; multiple repetitions report amortized values. Divide bytes by
+`1,000,000` for the paper's decimal MB.
 
-Directory `MyShuffle` includes all codes for implementing shuffle protocols. All files mentioned below are in this directory.
+Modeled time is `local_seconds + bytes / (bandwidth_MBps * 1,000,000) + rounds * RTT_ms / 1,000`. Table timings use 80 MB/s and 60 ms RTT. Bandwidth
+sweeps fix RTT at 0.5 ms; RTT sweeps fix bandwidth at 80 MB/s. Each setting
+selects its decomposition parameter for the stated optimization target.
+MPC-backend preprocessing contributes time and bytes; its internal rounds are
+excluded from the protocol-depth counter.
 
-Entries:
+Round accounting has been corrected since the paper measurements, so modeled
+timings can differ. Local times also depend on hardware and load.
 
-  - `my_shuffle_main.cpp` defines the entry of the program.
+## Source organization and changes to MP-SPDZ
 
-  - `my_benchmark.cpp/h` helps execute the corresponding shuffle protocol and records test outcomes, including offline/online communication and time.
+`MyShuffle/` adds the shuffle protocols (`my_shuffle`, `Song_shuffle`,
+`semi_my_shuffle`, and `Chase_shuffle`), MPC/OT helpers, and the executable entry
+`my_shuffle_main.cpp`. `mpc_communicator.cpp` handles communication;
+`my_benchmark.cpp` measures protocol execution.
 
-  - `test_shuffle.cpp/h` defines the (correctness) test for shuffle protocols.
+The added benchmark scripts run experiments (`my_benchmark.py`), derive network
+sweeps (`derive_network_sweeps.py`), and produce summaries
+(`summarize_benchmarks.py`). CMake/Make, TLS setup, the local launcher
+(`Scripts/run-shuffle.py`), and CI integrate these additions with MP-SPDZ.
 
-  - `unit_test.cpp/h` defines unit test for gadgets.
+## AI acknowledgement
 
-Shuffle protocols:
+The main body of the code, including MPC building blocks and the shuffle protocols, are written manually by Jiacheng Gao in 2024 and 2025.
 
-  - `Chase_shuffle.cpp/h` implements the shuffle protocol by [Chase et al.](https://link.springer.com/chapter/10.1007/978-3-030-64840-4_12).
-
-  - `Song_shuffle.cpp/h` implements the shuffle protocol by [Song et al.](https://www.ndss-symposium.org/wp-content/uploads/2024-21-paper.pdf).
-
-  - `my_shuffle.cpp/h` implements the shuffle protocol by this paper.
-
-MPC gadgets:
-
-  - `mpc_communicator.cpp/h` defines interface for interactions between parties.
-
-  - `mpc_gadgets.cpp/h` includes debugging tools.
-
-  - `OPV.cpp/h`, `Benes_network.cpp`, `double_length_prg.cpp`, etc. define primitives required by shuffle protocols.
-
-More details can be found in corresponding header files.
-
-## Citation
-
-TODO
+OpenAI Codex later assisted with artifact documentation, writing benchmark scripts, and packaging the artifact for evaluations. The main body of this README is also written by Codex.

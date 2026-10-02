@@ -9,6 +9,7 @@ namespace semiHonest {
         {
             int me = com.get_my_number();
             int n = com.get_n_party();
+            const size_t rounds_before = com.count_total_rounds();
             if (me == party) {
                 clear = share;
                 vectors<ClearType> buff(share.num, share.len);
@@ -20,6 +21,8 @@ namespace semiHonest {
             } else {
                 com.send(party, share);
             }
+            // All shares can be sent concurrently to the receiver.
+            com.set_round_depth_since(rounds_before, n > 1 ? 1 : 0);
         }
     }
 
@@ -208,8 +211,11 @@ namespace semiHonest {
 
     void process_all_orders(mpc_comm& com)
     {
+        const size_t sessions_rounds_before = com.count_total_rounds();
+        size_t parallel_session_rounds = 0;
         for (auto& info : booked_shuffle) {
             for (auto& order : info.second) {
+                const size_t session_rounds_before = com.count_total_rounds();
                 shuffle_session& session = *order.session;
                 if (session.destroyed) {
                     std::cerr << FAIL_INFO << "destroyed shuffle session." << std::endl;
@@ -235,11 +241,17 @@ namespace semiHonest {
                     com.add_round_adjustment(-static_cast<long long>(
                             prepare_sequential_rounds - prepare_parallel_rounds));
                 }
+                parallel_session_rounds = std::max(parallel_session_rounds,
+                        com.count_total_rounds() - session_rounds_before);
             }
         }
+        com.set_round_depth_since(sessions_rounds_before, parallel_session_rounds);
 
+        const size_t perform_rounds_before = com.count_total_rounds();
+        parallel_session_rounds = 0;
         for (auto& info : booked_shuffle) {
             for (auto& order : info.second) {
+                const size_t session_rounds_before = com.count_total_rounds();
                 shuffle_session& session = *order.session;
                 size_t perform_sequential_rounds = 0;
                 size_t perform_parallel_rounds = 0;
@@ -255,11 +267,17 @@ namespace semiHonest {
                     com.add_round_adjustment(-static_cast<long long>(
                             perform_sequential_rounds - perform_parallel_rounds));
                 }
+                parallel_session_rounds = std::max(parallel_session_rounds,
+                        com.count_total_rounds() - session_rounds_before);
             }
         }
+        com.set_round_depth_since(perform_rounds_before, parallel_session_rounds);
 
+        const size_t reconstruct_rounds_before = com.count_total_rounds();
+        parallel_session_rounds = 0;
         for (auto& info : booked_shuffle) {
             for (auto& order : info.second) {
+                const size_t session_rounds_before = com.count_total_rounds();
                 shuffle_session& session = *order.session;
                 size_t num = size_t(1) << session.logsz;
                 size_t reconstruct_sequential_rounds = 0;
@@ -283,8 +301,11 @@ namespace semiHonest {
                             reconstruct_sequential_rounds - reconstruct_parallel_rounds));
                 }
                 session.set_init_flag();
+                parallel_session_rounds = std::max(parallel_session_rounds,
+                        com.count_total_rounds() - session_rounds_before);
             }
         }
+        com.set_round_depth_since(reconstruct_rounds_before, parallel_session_rounds);
 
         booked_shuffle.clear();
     }
@@ -314,6 +335,7 @@ namespace semiHonest {
         vectors<ClearType> shared_masked = val - cor.r[0];
         private_reconstruct_to(com, 0, shared_masked, masked);
 
+        const size_t chain_rounds_before = com.count_total_rounds();
         if (me == 0) {
             cor.perm.perform(masked);
             if (n > 1) {
@@ -328,6 +350,7 @@ namespace semiHonest {
             }
         }
 
+        com.set_round_depth_since(chain_rounds_before, n - 1);
         com.unchecked_broadcast(n - 1, masked);
 
         val = cor.permuted_r[n - 1];

@@ -9,6 +9,8 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SUMMARY_SCRIPT = ROOT / "summarize_benchmarks.py"
+sys.path.insert(0, str(ROOT))
+from summarize_benchmarks import read_result
 
 
 def write_result(path, logsz_values):
@@ -85,6 +87,13 @@ def create_fixture(base):
 
 
 class SummaryTests(unittest.TestCase):
+    def test_summary_preserves_fractional_rounds(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "result.csv"
+            write_result(path, [6])
+            path.write_text(path.read_text().replace("off_round,10", "off_round,59.5"))
+            self.assertEqual(read_result(path)["off_round"], [59.5])
+
     def test_all_summaries_are_complete_and_strict(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)

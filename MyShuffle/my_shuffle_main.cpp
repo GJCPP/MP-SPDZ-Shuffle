@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <exception>
+#include <iomanip>
 
 #include "Math/gfp.hpp"
 #include "Machines/SPDZ.hpp"
@@ -82,6 +83,10 @@ int python_interface(int argc, char **argv) {
     int logbatch = atoi(argv[6]);
     int port_base = atoi(argv[7]);
     int rep = atoi(argv[8]);
+    if (n < 2 || rep < 1) {
+        std::cerr << "Need at least two parties and one repetition." << std::endl;
+        return 2;
+    }
     
     myShuffle::mpc_comm com(n, me, port_base);
 
@@ -107,8 +112,11 @@ int python_interface(int argc, char **argv) {
     } else {
         execute_Chase_shuffle(com, logsz, veclen, logbatch, rep, off_comm, off_round, off_time, on_comm, on_round, on_time);
     }
-    std::cout << off_comm / rep << " " << off_round / rep << " " << off_time / rep << " "
-            << on_comm / rep << " " << on_round / rep << " " << on_time / rep << std::endl;
+    // Offline correlations are batched across repetitions, whereas online
+    // executions are sequential. Report amortized depth without truncation.
+    std::cout << std::setprecision(12)
+            << off_comm / rep << " " << double(off_round) / rep << " " << off_time / rep << " "
+            << on_comm / rep << " " << double(on_round) / rep << " " << on_time / rep << std::endl;
     // std::cerr << off_comm / rep << " " << off_time / rep << " " << on_comm / rep << " " << on_time / rep << std::endl;
     return 0;
 }

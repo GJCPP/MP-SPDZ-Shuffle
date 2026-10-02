@@ -151,12 +151,12 @@ void execute_Song_shuffle(myShuffle::mpc_comm &com,
         delete plan;
     }
 
-    // Average
+    // Average bytes/time per party; use global interaction depth for rounds.
     off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
-    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
+    off_round = myShuffle::insecure_static_max(com, off_round);
     off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
     on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
-    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
+    on_round = myShuffle::insecure_static_max(com, on_round);
     on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
@@ -180,14 +180,21 @@ void execute_Chase_shuffle(myShuffle::mpc_comm &com,
     com.set_offline();
     myShuffle::timer off_time_timer, on_time_timer;
     off_time_timer.tick();
+    const size_t prepare_rounds_before = com.count_total_rounds();
+    size_t parallel_prepare_rounds = 0;
     for (int rank(0); rank != rep; ++rank) {
         for (int permuter(0); permuter != com.get_n_party(); ++permuter) {
             plans.emplace_back();
             plans.back().init(permuter, logsz, veclen, logbatch,
                     permutation(1 << logsz, true));
+            const size_t before = com.count_total_rounds();
             plans.back().prepare(com);
+            parallel_prepare_rounds = std::max(parallel_prepare_rounds,
+                    com.count_total_rounds() - before);
         }
     }
+    // Offline correlations have no dependency on another permutation or run.
+    com.set_round_depth_since(prepare_rounds_before, parallel_prepare_rounds);
 
     off_time_timer.tock();
     off_time = off_time_timer.duration();
@@ -208,10 +215,10 @@ void execute_Chase_shuffle(myShuffle::mpc_comm &com,
     com.reset_total_comm();
 
     off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
-    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
+    off_round = myShuffle::insecure_static_max(com, off_round);
     off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
     on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
-    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
+    on_round = myShuffle::insecure_static_max(com, on_round);
     on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
@@ -269,12 +276,12 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
         delete plan;
     }
 
-    // Average
+    // Average bytes/time per party; use global interaction depth for rounds.
     off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
-    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
+    off_round = myShuffle::insecure_static_max(com, off_round);
     off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
     on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
-    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
+    on_round = myShuffle::insecure_static_max(com, on_round);
     on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }
 
@@ -324,9 +331,9 @@ void execute_semi_my_shuffle(myShuffle::mpc_comm &com,
     }
 
     off_comm = myShuffle::insecure_static_sum(com, off_comm) / com.get_n_party();
-    off_round = myShuffle::insecure_static_sum(com, off_round) / com.get_n_party();
+    off_round = myShuffle::insecure_static_max(com, off_round);
     off_time = myShuffle::insecure_static_sum(com, off_time) / com.get_n_party();
     on_comm = myShuffle::insecure_static_sum(com, on_comm) / com.get_n_party();
-    on_round = myShuffle::insecure_static_sum(com, on_round) / com.get_n_party();
+    on_round = myShuffle::insecure_static_max(com, on_round);
     on_time = myShuffle::insecure_static_sum(com, on_time) / com.get_n_party();
 }

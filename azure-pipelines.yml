@@ -9,13 +9,18 @@ trigger:
 - to-publish
 
 pool:
-  vmImage: 'ubuntu-20.04'
+  vmImage: 'ubuntu-24.04'
 
 steps:
   - checkout: self
     submodules: recursive
   - script: |
-      bash -c "sudo apt-get update && sudo apt-get install libsodium-dev libntl-dev python3-gmpy2 python3-networkx"
+      set -euo pipefail
+      sudo apt-get update
+      sudo apt-get install -y automake build-essential clang cmake curl git libboost-all-dev libgmp-dev libntl-dev libsodium-dev libssl-dev libtool openssl python3-gmpy2 python3-networkx python3-venv
+      python3 -m venv .venv
+      .venv/bin/python -m pip install -r requirements-runtime.txt
+    displayName: Install build and benchmark dependencies
   - script: |
       make setup
   - script:
@@ -39,37 +44,18 @@ steps:
     displayName: Build shuffle executable
   - script: |
       set -euo pipefail
-      Scripts/setup-ssl.sh 3
-      run_three_party() {
-        protocol="$1"
-        port="$2"
-        pids=""
-        for party in 0 1 2; do
-          ./build/my_shuffle_main.x "$protocol" "$party" 3 3 2 4 "$port" 1 \
-            >"/tmp/${protocol}-${party}.out" \
-            2>"/tmp/${protocol}-${party}.err" &
-          pids="$pids $!"
-        done
-        status=0
-        for pid in $pids; do
-          wait "$pid" || status=1
-        done
-        if [ "$status" -ne 0 ]; then
-          cat "/tmp/${protocol}-"*.err
-          return 1
-        fi
-      }
-      run_three_party test_my_shuffle 12000
-      run_three_party test_my_shuffle_strong 13000
-      run_three_party test_semi_my_shuffle 14000
-    displayName: Test weak, strong, and semi-honest shuffles
+      make test-shuffle PYTHON=.venv/bin/python
+      make test-shuffle-rounds PYTHON=.venv/bin/python
+    displayName: Test shuffle correctness and reject tampering
   - script: |
       set -euo pipefail
-      SHUFFLE_BENCHMARK_DIR=/tmp/shuffle-benchmark-smoke \
+      Scripts/setup-ssl.sh --ensure 3
+      smoke_dir=$(mktemp -d)
+      SHUFFLE_BENCHMARK_DIR="$smoke_dir" \
       SHUFFLE_BENCHMARK_PARTIES=3 \
       SHUFFLE_BENCHMARK_LOGSZ=6 \
       SHUFFLE_BENCHMARK_LOGBATCH=4 \
-      python3 -u my_benchmark.py my_shuffle_strong 15000
-      test -s /tmp/shuffle-benchmark-smoke/my_shuffle_strong_total_time_n_3.csv
-      python3 tests/test_summarize_benchmarks.py
+      timeout --kill-after=5s 120s .venv/bin/python -u my_benchmark.py my_shuffle 15000
+      test -s "$smoke_dir/my_shuffle_total_time_n_3.csv"
+      .venv/bin/python -m unittest discover -s tests -v
     displayName: Smoke-test benchmark and summaries

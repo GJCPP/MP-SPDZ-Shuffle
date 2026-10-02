@@ -86,6 +86,22 @@ class NetworkSweepTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             modeled_phase_components(0.1, -1, 2, 80, 60)
 
+    def test_fractional_amortized_rounds_survive_csv_and_model(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "raw.csv"
+            with source.open("w", newline="") as stream:
+                writer = csv.DictWriter(stream, fieldnames=RAW_FIELDS)
+                writer.writeheader()
+                row = measurement(4, 0.0, 0, 17)
+                row["off_rounds"] = 59.5
+                writer.writerow(row)
+            derived = write_network_sweeps(
+                source, Path(directory) / "sweep.csv", strict=True)
+            for row in derived:
+                self.assertEqual(row["off_rounds"], 59.5)
+                self.assertAlmostEqual(row["off_latency_seconds"],
+                                       59.5 * row["rtt_ms"] / 1000)
+
     def test_on_time_target_ignores_offline_time(self):
         slow_offline = measurement(4, 0.1, 0, 0, target="on_time")
         slow_offline["off_compute_seconds"] = 100

@@ -112,10 +112,10 @@ def read_measurements(path):
                 "logbatch": int(row["logbatch"]),
                 "attempt": int(row["attempt"]),
                 "off_comm_bytes": int(row["off_comm_bytes"]),
-                "off_rounds": int(row["off_rounds"]),
+                "off_rounds": float(row["off_rounds"]),
                 "off_compute_seconds": float(row["off_compute_seconds"]),
                 "on_comm_bytes": int(row["on_comm_bytes"]),
-                "on_rounds": int(row["on_rounds"]),
+                "on_rounds": float(row["on_rounds"]),
                 "on_compute_seconds": float(row["on_compute_seconds"]),
             }
             key = tuple(measurement[name] for name in (

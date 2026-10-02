@@ -54,6 +54,22 @@ namespace myShuffle
         return ret;
     }
 
+    // For benchmark statistics only, after measured protocol communication
+    // has been recorded. A global depth is never an average of party counts.
+    template <typename T>
+    T insecure_static_max(mpc_comm& com, const T& val) {
+        T result = val;
+        for (int i = 0; i < com.get_n_party(); ++i) {
+            octetStream os;
+            os.serialize(val);
+            com.unchecked_broadcast(i, os);
+            T received;
+            os.unserialize(received);
+            result = std::max(result, received);
+        }
+        return result;
+    }
+
 
     void insecure_share(mpc_comm& com, int owner, vectors<block_wrapper>& val);
     void insecure_share(mpc_comm& com, int owner, vectors<ClearType>& val);

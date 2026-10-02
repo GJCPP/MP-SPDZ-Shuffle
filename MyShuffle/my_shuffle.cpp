@@ -539,6 +539,7 @@ namespace myShuffle {
 
         vectors<ClearType> incoming_a, incoming_b;
         int me = com.get_my_number();
+        const size_t chain_rounds_before = com.count_total_rounds();
         if (me == 0) {
             cor.perm.perform(z00);
             cor.perm.perform(z01);
@@ -558,6 +559,10 @@ namespace myShuffle {
                 com.send(me + 1, z);
             }
         }
+
+        // All n-1 transfers depend on the preceding party's permutation.
+        // A party observes only its adjacent links, not the full chain.
+        com.set_round_depth_since(chain_rounds_before, com.get_n_party() - 1);
 
         // Only after every sequential message has been fixed does the last
         // party broadcast y_n and the parties invoke terminal Verify once.

@@ -24,10 +24,10 @@ def read_result(path):
     return {
         "logsz": logsz,
         "off_comm": [int(x) for x in rows.get("off_comm", [])],
-        "off_round": [int(x) for x in off_round] if off_round else ["NA"] * len(logsz),
+        "off_round": [float(x) for x in off_round] if off_round else ["NA"] * len(logsz),
         "off_time": [float(x) for x in rows.get("off_time", [])],
         "on_comm": [int(x) for x in rows.get("on_comm", [])],
-        "on_round": [int(x) for x in on_round] if on_round else ["NA"] * len(logsz),
+        "on_round": [float(x) for x in on_round] if on_round else ["NA"] * len(logsz),
         "on_time": [float(x) for x in rows.get("on_time", [])],
     }
 

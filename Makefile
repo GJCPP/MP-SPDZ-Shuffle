@@ -2,6 +2,7 @@
 include CONFIG
 
 BUILD_DIR ?= build
+BUILD_JOBS ?= 2
 
 define objs
 $(addprefix $(BUILD_DIR)/,$(patsubst %.cpp,%.o,$(1)))
@@ -305,7 +306,8 @@ $(LIBSIMPLEOT_C): deps/SimplestOT_C/ref10/Makefile
 OT/BaseOT.o: deps/SimplestOT_C/ref10/Makefile
 
 deps/SimplestOT_C/ref10/Makefile:
-	git submodule update --init deps/SimplestOT_C || git clone https://github.com/mkskeller/SimplestOT_C.git deps/SimplestOT_C
+	@test -f deps/SimplestOT_C/ref10/CMakeLists.txt || \
+		(git submodule update --init deps/SimplestOT_C || git clone https://github.com/mkskeller/SimplestOT_C.git deps/SimplestOT_C)
 	cd deps/SimplestOT_C/ref10; PATH="$(CURDIR)/local/bin:$(PATH)" cmake .
 
 .PHONY: Programs/Circuits
@@ -324,7 +326,7 @@ $(BOOST_ARCHIVE): deps/libOTe/libOTe
 
 boost: deps/libOTe/libOTe $(BOOST_ARCHIVE)
 	cd deps/libOTe; \
-	python3 build.py --setup --boost --install=$(CURDIR)/local
+	python3 build.py --setup --boost --par=$(BUILD_JOBS) --install=$(CURDIR)/local
 maybe-boost: deps/libOTe/libOTe
 	cd `mktemp -d`; \
 	PATH="$(CURDIR)/local/bin:$(PATH)" cmake $(CURDIR)/deps/libOTe || \
@@ -362,12 +364,12 @@ endif
 local/lib/liblibOTe.a: deps/libOTe/libOTe
 	make maybe-boost; \
 	cd deps/libOTe; \
-	PATH="$(CURDIR)/local/bin:$(PATH)" python3 build.py --install=$(CURDIR)/local -- -DBUILD_SHARED_LIBS=0 $(OTE_OPTS) && \
+	PATH="$(CURDIR)/local/bin:$(PATH)" python3 build.py --par=$(BUILD_JOBS) --install=$(CURDIR)/local -- -DBUILD_SHARED_LIBS=0 $(OTE_OPTS) && \
 	touch ../../local/lib/liblibOTe.a
 
 $(SHARED_OTE): deps/libOTe/libOTe maybe-boost
 	cd deps/libOTe; \
-	python3 build.py --install=$(CURDIR)/local -- -DBUILD_SHARED_LIBS=1 $(OTE_OPTS)
+	python3 build.py --par=$(BUILD_JOBS) --install=$(CURDIR)/local -- -DBUILD_SHARED_LIBS=1 $(OTE_OPTS)
 
 cmake:
 	wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1.tar.gz
@@ -403,18 +405,27 @@ MY_BIN := $(BUILD_DIR)/my_shuffle_main.x
 MY_SRC := $(wildcard $(MY_SRC_DIR)/*.cpp)
 MY_OBJ := $(MY_SRC:$(MY_SRC_DIR)/%.cpp=$(MY_OBJ_DIR)/%.o)
 BENCHMARK_BASE_DIR ?= benchmark_results_network_sweeps
+PYTHON ?= python3
 
 $(BUILD_DIR)/%.x: $(BUILD_DIR)/MyShuffle/%.o $(COMMON) $(MY_OBJ) $(OT) $(FHEOFFLINE) $(BaseOT)
 	@mkdir -p $(@D)
 	$(CXX) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
-.PHONY: my_shuffle_main.x benchmark benchmark-semi benchmark-mali
+.PHONY: my_shuffle_main.x example test-shuffle test-shuffle-rounds benchmark benchmark-semi benchmark-mali
 my_shuffle_main.x: $(LIBSIMPLEOT) $(STATIC_OTE) local/lib/libcryptoTools.a
 	cmake -S . -B $(BUILD_DIR)
-	cmake --build $(BUILD_DIR) --target my_shuffle_main
+	cmake --build $(BUILD_DIR) --target my_shuffle_main --parallel $(BUILD_JOBS)
 
 example: my_shuffle_main.x
-	for i in 0 1 2; do ./$(MY_BIN) my_shuffle $$i 3 6 1 1 10000 1 & true; done
+	$(PYTHON) Scripts/run-shuffle.py my_shuffle 3 6 1 1 10000 1 --binary ./$(MY_BIN)
+
+test-shuffle: my_shuffle_main.x
+	$(PYTHON) Scripts/run-shuffle.py test_my_shuffle 3 6 1 4 12000 1 --binary ./$(MY_BIN)
+	$(PYTHON) Scripts/run-shuffle.py test_my_shuffle_tamper 3 6 1 4 13000 1 --expect-mac-failure --binary ./$(MY_BIN)
+	$(PYTHON) Scripts/run-shuffle.py test_semi_my_shuffle 3 6 2 4 14000 1 --binary ./$(MY_BIN)
+
+test-shuffle-rounds: my_shuffle_main.x
+	SHUFFLE_ROUND_INTEGRATION=1 SHUFFLE_TEST_BINARY=./$(MY_BIN) $(PYTHON) tests/test_shuffle_rounds.py -v
 
 benchmark: my_shuffle_main.x
 	$(MAKE) benchmark-mali

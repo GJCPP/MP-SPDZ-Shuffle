@@ -577,6 +577,7 @@ namespace myShuffle {
 
 
         my_ote::send_base_cor_ot(sendKey, osuPrg, sendChannel);
+        add_logical_rounds(2);
 
 
         if (!channel) delete sendChannel;
@@ -612,6 +613,7 @@ namespace myShuffle {
         
 
         my_ote::recv_base_cor_ot(choices, recvKey, osuPrg, recvChannel);
+        add_logical_rounds(2);
 
 
         if (!channel) delete recvChannel;
@@ -667,7 +669,7 @@ namespace myShuffle {
         extOT.send(sendBlockMsg, osuPrg, sendChannel);
         // SimplestOT is two rounds on first use. Malicious KOS extension is
         // three rounds (receiver matrix, challenge, correlation response).
-        add_logical_rounds(needs_base_ot ? 5 : 3);
+        add_logical_rounds(3);
         memcpy(sendKey.data(), sendBlockMsg.data(), 2 * num_ot * sizeof(block));
     }
 
@@ -711,7 +713,7 @@ namespace myShuffle {
         // Perform extened ot
         std::vector<block> recvBlockMsg(num_ot);
         extOT.receive(choices, recvBlockMsg, osuPrg, recvChannel);
-        add_logical_rounds(needs_base_ot ? 5 : 3);
+        add_logical_rounds(3);
         memcpy(recvKey.data(), recvBlockMsg.data(), num_ot * sizeof(block));
     }
 
@@ -805,12 +807,29 @@ namespace myShuffle {
             return raw + static_cast<size_t>(round_adjustment);
         }
         size_t reduction = static_cast<size_t>(-round_adjustment);
-        return raw < reduction ? 0 : raw - reduction;
+        if (raw < reduction) {
+            throw std::logic_error("Negative protocol round count");
+        }
+        return raw - reduction;
     }
 
     void mpc_comm::add_round_adjustment(long long adjustment)
     {
         round_adjustment += adjustment;
+    }
+
+    void mpc_comm::set_round_depth_since(size_t before, size_t depth)
+    {
+        const size_t after = count_total_rounds();
+        if (after < before) {
+            throw std::logic_error("Protocol round count decreased inside a stage");
+        }
+        const size_t local_depth = after - before;
+        if (depth >= local_depth) {
+            add_round_adjustment(static_cast<long long>(depth - local_depth));
+        } else {
+            add_round_adjustment(-static_cast<long long>(local_depth - depth));
+        }
     }
 
     void mpc_comm::reset_total_comm()

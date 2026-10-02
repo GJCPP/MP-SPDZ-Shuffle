@@ -38,6 +38,9 @@ void execute_my_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, size_t& off_round, double& off_time,
                             size_t& on_comm, size_t& on_round, double& on_time);
+// These functions return phase totals for the whole repetition batch. Bytes
+// and local time are averaged across parties; rounds are global phase depths.
+// The executable amortizes each metric by rep, preserving fractional rounds.
 void execute_Song_shuffle(myShuffle::mpc_comm &com,
                             int logsz, int veclen, int logbatch, int rep,
                             size_t& off_comm, size_t& off_round, double& off_time,
